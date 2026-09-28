@@ -4,8 +4,8 @@ module AXI_data_out_0(
     input   wire            fifo_ready,     // FIFO准备信号
 
     output  reg             valid,          // 有效信号
-    output  wire             last,           // 最后一个数据信号
-    output  wire     [31:0]  data            // 数据信号
+    output  wire            last,           // 最后一个数据信号
+    output  wire    [31:0]  data            // 数据信号
     );
 
     // 设计10位计数器，一个采样点占32位，高位补零
@@ -22,11 +22,11 @@ module AXI_data_out_0(
     always @(posedge clk or negedge rst_n) begin 
         if (!rst_n) begin
             valid       <= 1'b0;
-            // lfsr        <= 16'd0;
+            lfsr        <= 16'h001;
             finished    <= 1'b0;
             count       <= 10'd0;
-        end 
-        else if (fifo_ready) begin 
+        end
+        else if (!finished) begin 
             valid <= 1'b1;
             
             if (valid && fifo_ready) begin

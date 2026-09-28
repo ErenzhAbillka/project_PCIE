@@ -1,7 +1,7 @@
 //Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-//Date        : Tue Sep 22 18:55:37 2026
+//Date        : Mon Sep 28 17:36:39 2026
 //Host        : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
 //Command     : generate_target xdma_pcie.bd
 //Design      : xdma_pcie
@@ -9,7 +9,7 @@
 //--------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CORE_GENERATION_INFO = "xdma_pcie,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=xdma_pcie,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=1,numReposBlks=1,numNonXlnxBlks=0,numHierBlks=0,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "xdma_pcie.hwdef" *) 
+(* CORE_GENERATION_INFO = "xdma_pcie,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=xdma_pcie,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=3,numReposBlks=3,numNonXlnxBlks=0,numHierBlks=0,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_board_cnt=3,da_xdma_cnt=1,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "xdma_pcie.hwdef" *) 
 module xdma_pcie
    (C0_DDR4_0_act_n,
     C0_DDR4_0_adr,
@@ -63,7 +63,14 @@ module xdma_pcie
     C0_DDR4_S_AXI_0_wstrb,
     C0_DDR4_S_AXI_0_wvalid,
     C0_SYS_CLK_0_clk_n,
-    C0_SYS_CLK_0_clk_p);
+    C0_SYS_CLK_0_clk_p,
+    diff_clock_rtl_0_clk_n,
+    diff_clock_rtl_0_clk_p,
+    pcie_7x_mgt_rtl_0_rxn,
+    pcie_7x_mgt_rtl_0_rxp,
+    pcie_7x_mgt_rtl_0_txn,
+    pcie_7x_mgt_rtl_0_txp,
+    reset_rtl_0);
   (* X_INTERFACE_INFO = "xilinx.com:interface:ddr4:1.0 C0_DDR4_0 ACT_N" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME C0_DDR4_0, AXI_ARBITRATION_SCHEME RD_PRI_REG, BURST_LENGTH 8, CAN_DEBUG false, CAS_LATENCY 11, CAS_WRITE_LATENCY 9, CS_ENABLED true, CUSTOM_PARTS no_file_loaded, DATA_MASK_ENABLED DM_NO_DBI, DATA_WIDTH 64, MEMORY_PART MT40A512M16HA-083E, MEMORY_TYPE Components, MEM_ADDR_MAP ROW_COLUMN_BANK, SLOT Single, TIMEPERIOD_PS 1250" *) output C0_DDR4_0_act_n;
   (* X_INTERFACE_INFO = "xilinx.com:interface:ddr4:1.0 C0_DDR4_0 ADR" *) output [16:0]C0_DDR4_0_adr;
   (* X_INTERFACE_INFO = "xilinx.com:interface:ddr4:1.0 C0_DDR4_0 BA" *) output [1:0]C0_DDR4_0_ba;
@@ -117,6 +124,13 @@ module xdma_pcie
   (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 C0_DDR4_S_AXI_0 WVALID" *) input C0_DDR4_S_AXI_0_wvalid;
   (* X_INTERFACE_INFO = "xilinx.com:interface:diff_clock:1.0 C0_SYS_CLK_0 CLK_N" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME C0_SYS_CLK_0, CAN_DEBUG false, FREQ_HZ 100000000" *) input C0_SYS_CLK_0_clk_n;
   (* X_INTERFACE_INFO = "xilinx.com:interface:diff_clock:1.0 C0_SYS_CLK_0 CLK_P" *) input C0_SYS_CLK_0_clk_p;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:diff_clock:1.0 diff_clock_rtl_0 CLK_N" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME diff_clock_rtl_0, CAN_DEBUG false, FREQ_HZ 100000000" *) input [0:0]diff_clock_rtl_0_clk_n;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:diff_clock:1.0 diff_clock_rtl_0 CLK_P" *) input [0:0]diff_clock_rtl_0_clk_p;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt_rtl_0 rxn" *) input [7:0]pcie_7x_mgt_rtl_0_rxn;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt_rtl_0 rxp" *) input [7:0]pcie_7x_mgt_rtl_0_rxp;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt_rtl_0 txn" *) output [7:0]pcie_7x_mgt_rtl_0_txn;
+  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt_rtl_0 txp" *) output [7:0]pcie_7x_mgt_rtl_0_txp;
+  (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 RST.RESET_RTL_0 RST" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RST.RESET_RTL_0, INSERT_VIP 0, POLARITY ACTIVE_LOW" *) input reset_rtl_0;
 
   wire [31:0]C0_DDR4_S_AXI_0_1_ARADDR;
   wire [1:0]C0_DDR4_S_AXI_0_1_ARBURST;
@@ -171,6 +185,15 @@ module xdma_pcie
   wire [7:0]ddr4_0_C0_DDR4_DQS_T;
   wire [0:0]ddr4_0_C0_DDR4_ODT;
   wire ddr4_0_C0_DDR4_RESET_N;
+  wire [0:0]diff_clock_rtl_0_1_CLK_N;
+  wire [0:0]diff_clock_rtl_0_1_CLK_P;
+  wire reset_rtl_0_1;
+  wire [0:0]util_ds_buf_IBUF_DS_ODIV2;
+  wire [0:0]util_ds_buf_IBUF_OUT;
+  wire [7:0]xdma_0_pcie_mgt_rxn;
+  wire [7:0]xdma_0_pcie_mgt_rxp;
+  wire [7:0]xdma_0_pcie_mgt_txn;
+  wire [7:0]xdma_0_pcie_mgt_txp;
 
   assign C0_DDR4_0_act_n = ddr4_0_C0_DDR4_ACT_N;
   assign C0_DDR4_0_adr[16:0] = ddr4_0_C0_DDR4_ADR;
@@ -221,6 +244,13 @@ module xdma_pcie
   assign C0_DDR4_S_AXI_0_wready = C0_DDR4_S_AXI_0_1_WREADY;
   assign C0_SYS_CLK_0_1_CLK_N = C0_SYS_CLK_0_clk_n;
   assign C0_SYS_CLK_0_1_CLK_P = C0_SYS_CLK_0_clk_p;
+  assign diff_clock_rtl_0_1_CLK_N = diff_clock_rtl_0_clk_n[0];
+  assign diff_clock_rtl_0_1_CLK_P = diff_clock_rtl_0_clk_p[0];
+  assign pcie_7x_mgt_rtl_0_txn[7:0] = xdma_0_pcie_mgt_txn;
+  assign pcie_7x_mgt_rtl_0_txp[7:0] = xdma_0_pcie_mgt_txp;
+  assign reset_rtl_0_1 = reset_rtl_0;
+  assign xdma_0_pcie_mgt_rxn = pcie_7x_mgt_rtl_0_rxn[7:0];
+  assign xdma_0_pcie_mgt_rxp = pcie_7x_mgt_rtl_0_rxp[7:0];
   xdma_pcie_ddr4_0_2 ddr4_0
        (.c0_ddr4_act_n(ddr4_0_C0_DDR4_ACT_N),
         .c0_ddr4_adr(ddr4_0_C0_DDR4_ADR),
@@ -277,4 +307,35 @@ module xdma_pcie
         .c0_sys_clk_n(C0_SYS_CLK_0_1_CLK_N),
         .c0_sys_clk_p(C0_SYS_CLK_0_1_CLK_P),
         .sys_rst(1'b0));
+  xdma_pcie_util_ds_buf_0 util_ds_buf
+       (.IBUF_DS_N(diff_clock_rtl_0_1_CLK_N),
+        .IBUF_DS_ODIV2(util_ds_buf_IBUF_DS_ODIV2),
+        .IBUF_DS_P(diff_clock_rtl_0_1_CLK_P),
+        .IBUF_OUT(util_ds_buf_IBUF_OUT));
+  xdma_pcie_xdma_0_0 xdma_0
+       (.cfg_mgmt_addr({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .cfg_mgmt_byte_enable({1'b0,1'b0,1'b0,1'b0}),
+        .cfg_mgmt_read(1'b0),
+        .cfg_mgmt_type1_cfg_reg_access(1'b0),
+        .cfg_mgmt_write(1'b0),
+        .cfg_mgmt_write_data({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .m_axi_arready(1'b0),
+        .m_axi_awready(1'b0),
+        .m_axi_bid({1'b0,1'b0,1'b0,1'b0}),
+        .m_axi_bresp({1'b0,1'b0}),
+        .m_axi_bvalid(1'b0),
+        .m_axi_rdata({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .m_axi_rid({1'b0,1'b0,1'b0,1'b0}),
+        .m_axi_rlast(1'b0),
+        .m_axi_rresp({1'b0,1'b0}),
+        .m_axi_rvalid(1'b0),
+        .m_axi_wready(1'b0),
+        .pci_exp_rxn(xdma_0_pcie_mgt_rxn),
+        .pci_exp_rxp(xdma_0_pcie_mgt_rxp),
+        .pci_exp_txn(xdma_0_pcie_mgt_txn),
+        .pci_exp_txp(xdma_0_pcie_mgt_txp),
+        .sys_clk(util_ds_buf_IBUF_DS_ODIV2),
+        .sys_clk_gt(util_ds_buf_IBUF_OUT),
+        .sys_rst_n(reset_rtl_0_1),
+        .usr_irq_req(1'b0));
 endmodule

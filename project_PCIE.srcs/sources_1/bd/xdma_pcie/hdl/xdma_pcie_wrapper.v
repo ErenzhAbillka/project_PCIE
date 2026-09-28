@@ -1,7 +1,7 @@
 //Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-//Date        : Tue Sep 22 18:55:37 2026
+//Date        : Mon Sep 28 17:36:39 2026
 //Host        : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
 //Command     : generate_target xdma_pcie_wrapper.bd
 //Design      : xdma_pcie_wrapper
@@ -62,7 +62,14 @@ module xdma_pcie_wrapper
     C0_DDR4_S_AXI_0_wstrb,
     C0_DDR4_S_AXI_0_wvalid,
     C0_SYS_CLK_0_clk_n,
-    C0_SYS_CLK_0_clk_p);
+    C0_SYS_CLK_0_clk_p,
+    diff_clock_rtl_0_clk_n,
+    diff_clock_rtl_0_clk_p,
+    pcie_7x_mgt_rtl_0_rxn,
+    pcie_7x_mgt_rtl_0_rxp,
+    pcie_7x_mgt_rtl_0_txn,
+    pcie_7x_mgt_rtl_0_txp,
+    reset_rtl_0);
   output C0_DDR4_0_act_n;
   output [16:0]C0_DDR4_0_adr;
   output [1:0]C0_DDR4_0_ba;
@@ -116,6 +123,13 @@ module xdma_pcie_wrapper
   input C0_DDR4_S_AXI_0_wvalid;
   input C0_SYS_CLK_0_clk_n;
   input C0_SYS_CLK_0_clk_p;
+  input [0:0]diff_clock_rtl_0_clk_n;
+  input [0:0]diff_clock_rtl_0_clk_p;
+  input [7:0]pcie_7x_mgt_rtl_0_rxn;
+  input [7:0]pcie_7x_mgt_rtl_0_rxp;
+  output [7:0]pcie_7x_mgt_rtl_0_txn;
+  output [7:0]pcie_7x_mgt_rtl_0_txp;
+  input reset_rtl_0;
 
   wire C0_DDR4_0_act_n;
   wire [16:0]C0_DDR4_0_adr;
@@ -170,6 +184,13 @@ module xdma_pcie_wrapper
   wire C0_DDR4_S_AXI_0_wvalid;
   wire C0_SYS_CLK_0_clk_n;
   wire C0_SYS_CLK_0_clk_p;
+  wire [0:0]diff_clock_rtl_0_clk_n;
+  wire [0:0]diff_clock_rtl_0_clk_p;
+  wire [7:0]pcie_7x_mgt_rtl_0_rxn;
+  wire [7:0]pcie_7x_mgt_rtl_0_rxp;
+  wire [7:0]pcie_7x_mgt_rtl_0_txn;
+  wire [7:0]pcie_7x_mgt_rtl_0_txp;
+  wire reset_rtl_0;
 
   xdma_pcie xdma_pcie_i
        (.C0_DDR4_0_act_n(C0_DDR4_0_act_n),
@@ -224,5 +245,12 @@ module xdma_pcie_wrapper
         .C0_DDR4_S_AXI_0_wstrb(C0_DDR4_S_AXI_0_wstrb),
         .C0_DDR4_S_AXI_0_wvalid(C0_DDR4_S_AXI_0_wvalid),
         .C0_SYS_CLK_0_clk_n(C0_SYS_CLK_0_clk_n),
-        .C0_SYS_CLK_0_clk_p(C0_SYS_CLK_0_clk_p));
+        .C0_SYS_CLK_0_clk_p(C0_SYS_CLK_0_clk_p),
+        .diff_clock_rtl_0_clk_n(diff_clock_rtl_0_clk_n),
+        .diff_clock_rtl_0_clk_p(diff_clock_rtl_0_clk_p),
+        .pcie_7x_mgt_rtl_0_rxn(pcie_7x_mgt_rtl_0_rxn),
+        .pcie_7x_mgt_rtl_0_rxp(pcie_7x_mgt_rtl_0_rxp),
+        .pcie_7x_mgt_rtl_0_txn(pcie_7x_mgt_rtl_0_txn),
+        .pcie_7x_mgt_rtl_0_txp(pcie_7x_mgt_rtl_0_txp),
+        .reset_rtl_0(reset_rtl_0));
 endmodule
