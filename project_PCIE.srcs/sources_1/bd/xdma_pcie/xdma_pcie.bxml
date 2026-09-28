@@ -4,8 +4,8 @@
     <Description>Composite Fileset</Description>
     <Generation Name="SYNTHESIS" State="STALE" Timestamp="1790588199"/>
     <Generation Name="IMPLEMENTATION" State="STALE" Timestamp="1790588199"/>
-    <Generation Name="SIMULATION" State="GENERATED" Timestamp="1790588204"/>
-    <Generation Name="HW_HANDOFF" State="GENERATED" Timestamp="1790588204"/>
+    <Generation Name="SIMULATION" State="STALE" Timestamp="1790592368"/>
+    <Generation Name="HW_HANDOFF" State="STALE" Timestamp="1790592368"/>
     <FileCollection Name="SOURCES" Type="SOURCES">
       <File Name="ip\xdma_pcie_ddr4_0_2\xdma_pcie_ddr4_0_2.xci" Type="IP">
         <Instance HierarchyPath="ddr4_0"/>
@@ -67,6 +67,30 @@
       <File Name="sim\xdma_pcie.protoinst">
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
         <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_AXI_data_out_0_0_0\xdma_pcie_AXI_data_out_0_0_0.xci" Type="IP">
+        <Instance HierarchyPath="AXI_data_out_0_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_axis_data_fifo_0_0\xdma_pcie_axis_data_fifo_0_0.xci" Type="IP">
+        <Instance HierarchyPath="axis_data_fifo_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_wr_addr_0_0\xdma_pcie_wr_addr_0_0.xci" Type="IP">
+        <Instance HierarchyPath="wr_addr_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
         <UsedIn Val="SIMULATION"/>
       </File>
     </FileCollection>
