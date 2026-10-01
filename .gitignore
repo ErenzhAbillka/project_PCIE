@@ -1,0 +1,7 @@
+build/
+*.log
+*.jou
+*.str
+*.tmp
+*.cache/
+.vivado/
