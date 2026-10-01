@@ -1512,14 +1512,14 @@ module xdma_pcie_xdma_0_0_pcie3_ip_pcie3_uscale_top
 
   generate
 if (PL_UPSTREAM_FACING == "TRUE") begin : axis_mapping_ep
-assign s_axis_cc_tdata_i = {128'b0,s_axis_cc_tdata}; // I
-assign s_axis_rq_tdata_i = {128'b0,s_axis_rq_tdata}; // I
-assign s_axis_cc_tkeep_i = {4'b0,s_axis_cc_tkeep};   // I
-assign s_axis_rq_tkeep_i = {4'b0,s_axis_rq_tkeep};   // I
-assign m_axis_cq_tdata = m_axis_cq_tdata_i[127:0];   // O
-assign m_axis_rc_tdata = m_axis_rc_tdata_i[127:0];   // O
-assign m_axis_cq_tkeep = m_axis_cq_tkeep_i[3:0];     // O
-assign m_axis_rc_tkeep = m_axis_rc_tkeep_i[3:0];     // O
+assign s_axis_cc_tdata_i = s_axis_cc_tdata; // I
+assign s_axis_rq_tdata_i = s_axis_rq_tdata; // I
+assign s_axis_cc_tkeep_i = s_axis_cc_tkeep; // I
+assign s_axis_rq_tkeep_i = s_axis_rq_tkeep; // I
+assign m_axis_cq_tdata = m_axis_cq_tdata_i; // O
+assign m_axis_rc_tdata = m_axis_rc_tdata_i; // O
+assign m_axis_cq_tkeep = m_axis_cq_tkeep_i; // O
+assign m_axis_rc_tkeep = m_axis_rc_tkeep_i; // O
 end // axis_mapping_ep
   endgenerate
 

@@ -5021,13 +5021,6 @@ xdma_v4_1_2_udma_ram_top
     .cfg_ds_port_number                             ( cfg_ds_port_number ),
 
 
-    //--------------------------------------------------------------------------------------//
-    // Reset Pass Through Signals
-    //  - Only used for PCIe_X0Y0
-    //--------------------------------------------------------------------------------------//
-    .pcie_perstn0_out       (),
-    .pcie_perstn1_in        (1'b0),
-    .pcie_perstn1_out       (),
 
 
 

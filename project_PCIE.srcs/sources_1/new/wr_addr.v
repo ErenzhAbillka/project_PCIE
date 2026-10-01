@@ -22,12 +22,7 @@ module wr_addr #
 (
 		parameter integer C_M00_AXI_ID_WIDTH	= 1,
 		parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
-		parameter integer C_M00_AXI_DATA_WIDTH	= 32,
-		parameter integer C_M00_AXI_AWUSER_WIDTH	= 0,
-		parameter integer C_M00_AXI_ARUSER_WIDTH	= 0,
-		parameter integer C_M00_AXI_WUSER_WIDTH	= 0,
-		parameter integer C_M00_AXI_RUSER_WIDTH	= 0,
-		parameter integer C_M00_AXI_BUSER_WIDTH	= 0
+		parameter integer C_M00_AXI_DATA_WIDTH	= 32
 	)
 
 (
@@ -61,18 +56,15 @@ module wr_addr #
 		output wire [3 : 0] m00_axi_awcache,
 		output wire [2 : 0] m00_axi_awprot,
 		output wire [3 : 0] m00_axi_awqos,
-		output wire [C_M00_AXI_AWUSER_WIDTH-1 : 0] m00_axi_awuser,
 		output wire  m00_axi_awvalid,
 		input wire  m00_axi_awready,
 		output wire [C_M00_AXI_DATA_WIDTH-1 : 0] m00_axi_wdata,
 		output wire [C_M00_AXI_DATA_WIDTH/8-1 : 0] m00_axi_wstrb,
 		output wire  m00_axi_wlast,
-		output wire [C_M00_AXI_WUSER_WIDTH-1 : 0] m00_axi_wuser,
 		output wire  m00_axi_wvalid,
 		input wire  m00_axi_wready,
 		input wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_bid,
 		input wire [1 : 0] m00_axi_bresp,
-		input wire [C_M00_AXI_BUSER_WIDTH-1 : 0] m00_axi_buser,
 		input wire  m00_axi_bvalid,
 		output wire  m00_axi_bready,
 		output wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_arid,
@@ -84,150 +76,75 @@ module wr_addr #
 		output wire [3 : 0] m00_axi_arcache,
 		output wire [2 : 0] m00_axi_arprot,
 		output wire [3 : 0] m00_axi_arqos,
-		output wire [C_M00_AXI_ARUSER_WIDTH-1 : 0] m00_axi_aruser,
 		output wire  m00_axi_arvalid,
 		input wire  m00_axi_arready,
 		input wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_rid,
 		input wire [C_M00_AXI_DATA_WIDTH-1 : 0] m00_axi_rdata,
 		input wire [1 : 0] m00_axi_rresp,
 		input wire  m00_axi_rlast,
-		input wire [C_M00_AXI_RUSER_WIDTH-1 : 0] m00_axi_ruser,
 		input wire  m00_axi_rvalid,
 		output wire  m00_axi_rready          
 );
 
-    wire         aw_ready;
-    wire         w_ready;
- 
-    
-    wire [1:0]   b_resp;
-    wire         b_valid;
- 
-    reg [31:0]  aw_addr;
-    reg [7:0]   aw_len;
-    reg [2:0]   aw_size;
-    reg [1:0]   aw_burst;
-    reg         aw_valid;
+    // Fixed 32-bit AXI master: four beats per packet, 4 KiB write window.
+    // clk and m00_axi_aclk MUST be the same clock; this is not a CDC bridge.
+    wire reset_n = rst_n & m00_axi_aresetn;
+    localparam [1:0] IDLE = 0, ADDRESS = 1, DATA = 2, RESPONSE = 3;
+    reg [1:0] state;
+    reg [31:0] aw_addr;
+    reg [1:0] beat;
+    reg write_done;
+    reg write_error;
+    reg read_error;
+    wire aw_ready;
+    wire [1:0] b_resp;
+    wire b_valid;
+    wire [7:0] aw_len = 8'd3;
+    wire [2:0] aw_size = 3'd2;
+    wire [1:0] aw_burst = 2'b01;
+    wire aw_valid = reset_n && (state == ADDRESS);
+    wire [31:0] w_data = i_data;
+    wire w_valid = reset_n && (state == DATA) && i_valid;
+    wire w_last = (beat == 2'd3);
+    wire [3:0] w_strb = 4'b1111;
+    wire b_ready = reset_n && (state == RESPONSE);
 
-    reg [31:0]  w_data;
-    reg         w_last;
-    reg [3:0]   w_strb;
-    reg         w_valid;
- 
-    reg         b_ready ;  
-    
-    reg           [31:0]    aw_addr_cnt;
+    always @* fifo_ready = reset_n && (state == DATA) && m00_axi_wready;
 
-    reg            [1:0]       state, state_next;
-    localparam            s0 = 2'b00, s1 = 2'b01, s2 = 2'b10, s3 = 2'b11;
-    
-    always @ (posedge clk , negedge rst_n)
-    begin
-        if (!rst_n)
-            state <= s0;
-        else 
-            state <= state_next;
-    end 
-    
-    always @(*)
-    begin
-        case (state)
-            s0  :   begin
-                        if (i_valid)
-                            state_next = s1;
-                        else
-                            state_next = s0;
-                    end 
-                    
-            s1  :   begin                       //д���ַ��Ϣ
-                        if (aw_ready)
-                            state_next = s2;
-                        else
-                            state_next = s1;
-                    end 
-            s2  :   begin                       //��⵽aw_ready
-                        if (i_last)
-                            state_next = s3;
-                        else
-                            state_next = s2;
-                    end
-            s3  :   begin
-                        state_next = s0;
-                    end 
-            default : begin
-                        state_next = 'bx;
-                      end 
-        endcase
-    end 
-    
-    always @ (posedge clk , negedge rst_n)
-    begin
-        if (!rst_n)
-        begin
-           aw_len <= 8'd0;
-           aw_size <= 3'd0;
-           aw_burst <= 2'b0;
-           aw_addr <= 0;
-           aw_valid <= 0;
-           aw_addr_cnt <= 0;
-           
-        end
-        else case (state_next)
-            s0  :   begin
-                        
-                    end 
-            s1  :   begin
-                        aw_len <= 8'd3;
-                        aw_size <= 3'd2;
-                        aw_burst <= 2'b01;
-                        aw_valid <= 1;
-                        aw_addr <= aw_addr_cnt;
-                    end
-                    
-             s2 :  begin
-                        aw_valid <= 0;
-                    end 
-            s3  :   begin
-                        if (aw_addr_cnt <= 32'd4096)
-                            aw_addr_cnt <= aw_addr_cnt + 32'd16;
-                        else
-                            aw_addr_cnt <= 0;
-                    end 
+    always @(posedge clk or negedge reset_n) begin
+        if (!reset_n) begin
+            state <= IDLE;
+            aw_addr <= 0;
+            beat <= 0;
+            write_done <= 0;
+            write_error <= 0;
+        end else begin
+            write_done <= 0;
+            case (state)
+                IDLE: if (i_valid) state <= ADDRESS;
+                ADDRESS: if (aw_valid && aw_ready) begin
+                    beat <= 0;
+                    state <= DATA;
+                end
+                DATA: if (w_valid && m00_axi_wready) begin
+                    // Preserve AXI burst length even if the source TLAST is wrong.
+                    if (i_last != w_last) write_error <= 1;
+                    if (w_last) state <= RESPONSE;
+                    else beat <= beat + 1'b1;
+                end
+                RESPONSE: if (b_valid && b_ready) begin
+                    write_done <= 1;
+                    if (b_resp != 2'b00) write_error <= 1;
+                    aw_addr <= (aw_addr == 32'h00000ff0) ? 0 : aw_addr + 32'd16;
+                    state <= IDLE;
+                end
+                default: state <= IDLE;
             endcase
+        end
     end
-    
-    always @(*) begin
-        if (state == 2)
-            begin
-                w_last = i_last;
-                w_valid = i_valid;
-                w_data = i_data;
-                w_strb = 4'b1111; 
-                fifo_ready = m00_axi_wready  ; 
-            end
-        else
-            begin
-                w_last = 0;
-                w_valid = 0;
-                w_data = 0;
-                w_strb = 4'b1111; 
-                fifo_ready          = 0 ;
-            end
-    
-    
-    end  
-    
-    always @ (posedge clk, negedge rst_n)
-    begin
-        if (!rst_n)
-            b_ready <= 0;
-        else 
-            b_ready <= 1;
-    end 
-    
-    
-     //����ַ������
 
+    // Preserve the original host-to-FPGA readback contract:
+    // one four-beat read at 0xF000 per trigger, with byte reversal.
     reg     [31:0]      ar_addr     ;
     reg     [7:0]       ar_len      ;
     reg     [2:0]       ar_size     ;
@@ -236,7 +153,7 @@ module wr_addr #
     wire                ar_ready    ; 
 
     wire    [31:0]      r_data      ; 
-    wire                r_resp      ;
+    wire    [1:0]       r_resp      ;
     wire                r_last      ;
     wire                r_valid     ;
     wire                r_ready     ;
@@ -256,8 +173,8 @@ module wr_addr #
                 RD_LAST     = 4,
                 RD_STOP     = 5;
 
-    always @ (posedge clk, negedge rst_n) begin  :   R_FMS1
-        if (~rst_n)
+    always @ (posedge clk, negedge reset_n) begin  :   R_FMS1
+        if (~reset_n)
             rd_state_c <= WAIT_XDMA;
         else
             rd_state_c <= rd_state_n;
@@ -273,19 +190,23 @@ module wr_addr #
             end
 
             RD_ADDR :   begin
-                            if (ar_ready)
+                            if (ar_valid && ar_ready)
                                 rd_state_n = RD_FIFO;
                             else
                                 rd_state_n = RD_ADDR;
             end
             
             RD_FIFO :   begin
-                            if (!xdma_valid)
-                                rd_state_n = WAIT_XDMA;
+                            if (r_valid && r_ready && r_last)
+                                rd_state_n = RD_STOP;
                             else
                                 rd_state_n = RD_FIFO;            
             end 
             
+            RD_STOP: begin
+                if (!xdma_valid) rd_state_n = WAIT_XDMA;
+                else rd_state_n = RD_STOP;
+            end
             default :   begin
                             rd_state_n = 0; 
             end
@@ -293,8 +214,8 @@ module wr_addr #
         endcase 
     end
 
-    always @ (posedge clk, negedge rst_n) begin  :   R_FMS3
-        if (~rst_n)
+    always @ (posedge clk, negedge reset_n) begin  :   R_FMS3
+        if (~reset_n)
             begin
                 ar_addr         <= 0;
                 ar_burst        <= 0;
@@ -334,10 +255,10 @@ module wr_addr #
                     };
 
     //r_ready ����
-    assign r_ready = i_fifo_ready;
+    assign r_ready = reset_n && (rd_state_c == RD_FIFO) && i_fifo_ready;
     assign rd_data_buff = r_data;
-    assign o_valid = r_valid;
-    assign o_last = r_last;
+    assign o_valid = reset_n && (rd_state_c == RD_FIFO) && r_valid;
+    assign o_last = o_valid && r_last;
 
     assign m00_axi_wdata      = w_data        ;
 	assign m00_axi_wvalid     = w_valid       ;
@@ -370,15 +291,13 @@ module wr_addr #
     assign m00_axi_rready     = r_ready       ;
     
     
-        assign m00_axi_txn_done = 0;
-        assign m00_axi_error = 0;
+        assign m00_axi_txn_done = write_done;
+        assign m00_axi_error = write_error | read_error;
         assign m00_axi_awid = 0;
         assign m00_axi_awlock = 0;
         assign m00_axi_awcache = 0;
         assign m00_axi_awprot = 0;
         assign m00_axi_awqos = 0;
-        assign m00_axi_awuser = 0;
-        assign m00_axi_wuser = 0;
         
         assign m00_axi_arid = 0;
        
@@ -386,6 +305,9 @@ module wr_addr #
         assign m00_axi_arcache = 0;
         assign m00_axi_arprot = 0;
         assign m00_axi_arqos = 0;
-        assign m00_axi_aruser = 0;
   
+    always @(posedge clk or negedge reset_n) begin
+        if (!reset_n) read_error <= 0;
+        else if (r_valid && r_ready && r_resp != 2'b00) read_error <= 1;
+    end
 endmodule

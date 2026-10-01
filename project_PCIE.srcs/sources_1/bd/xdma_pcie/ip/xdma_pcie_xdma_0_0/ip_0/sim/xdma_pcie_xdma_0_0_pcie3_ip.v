@@ -188,9 +188,6 @@ module xdma_pcie_xdma_0_0_pcie3_ip (
   sys_clk,
   sys_clk_gt,
   sys_reset,
-  pcie_perstn1_in,
-  pcie_perstn0_out,
-  pcie_perstn1_out,
   int_qpll1lock_out,
   int_qpll1outrefclk_out,
   int_qpll1outclk_out,
@@ -213,55 +210,55 @@ output wire user_clk;
 output wire user_reset;
 output wire user_lnk_up;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_rq TDATA" *)
-input wire [127 : 0] s_axis_rq_tdata;
+input wire [255 : 0] s_axis_rq_tdata;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_rq TKEEP" *)
-input wire [3 : 0] s_axis_rq_tkeep;
+input wire [7 : 0] s_axis_rq_tkeep;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_rq TLAST" *)
 input wire s_axis_rq_tlast;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_rq TREADY" *)
 output wire [3 : 0] s_axis_rq_tready;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_rq TUSER" *)
 input wire [59 : 0] s_axis_rq_tuser;
-(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axis_rq, TDATA_NUM_BYTES 16, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 60, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axis_rq, TDATA_NUM_BYTES 32, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 60, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_rq TVALID" *)
 input wire s_axis_rq_tvalid;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rc TDATA" *)
-output wire [127 : 0] m_axis_rc_tdata;
+output wire [255 : 0] m_axis_rc_tdata;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rc TKEEP" *)
-output wire [3 : 0] m_axis_rc_tkeep;
+output wire [7 : 0] m_axis_rc_tkeep;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rc TLAST" *)
 output wire m_axis_rc_tlast;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rc TREADY" *)
 input wire m_axis_rc_tready;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rc TUSER" *)
 output wire [74 : 0] m_axis_rc_tuser;
-(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME m_axis_rc, TDATA_NUM_BYTES 16, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 75, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME m_axis_rc, TDATA_NUM_BYTES 32, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 75, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rc TVALID" *)
 output wire m_axis_rc_tvalid;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_cq TDATA" *)
-output wire [127 : 0] m_axis_cq_tdata;
+output wire [255 : 0] m_axis_cq_tdata;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_cq TKEEP" *)
-output wire [3 : 0] m_axis_cq_tkeep;
+output wire [7 : 0] m_axis_cq_tkeep;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_cq TLAST" *)
 output wire m_axis_cq_tlast;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_cq TREADY" *)
 input wire m_axis_cq_tready;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_cq TUSER" *)
 output wire [84 : 0] m_axis_cq_tuser;
-(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME m_axis_cq, TDATA_NUM_BYTES 16, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 85, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME m_axis_cq, TDATA_NUM_BYTES 32, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 85, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_cq TVALID" *)
 output wire m_axis_cq_tvalid;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_cc TDATA" *)
-input wire [127 : 0] s_axis_cc_tdata;
+input wire [255 : 0] s_axis_cc_tdata;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_cc TKEEP" *)
-input wire [3 : 0] s_axis_cc_tkeep;
+input wire [7 : 0] s_axis_cc_tkeep;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_cc TLAST" *)
 input wire s_axis_cc_tlast;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_cc TREADY" *)
 output wire [3 : 0] s_axis_cc_tready;
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_cc TUSER" *)
 input wire [32 : 0] s_axis_cc_tuser;
-(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axis_cc, TDATA_NUM_BYTES 16, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 33, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axis_cc, TDATA_NUM_BYTES 32, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 33, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_cc TVALID" *)
 input wire s_axis_cc_tvalid;
 (* X_INTERFACE_INFO = "xilinx.com:interface:pcie3_cfg_status:1.0 pcie3_cfg_status rq_seq_num" *)
@@ -473,9 +470,6 @@ input wire sys_clk_gt;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RST.sys_rst, POLARITY ACTIVE_LOW, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 RST.sys_rst RST" *)
 input wire sys_reset;
-input wire pcie_perstn1_in;
-output wire pcie_perstn0_out;
-output wire pcie_perstn1_out;
 (* X_INTERFACE_INFO = "xilinx.com:display_pcie3_ultrascale:int_shared_logic:1.0 pcie3_us_int_shared_logic ints_qpll1lock_out" *)
 output wire [1 : 0] int_qpll1lock_out;
 (* X_INTERFACE_INFO = "xilinx.com:display_pcie3_ultrascale:int_shared_logic:1.0 pcie3_us_int_shared_logic ints_qpll1outrefclk_out" *)
@@ -487,20 +481,20 @@ output wire phy_rdy_out;
   xdma_pcie_xdma_0_0_pcie3_ip_pcie3_uscale_core_top #(
     .PL_LINK_CAP_MAX_LINK_SPEED(2),
     .PL_LINK_CAP_MAX_LINK_WIDTH(8),
-    .USER_CLK_FREQ(3),
+    .USER_CLK_FREQ(2),
     .CORE_CLK_FREQ(1),
     .PLL_TYPE(2),
     .PF0_LINK_CAP_ASPM_SUPPORT(0),
-    .C_DATA_WIDTH(128),
+    .C_DATA_WIDTH(256),
     .REF_CLK_FREQ(0),
     .PCIE_LINK_SPEED(3),
-    .KEEP_WIDTH(4),
+    .KEEP_WIDTH(8),
     .ARI_CAP_ENABLE("FALSE"),
     .PF0_ARI_CAP_NEXT_FUNC('H00),
     .AXISTEN_IF_CC_ALIGNMENT_MODE("TRUE"),
     .AXISTEN_IF_CQ_ALIGNMENT_MODE("TRUE"),
     .AXISTEN_IF_RC_ALIGNMENT_MODE("FALSE"),
-    .AXISTEN_IF_RC_STRADDLE("FALSE"),
+    .AXISTEN_IF_RC_STRADDLE("TRUE"),
     .AXISTEN_IF_RQ_ALIGNMENT_MODE("FALSE"),
     .AXISTEN_IF_ENABLE_MSG_ROUTE('H20000),
     .AXISTEN_IF_ENABLE_RX_MSG_INTFC("FALSE"),
@@ -786,14 +780,14 @@ output wire phy_rdy_out;
     .VF5_MSI_CAP_MULTIMSGCAP(0),
     .VF5_PM_CAP_NEXTPTR('H00),
     .COMPLETION_SPACE("16KB"),
-    .gen_x0y0_xdc(1),
-    .gen_x0y1_xdc(0),
+    .gen_x0y0_xdc(0),
+    .gen_x0y1_xdc(1),
     .gen_x0y2_xdc(0),
     .gen_x0y3_xdc(0),
     .gen_x0y4_xdc(0),
     .gen_x0y5_xdc(0),
     .xlnx_ref_board(0),
-    .pcie_blk_locn(0),
+    .pcie_blk_locn(1),
     .PIPE_SIM("FALSE"),
     .AXISTEN_IF_ENABLE_CLIENT_TAG("TRUE"),
     .PCIE_USE_MODE("2.0"),
@@ -816,13 +810,13 @@ output wire phy_rdy_out;
     .DIS_GT_WIZARD("FALSE"),
     .TRANSCEIVER_CTRL_STATUS_PORTS("FALSE"),
     .SHARED_LOGIC(1),
-    .DEDICATE_PERST("TRUE"),
+    .DEDICATE_PERST("FALSE"),
     .SYS_RESET_POLARITY(0),
     .MCAP_ENABLEMENT("NONE"),
     .PHY_LP_TXPRESET(4),
     .EXT_CH_GT_DRP("FALSE"),
-    .EN_GT_SELECTION("FALSE"),
-    .SELECT_QUAD("GTH_Quad_225"),
+    .EN_GT_SELECTION("TRUE"),
+    .SELECT_QUAD("GTH_Quad_227"),
     .silicon_revision("Production"),
     .DEV_PORT_TYPE(0),
     .RX_DETECT(0),
@@ -1038,9 +1032,9 @@ output wire phy_rdy_out;
     .pl_gen2_upstream_prefer_deemph(1'B0),
     .pl_eq_in_progress(),
     .pl_eq_phase(),
-    .pcie_perstn1_in(pcie_perstn1_in),
-    .pcie_perstn0_out(pcie_perstn0_out),
-    .pcie_perstn1_out(pcie_perstn1_out),
+    .pcie_perstn1_in(1'B0),
+    .pcie_perstn0_out(),
+    .pcie_perstn1_out(),
     .ext_qpll1refclk(),
     .ext_qpll1rate(),
     .ext_qpll1pd(),

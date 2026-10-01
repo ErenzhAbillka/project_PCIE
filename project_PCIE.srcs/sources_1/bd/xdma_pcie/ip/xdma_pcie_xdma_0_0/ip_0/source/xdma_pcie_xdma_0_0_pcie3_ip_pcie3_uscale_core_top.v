@@ -1356,7 +1356,6 @@ module xdma_pcie_xdma_0_0_pcie3_ip_pcie3_uscale_core_top
   wire                core_clk;
   wire                gt_txoutclk;
   wire                sys_rst_n;
-  wire                sys_reset_pt;
   wire                mgmt_reset_n;
   wire                phy_rdy;
   wire                phy_rdy_phystatus;
@@ -1680,8 +1679,9 @@ module xdma_pcie_xdma_0_0_pcie3_ip_pcie3_uscale_core_top
 
   reg  phase1 = 1'b0; 
 
-  assign sys_rst_n = sys_reset_pt;
-  assign pcie_perstn0_out = sys_reset_pt;
+  assign sys_rst_n = sys_reset;
+  assign pcie_perstn0_out = 1'b0;
+  assign pcie_perstn1_out = 1'b0;
   assign sys_or_hot_rst = ~sys_rst_n || cfg_hot_reset_out;
   assign user_lnk_up_int = (cfg_phy_link_status == 2'b11 && sys_rst_n) ? 1'b1 : 1'b0;
  
@@ -2709,10 +2709,10 @@ begin
     .dbg_mcap_reset (),
     .pl_eq_in_progress (pl_eq_in_progress),
     .pl_eq_phase (pl_eq_phase),
-    .pcie_perstn0_in (sys_reset),
-    .pcie_perstn0_out (sys_reset_pt),
-    .pcie_perstn1_in (pcie_perstn1_in),
-    .pcie_perstn1_out (pcie_perstn1_out),
+    .pcie_perstn0_in (1'b0),
+    .pcie_perstn0_out (),
+    .pcie_perstn1_in (1'b0),
+    .pcie_perstn1_out (),
     .pl_eq_reset_eieos_count (pl_eq_reset_eieos_count_mux),
     .pl_gen2_upstream_prefer_deemph (pl_gen2_upstream_prefer_deemph_mux),
 
@@ -4263,10 +4263,10 @@ xdma_pcie_xdma_0_0_pcie3_ip_phy_wrapper #
     .dbg_mcap_rdwr_b (),
     .dbg_mcap_reset (),
     .pl_eq_phase (pl_eq_phase),
-    .pcie_perstn0_in (sys_reset),
-    .pcie_perstn0_out (sys_reset_pt),
-    .pcie_perstn1_in (pcie_perstn1_in),
-    .pcie_perstn1_out (pcie_perstn1_out),
+    .pcie_perstn0_in (1'b0),
+    .pcie_perstn0_out (),
+    .pcie_perstn1_in (1'b0),
+    .pcie_perstn1_out (),
     .pl_eq_reset_eieos_count (pl_eq_reset_eieos_count_mux),
     .pl_gen2_upstream_prefer_deemph (pl_gen2_upstream_prefer_deemph_mux),
 
