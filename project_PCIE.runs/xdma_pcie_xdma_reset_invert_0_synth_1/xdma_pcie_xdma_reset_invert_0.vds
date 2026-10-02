@@ -1,0 +1,14 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Thu Oct  1 15:46:36 2026
+# Process ID: 26404
+# Current directory: E:/FPGA_Doc/project_PCIE/project_PCIE.runs/xdma_pcie_xdma_reset_invert_0_synth_1
+# Command line: vivado.exe -log xdma_pcie_xdma_reset_invert_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source xdma_pcie_xdma_reset_invert_0.tcl
+# Log file: E:/FPGA_Doc/project_PCIE/project_PCIE.runs/xdma_pcie_xdma_reset_invert_0_synth_1/xdma_pcie_xdma_reset_invert_0.vds
+# Journal file: E:/FPGA_Doc/project_PCIE/project_PCIE.runs/xdma_pcie_xdma_reset_invert_0_synth_1\vivado.jou
+#-----------------------------------------------------------
+source xdma_pcie_xdma_reset_invert_0.tcl -notrace
+INFO: [IP_Flow 19-4838] Using cached IP synthesis design for IP xdma_pcie_xdma_reset_invert_0, cache-ID = 1bfc4db23d1dfc9a.
+INFO: [Common 17-206] Exiting Vivado at Thu Oct  1 15:46:40 2026...
