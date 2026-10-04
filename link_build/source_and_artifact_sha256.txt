@@ -1,0 +1,17 @@
+CURRENT RELEASE: KU060-XDMA-DIAG-20261002-DMA-PASS-20261004
+Build timestamp in BIT header: 2026/10/02 17:52:53, Vivado 2018.3
+DMA validated: 2026-10-04; details: RELEASE_20261004_DMA_VALIDATED.txt
+
+Current files in this directory:
+1372b2fd44dff725e0d75d7024b70a373192d1bb6beaba9e4a8d65d8050ab815  xdma_pcie_wrapper.bit
+9d51856b8f50fdb7af3a786eafc02e11702b250a9a2e4ba5375282b840aa3765  xdma_pcie_wrapper.ltx
+
+Source files were copied byte-for-byte from:
+E:/Documents/ChatGPT/project_PCIE/fpga_diag_20261002/xdma_pcie_wrapper_diag.bit
+E:/Documents/ChatGPT/project_PCIE/fpga_diag_20261002/xdma_pcie_wrapper_diag.ltx
+
+Historical files retained; NOT the source/checkpoint/report set for this current release:
+project_PCIE.xpr, original RTL/BD, link_build/synth.dcp, link_build/routed.dcp, link_build/*.rpt.
+Their prior manifest is preserved in Git parent 7077609e29382977dd02860b934d6920502a4eb5.
+Running scripts/build_link.tcl can overwrite the current release filenames with a different build.
+Use the above hashes to identify the validated input for later Flash-image generation.

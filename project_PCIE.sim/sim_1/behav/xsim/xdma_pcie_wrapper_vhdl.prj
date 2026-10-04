@@ -1,0 +1,16 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_0/sim/bd_8c6a_microblaze_I_0.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_1/sim/bd_8c6a_rst_0_0.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_2/sim/bd_8c6a_ilmb_0.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_3/sim/bd_8c6a_dlmb_0.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_4/sim/bd_8c6a_dlmb_cntlr_0.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_5/sim/bd_8c6a_ilmb_cntlr_0.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_7/sim/bd_8c6a_second_dlmb_cntlr_0.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_8/sim/bd_8c6a_second_ilmb_cntlr_0.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_10/sim/bd_8c6a_iomodule_0_0.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_util_ds_buf_0/util_ds_buf.vhd" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_util_ds_buf_0/sim/xdma_pcie_util_ds_buf_0.vhd" \
+
+# Do not sort compile order
+nosort

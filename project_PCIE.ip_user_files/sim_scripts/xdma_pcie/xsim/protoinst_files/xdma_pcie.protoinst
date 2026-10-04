@@ -1,0 +1,53 @@
+{
+	"version": "1.0",
+	"modules": {
+		"xdma_pcie": {
+			"proto_instances": {
+				"/ddr4_0/C0_DDR4_S_AXI": {
+					"interface": "xilinx.com:interface:aximm:1.0",
+					"ports": {
+						"ACLK": { "actual": "c0_ddr4_ui_clk"},
+						"ARADDR": { "actual": "c0_ddr4_s_axi_araddr"},
+						"ARBURST": { "actual": "c0_ddr4_s_axi_arburst"},
+						"ARCACHE": { "actual": "c0_ddr4_s_axi_arcache"},
+						"ARESETN": { "actual": "c0_ddr4_aresetn"},
+						"ARID": { "actual": "c0_ddr4_s_axi_arid"},
+						"ARLEN": { "actual": "c0_ddr4_s_axi_arlen"},
+						"ARLOCK": { "actual": "c0_ddr4_s_axi_arlock"},
+						"ARPROT": { "actual": "c0_ddr4_s_axi_arprot"},
+						"ARQOS": { "actual": "c0_ddr4_s_axi_arqos"},
+						"ARREADY": { "actual": "c0_ddr4_s_axi_arready"},
+						"ARSIZE": { "actual": "c0_ddr4_s_axi_arsize"},
+						"ARVALID": { "actual": "c0_ddr4_s_axi_arvalid"},
+						"AWADDR": { "actual": "c0_ddr4_s_axi_awaddr"},
+						"AWBURST": { "actual": "c0_ddr4_s_axi_awburst"},
+						"AWCACHE": { "actual": "c0_ddr4_s_axi_awcache"},
+						"AWID": { "actual": "c0_ddr4_s_axi_awid"},
+						"AWLEN": { "actual": "c0_ddr4_s_axi_awlen"},
+						"AWLOCK": { "actual": "c0_ddr4_s_axi_awlock"},
+						"AWPROT": { "actual": "c0_ddr4_s_axi_awprot"},
+						"AWQOS": { "actual": "c0_ddr4_s_axi_awqos"},
+						"AWREADY": { "actual": "c0_ddr4_s_axi_awready"},
+						"AWSIZE": { "actual": "c0_ddr4_s_axi_awsize"},
+						"AWVALID": { "actual": "c0_ddr4_s_axi_awvalid"},
+						"BID": { "actual": "c0_ddr4_s_axi_bid"},
+						"BREADY": { "actual": "c0_ddr4_s_axi_bready"},
+						"BRESP": { "actual": "c0_ddr4_s_axi_bresp"},
+						"BVALID": { "actual": "c0_ddr4_s_axi_bvalid"},
+						"RDATA": { "actual": "c0_ddr4_s_axi_rdata"},
+						"RID": { "actual": "c0_ddr4_s_axi_rid"},
+						"RLAST": { "actual": "c0_ddr4_s_axi_rlast"},
+						"RREADY": { "actual": "c0_ddr4_s_axi_rready"},
+						"RRESP": { "actual": "c0_ddr4_s_axi_rresp"},
+						"RVALID": { "actual": "c0_ddr4_s_axi_rvalid"},
+						"WDATA": { "actual": "c0_ddr4_s_axi_wdata"},
+						"WLAST": { "actual": "c0_ddr4_s_axi_wlast"},
+						"WREADY": { "actual": "c0_ddr4_s_axi_wready"},
+						"WSTRB": { "actual": "c0_ddr4_s_axi_wstrb"},
+						"WVALID": { "actual": "c0_ddr4_s_axi_wvalid"}
+					}
+				}
+			}
+		}
+	}
+}

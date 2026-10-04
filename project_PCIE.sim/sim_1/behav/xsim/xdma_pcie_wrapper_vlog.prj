@@ -1,0 +1,158 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ip_top" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/map" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ipshared/54bd/hdl/verilog" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_6/sim/bd_8c6a_lmb_bram_I_0.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/ip/ip_9/sim/bd_8c6a_second_lmb_bram_I_0.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/bd_0/sim/bd_8c6a.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_0/sim/xdma_pcie_ddr4_0_2_microblaze_mcs.v" \
+
+sv xil_defaultlib  --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ip_top" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/map" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ipshared/54bd/hdl/verilog" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/phy/ddr4_phy_v2_2_xiphy_behav.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/phy/ddr4_phy_v2_2_xiphy.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/iob/ddr4_phy_v2_2_iob_byte.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/iob/ddr4_phy_v2_2_iob.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/clocking/ddr4_phy_v2_2_pll.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/xiphy_files/ddr4_phy_v2_2_xiphy_tristate_wrapper.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/xiphy_files/ddr4_phy_v2_2_xiphy_riuor_wrapper.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/xiphy_files/ddr4_phy_v2_2_xiphy_control_wrapper.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/xiphy_files/ddr4_phy_v2_2_xiphy_byte_wrapper.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/xiphy_files/ddr4_phy_v2_2_xiphy_bitslice_wrapper.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/phy/xdma_pcie_ddr4_0_2_phy_ddr4.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/ip_top/xdma_pcie_ddr4_0_2_phy.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_wtr.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_ref.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_rd_wr.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_periodic.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_group.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_ecc_merge_enc.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_ecc_gen.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_ecc_fi_xor.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_ecc_dec_fix.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_ecc_buf.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_ecc.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_ctl.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_cmd_mux_c.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_cmd_mux_ap.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_arb_p.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_arb_mux_p.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_arb_c.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_arb_a.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_act_timer.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc_act_rank.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/controller/ddr4_v2_2_mc.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ui/ddr4_v2_2_ui_wr_data.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ui/ddr4_v2_2_ui_rd_data.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ui/ddr4_v2_2_ui_cmd.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ui/ddr4_v2_2_ui.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_ar_channel.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_aw_channel.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_b_channel.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_cmd_arbiter.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_cmd_fsm.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_cmd_translator.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_fifo.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_incr_cmd.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_r_channel.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_w_channel.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_wr_cmd_fsm.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_wrap_cmd.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_a_upsizer.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_register_slice.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axi_upsizer.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_axic_register_slice.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_carry_and.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_carry_latch_and.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_carry_latch_or.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_carry_or.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_command_fifo.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_comparator.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_comparator_sel.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_comparator_sel_static.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_r_upsizer.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi/ddr4_v2_2_w_upsizer.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi_ctrl/ddr4_v2_2_axi_ctrl_addr_decode.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi_ctrl/ddr4_v2_2_axi_ctrl_read.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi_ctrl/ddr4_v2_2_axi_ctrl_reg_bank.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi_ctrl/ddr4_v2_2_axi_ctrl_reg.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi_ctrl/ddr4_v2_2_axi_ctrl_top.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/axi_ctrl/ddr4_v2_2_axi_ctrl_write.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/clocking/ddr4_v2_2_infrastructure.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_xsdb_bram.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_write.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_wr_byte.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_wr_bit.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_sync.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_read.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_rd_en.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_pi.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_mc_odt.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_debug_microblaze.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_cplx_data.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_cplx.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_config_rom.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_addr_decode.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_top.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal_xsdb_arbiter.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_cal.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_chipscope_xsdb_slave.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/ddr4_v2_2_dp_AB9.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ip_top/xdma_pcie_ddr4_0_2.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ip_top/xdma_pcie_ddr4_0_2_ddr4.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ip_top/xdma_pcie_ddr4_0_2_ddr4_mem_intfc.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal/xdma_pcie_ddr4_0_2_ddr4_cal_riu.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/tb/microblaze_mcs_0.sv" \
+
+verilog xil_defaultlib  --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ip_top" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/map" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ipshared/54bd/hdl/verilog" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/sim/xdma_pcie.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/ip_0/sim/gtwizard_ultrascale_v1_7_gthe3_channel.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/ip_0/sim/xdma_pcie_xdma_0_0_pcie3_ip_gt_gthe3_channel_wrapper.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/ip_0/sim/gtwizard_ultrascale_v1_7_gthe3_common.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/ip_0/sim/xdma_pcie_xdma_0_0_pcie3_ip_gt_gthe3_common_wrapper.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/ip_0/sim/xdma_pcie_xdma_0_0_pcie3_ip_gt_gtwizard_gthe3.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/ip_0/sim/xdma_pcie_xdma_0_0_pcie3_ip_gt_gtwizard_top.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/ip_0/sim/xdma_pcie_xdma_0_0_pcie3_ip_gt.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_tph_tbl.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_pipe_lane.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_bram_16k.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_bram_rep_8k.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_bram_req_8k.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_gt_channel.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_pipe_pipeline.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_pipe_misc.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_init_ctrl.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_gt_common.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_bram_8k.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_bram_rep.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_bram_req.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_phy_sync.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_bram_cpl.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_sys_clk_gen.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_phy_rst.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_phy_txeq.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_phy_clk.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_bram.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_phy_rxeq.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_gtwizard_top.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_phy_wrapper.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_pcie3_uscale_wrapper.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_pcie3_uscale_top.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_phy_sync_cell.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_rxcdrhold.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/source/xdma_pcie_xdma_0_0_pcie3_ip_pcie3_uscale_core_top.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_0/sim/xdma_pcie_xdma_0_0_pcie3_ip.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_1/sim/xdma_v4_1_2_blk_mem_64_reg_be.v" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/ip_2/sim/xdma_v4_1_2_blk_mem_64_noreg_be.v" \
+
+sv xil_defaultlib  --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ip_top" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/map" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ipshared/54bd/hdl/verilog" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/xdma_v4_1/hdl/verilog/xdma_pcie_xdma_0_0_dma_bram_wrap.sv" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/xdma_v4_1/hdl/verilog/xdma_pcie_xdma_0_0_core_top.sv" \
+
+verilog xil_defaultlib  --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/ip_top" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/rtl/cal" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_ddr4_0_2/ip_1/rtl/map" --include "../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/ipshared/54bd/hdl/verilog" \
+"../../../../project_PCIE.ip_user_files/bd/xdma_pcie/ip/xdma_pcie_xdma_0_0/sim/xdma_pcie_xdma_0_0.v" \
+"../../../../project_PCIE.srcs/sources_1/bd/xdma_pcie/hdl/xdma_pcie_wrapper.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort
