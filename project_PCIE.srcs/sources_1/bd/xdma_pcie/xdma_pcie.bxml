@@ -2,10 +2,10 @@
 <Root MajorVersion="0" MinorVersion="36">
   <CompositeFile CompositeFileTopName="xdma_pcie" CanBeSetAsTop="false" CanDisplayChildGraph="true">
     <Description>Composite Fileset</Description>
-    <Generation Name="SYNTHESIS" State="RESET" Timestamp="1790840791"/>
-    <Generation Name="IMPLEMENTATION" State="RESET" Timestamp="1790840791"/>
-    <Generation Name="SIMULATION" State="RESET" Timestamp="1790840791"/>
-    <Generation Name="HW_HANDOFF" State="RESET" Timestamp="1790840791"/>
+    <Generation Name="SYNTHESIS" State="GENERATED" Timestamp="1791120050"/>
+    <Generation Name="IMPLEMENTATION" State="GENERATED" Timestamp="1791120050"/>
+    <Generation Name="SIMULATION" State="GENERATED" Timestamp="1791120050"/>
+    <Generation Name="HW_HANDOFF" State="GENERATED" Timestamp="1791120050"/>
     <FileCollection Name="SOURCES" Type="SOURCES">
       <File Name="ip\xdma_pcie_ddr4_0_2\xdma_pcie_ddr4_0_2.xci" Type="IP">
         <Instance HierarchyPath="ddr4_0"/>
@@ -36,14 +36,6 @@
       </File>
       <File Name="ip\xdma_pcie_util_ds_buf_0\xdma_pcie_util_ds_buf_0.xci" Type="IP">
         <Instance HierarchyPath="util_ds_buf"/>
-        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="xil_defaultlib"/>
-        <UsedIn Val="SYNTHESIS"/>
-        <UsedIn Val="IMPLEMENTATION"/>
-        <UsedIn Val="SIMULATION"/>
-      </File>
-      <File Name="ip\xdma_pcie_AXI_data_out_0_0_0\xdma_pcie_AXI_data_out_0_0_0.xci" Type="IP">
-        <Instance HierarchyPath="AXI_data_out_0_0"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
         <Library Name="xil_defaultlib"/>
         <UsedIn Val="SYNTHESIS"/>
@@ -156,6 +148,94 @@
       </File>
       <File Name="ip\xdma_pcie_vio_pcie_0\xdma_pcie_vio_pcie_0.xci" Type="IP">
         <Instance HierarchyPath="vio_pcie"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_top_layer_0_0\xdma_pcie_top_layer_0_0.xci" Type="IP">
+        <Instance HierarchyPath="top_layer_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_phase_source_0_0\xdma_pcie_phase_source_0_0.xci" Type="IP">
+        <Instance HierarchyPath="das_processing/phase_source_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_dds_compiler_0_0\xdma_pcie_dds_compiler_0_0.xci" Type="IP">
+        <Instance HierarchyPath="das_processing/dds_compiler_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_mult_iq_0_0\xdma_pcie_mult_iq_0_0.xci" Type="IP">
+        <Instance HierarchyPath="das_processing/mult_iq_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_fir_compiler_i_0\xdma_pcie_fir_compiler_i_0.xci" Type="IP">
+        <Instance HierarchyPath="das_processing/fir_compiler_i"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_fir_compiler_q_0\xdma_pcie_fir_compiler_q_0.xci" Type="IP">
+        <Instance HierarchyPath="das_processing/fir_compiler_q"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_iq_align_0_0\xdma_pcie_iq_align_0_0.xci" Type="IP">
+        <Instance HierarchyPath="das_processing/iq_align_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_cordic_amp_phase_0_0\xdma_pcie_cordic_amp_phase_0_0.xci" Type="IP">
+        <Instance HierarchyPath="das_processing/cordic_amp_phase_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_dif_acc_phase_0_0\xdma_pcie_dif_acc_phase_0_0.xci" Type="IP">
+        <Instance HierarchyPath="das_processing/dif_acc_phase_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_das_writer_packet_0_0\xdma_pcie_das_writer_packet_0_0.xci" Type="IP">
+        <Instance HierarchyPath="das_writer_packet_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_ila_das_0\xdma_pcie_ila_das_0.xci" Type="IP">
+        <Instance HierarchyPath="ila_das"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
         <Library Name="xil_defaultlib"/>
         <UsedIn Val="SYNTHESIS"/>

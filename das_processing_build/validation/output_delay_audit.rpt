@@ -1,0 +1,35 @@
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
+| Date              : Sun Oct  4 21:55:32 2026
+| Host              : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
+| Command           : check_timing -override_defaults no_output_delay -verbose -file E:/Documents/ChatGPT/project_PCIE/das_template_integration/reports/output_delay_audit.rpt
+| Design            : xdma_pcie_wrapper
+| Device            : xcku060-ffva1156
+| Speed File        : -2  PRODUCTION 1.25 10-29-2018
+| Temperature Grade : I
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+check_timing report
+
+Table of Contents
+-----------------
+1. checking no_output_delay
+
+1. checking no_output_delay
+---------------------------
+ There is 1 port with no output delay specified. (HIGH)
+
+C0_DDR4_0_reset_n
+
+ There are 4 ports with no output delay but user has a false path constraint (MEDIUM)
+
+adc_spi_csb
+adk_spi_csb
+device_spi_sclk
+device_spi_sda
+
+ There are 0 ports with no output delay but with a timing clock defined on it or propagating through it
+
+

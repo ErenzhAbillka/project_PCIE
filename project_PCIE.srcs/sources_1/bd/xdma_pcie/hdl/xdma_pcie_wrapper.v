@@ -1,7 +1,7 @@
 //Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-//Date        : Wed Sep 30 19:06:26 2026
+//Date        : Sun Oct  4 21:20:46 2026
 //Host        : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
 //Command     : generate_target xdma_pcie_wrapper.bd
 //Design      : xdma_pcie_wrapper
@@ -26,6 +26,16 @@ module xdma_pcie_wrapper
     C0_DDR4_0_reset_n,
     C0_SYS_CLK_0_clk_n,
     C0_SYS_CLK_0_clk_p,
+    adc_data_clk_n_0,
+    adc_data_clk_p_0,
+    adc_spi_csb,
+    adc_sync,
+    adk_spi_csb,
+    dac_spi_csb,
+    data_pin_n_0,
+    data_pin_p_0,
+    device_spi_sclk,
+    device_spi_sda,
     diff_clock_rtl_0_clk_n,
     diff_clock_rtl_0_clk_p,
     pcie_7x_mgt_rtl_0_rxn,
@@ -49,6 +59,16 @@ module xdma_pcie_wrapper
   output C0_DDR4_0_reset_n;
   input C0_SYS_CLK_0_clk_n;
   input C0_SYS_CLK_0_clk_p;
+  input adc_data_clk_n_0;
+  input adc_data_clk_p_0;
+  output adc_spi_csb;
+  output adc_sync;
+  output adk_spi_csb;
+  output dac_spi_csb;
+  input [13:0]data_pin_n_0;
+  input [13:0]data_pin_p_0;
+  output device_spi_sclk;
+  inout device_spi_sda;
   input [0:0]diff_clock_rtl_0_clk_n;
   input [0:0]diff_clock_rtl_0_clk_p;
   input [7:0]pcie_7x_mgt_rtl_0_rxn;
@@ -73,6 +93,16 @@ module xdma_pcie_wrapper
   wire C0_DDR4_0_reset_n;
   wire C0_SYS_CLK_0_clk_n;
   wire C0_SYS_CLK_0_clk_p;
+  wire adc_data_clk_n_0;
+  wire adc_data_clk_p_0;
+  wire adc_spi_csb;
+  wire adc_sync;
+  wire adk_spi_csb;
+  wire dac_spi_csb;
+  wire [13:0]data_pin_n_0;
+  wire [13:0]data_pin_p_0;
+  wire device_spi_sclk;
+  wire device_spi_sda;
   wire [0:0]diff_clock_rtl_0_clk_n;
   wire [0:0]diff_clock_rtl_0_clk_p;
   wire [7:0]pcie_7x_mgt_rtl_0_rxn;
@@ -98,6 +128,16 @@ module xdma_pcie_wrapper
         .C0_DDR4_0_reset_n(C0_DDR4_0_reset_n),
         .C0_SYS_CLK_0_clk_n(C0_SYS_CLK_0_clk_n),
         .C0_SYS_CLK_0_clk_p(C0_SYS_CLK_0_clk_p),
+        .adc_data_clk_n_0(adc_data_clk_n_0),
+        .adc_data_clk_p_0(adc_data_clk_p_0),
+        .adc_spi_csb(adc_spi_csb),
+        .adc_sync(adc_sync),
+        .adk_spi_csb(adk_spi_csb),
+        .dac_spi_csb(dac_spi_csb),
+        .data_pin_n_0(data_pin_n_0),
+        .data_pin_p_0(data_pin_p_0),
+        .device_spi_sclk(device_spi_sclk),
+        .device_spi_sda(device_spi_sda),
         .diff_clock_rtl_0_clk_n(diff_clock_rtl_0_clk_n),
         .diff_clock_rtl_0_clk_p(diff_clock_rtl_0_clk_p),
         .pcie_7x_mgt_rtl_0_rxn(pcie_7x_mgt_rtl_0_rxn),

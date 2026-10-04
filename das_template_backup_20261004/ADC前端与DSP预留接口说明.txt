@@ -1,0 +1,120 @@
+原 project_PCIE：ADC -> FIFO -> 预留 DSP -> 原 DDR4/PCIe 后端
+2026-10-04；本版以此说明为准。
+
+1. 当前实际连接
+
+ADC -> top_layer_0 -> axis_data_fifo_0 -> 停在这里，等待加入处理模块
+                                      m_axis_tready 目前接常量 0
+
+未来处理模块输出 -> wr_addr_0 -> 原 SmartConnect -> DDR4 -> XDMA/PCIe
+目前 wr_addr_0/i_valid=0、i_last=0、i_data=0，原始 ADC 数据不会写进 DDR。
+FIFO 的输出只接 ILA 观察，不会被 ILA 消费。
+没有插入直通模块冒充 DSP，也没有实现 DDS/FIR/CORDIC/差分累加/帧对齐。
+
+2. 这次删减和保留
+
+删除 top_layer 内的 1024 点快照 RAM、DDR 完成计数、四拍 TLAST 生成。
+删除 FIFO 到 wr_addr 的数据/valid/last/ready 直连。
+删除采集端对 write_burst_done 和 ddr_capture_done 的依赖。
+保留 AD9516/AD9643 SPI 初始化及已经使用的 125 MSPS LVDS 接收模块。
+wr_addr.v、adc_driver.v 本体没有修改；DDR4、XDMA、SmartConnect、
+复位模块配置、后端 AXI 连接和地址映射保持原样。
+VIO/ILA 监测项改为前端运行/溢出状态，原回读触发及其监测仍保留。
+
+wr_addr.v 与 2026-10-01 的 fpga_compat 副本逐字节相同，SHA256：
+ca857c8855c02442a885859d039fbc5b00484ba72d5856c4425aca4442d2fa54
+这里说明的是本次 ADC 迁移没有改 writer；不表示它与最初下载的模板相同。
+
+3. FIFO 为什么这样配置
+
+32 位，每拍一对 A/B 原始 ADC 数据：
+  TDATA[15:0]  = A 通道 14 位补码扩展为 16 位；
+  TDATA[31:16] = B 通道 14 位补码扩展为 16 位。
+两路都是实际 ADC 通道；它们不是解调得到的 I、Q。
+采样端 S_AXIS_ACLK=top_layer_0/sys_clk=125 MHz；
+处理端 M_AXIS_ACLK=DDR4 UI 时钟=200 MHz；
+IS_ACLK_ASYNC=1；FIFO_DEPTH=4096；FIFO_MODE=1（普通模式）；HAS_TLAST=0。
+保留原生 FIFO 的 XPM 指针跨域 max-delay/bus-skew 约束；仅对前端控制
+同步器设置局部例外，不使用 ADC/UI 全时钟组 false-path 掩盖 FIFO 路径。
+本阶段没有真实 DAS 帧标记，不把每四拍当成一条 DAS 数据帧。
+4096*32 bit=16 KiB，输入为 125 M 对/s，约 500 MB/s；
+完全不读时，FIFO 主存储量约对应 32.768 us，另有少量接口流水线缓存。
+200 MHz 是处理电路时钟，不是 ADC 采样率。下游必须看 valid/ready。
+如果后级每两拍才处理一个样本，最高 100 M 对/s，低于持续输入；
+加深 FIFO 只能延后满溢出，不能解决长期吞吐不足。
+
+ADC 是不可暂停的数据源：满 FIFO 的 ready=0 不能停止 ADC 转换。
+前端的一拍保持寄存器保证 AXIS 等待时 data/valid 不变；
+第一个无法保留的采样触发粘滞 overflow，停止接入新采样，保留已排队数据。
+不可把溢出前后数据拼成连续 DAS 曲线；复位并重新建立帧同步后才能继续。
+
+4. 当前 VIO 和 ILA
+
+vio_readback/probe_out1：采集使能电平，默认 0。
+  置 1 后允许连续送入 FIFO，置 0 停止新采样，已接受的数据可继续排空。
+  手动停/启之间不是连续采样，必须由后续帧控制建立新的一段。
+vio_readback/probe_in2：SPI 初始化完成；
+probe_in3：采集接入已运行（跨域同步后的状态）；probe_in4：ADC 溢出。
+probe_out0 及 probe_in0/1 保留原 DDR 回读、校准/错误用途。
+ila_readback/probe5=FIFO 32 位输出，probe6=FIFO 输出 valid，probe7=溢出。
+当前 ready=0，ILA 只会看到 FIFO 头部数据保持，不表示读出了整个 FIFO。
+只做前端空框架时保持使能为 0；如置 1 而不加处理，填满后溢出是预期行为。
+普通使能翻转不清除 overflow；工程用户复位会清 FIFO、状态并重新初始化。
+
+5. 将来怎样接你的处理模块
+
+处理输入使用 FIFO 的 m_axis_tdata[31:0]、m_axis_tvalid，处理模块输出
+input_ready 接回 m_axis_tready。valid&&ready 的那个上升沿才消费一个样本。
+仅断开 FIFO m_axis_tready 上现有的常量连接，保留 zero_1 的其他连接。
+处理模块建议运行在 200 MHz DDR4 UI 域；换时钟则还需要独立跨域。
+
+处理后的结果需先完成数据格式、分支延迟、帧编号和样本位置对齐，然后：
+  32 位处理结果 -> wr_addr_0/i_data
+  结果有效       -> wr_addr_0/i_valid
+  四拍末尾       -> wr_addr_0/i_last
+  wr_addr_0/fifo_ready -> 处理输出的 ready
+只断开 wr_addr 的上述 3 个输入上的常量连接，不删除整个常量 IP 或其他连线。
+
+保持原 writer 的要求：
+  clk 与 m00_axi_aclk 都是 200 MHz UI 时钟。
+  等待时必须保持 i_valid=1、i_data/i_last 不变，不能等 ready 才产生 valid。
+  每 4 次成功传输，最后一次 i_last=1；计数只在 valid&&fifo_ready 时前进。
+  最后不足四字时需要按协议补齐或以后另外修改 writer，本次不修改。
+  i_last 是 writer 的四拍突发末尾，不是论文的整条回波曲线末尾。
+  写地址仍在 0x0000..0x0FFF 的 4 KiB 窗口循环；不会自动变成论文的大帧存储。
+  向它持续输入会循环覆盖，后续大帧/连续上传需要另行确定地址和主机消费方案。
+
+FIFO 只保证传输次序和跨时钟；不会自动对齐 I/Q、幅值/相位或两条回波曲线。
+模板 old_prj_src/to_dam.v（模块 to_dma）的 valid/ready 处理不能直接作为
+这里的 AXIS 契约：其 valid 会随 ready 撤销，数据也没有等待保持机制。
+模板模块本次保留原样，没有接入当前数据通路。
+
+6. 和论文的对应关系
+
+参考 E:\Documents\论文\DAS\基于外差相干探测型φ-OTDR振动信号解调系统研究_陈益壮.pdf
+正文第28页图3.11：同一 ADC 信号分别乘 DDS(sin/cos)，经 FIR 得 I/Q，再解调幅相。
+正文第32-33页图3.16-3.18：回波曲线差分累加、指定位置的相位截取。
+正文第34-35页图3.19：对齐并拼接差分累加数据和相位数据后再交给 DMA。
+所以你把处理链放在本 FIFO 与 wr_addr 之间的安排是合理的。
+论文传输端是 Zynq PL->PS/ARM；本工程使用 KU060->DDR4->PCIe/电脑，
+不是把论文的 PS/AXI DMA 连线原样移植过来。
+
+当前先保留此前选定的 125 MSPS；论文多数参数基于 250 MSPS，
+DDS 相位步长、FIR 系数、AOM 计数及每条回波的点数必须重新计算。
+NCO/滤波的数据推进应跟随实际样本接收使能；不要按 200 MHz 每拍推进，
+却只在部分拍把对应样本送进算法，否则相位会错位。
+模板 AOM_pulse 的 62499 计数在 250 MHz 对应 4 kHz；直接改成
+125 MHz 时钟会变成 2 kHz，在 200 MHz 则变成 3.2 kHz，不能照搬。
+尚未确定也没有擅自写死：实际中频/频带、AOM 触发、重复频率、回波长度、
+使用 A/B 哪一路、各级定点位宽及缩放、最终帧格式。
+
+7. 文件和验证范围
+
+原工程 E:\FPGA_Doc\project_PCIE\project_PCIE.xpr 已修改，BD 为 xdma_pcie。
+本次前端仿真、SPI/LVDS 接收回归、BD 检查、整工程 RTL 展开结果见验证记录。
+本次生成的是“FIFO 后留空”的工程源码和 BD，没有生成新的下载 bit。
+旧 adc_capture_build 下的 bit/ltx 仍是上一版“原始 ADC 直送 DDR”的构建，
+不能用旧 bit 验证本次断开的边界；新源码的完整实现需接好 DSP 后重新运行。
+scripts/build_adc.tcl 的新输出目录为 adc_fifo_boundary_build，避免覆盖旧产物。
+重新打开 xpr 查看新连接，不要从仍显示旧图的 Vivado 窗口覆盖保存。
+修改前版本保存在 adc_dsp_boundary_backup_20261004。

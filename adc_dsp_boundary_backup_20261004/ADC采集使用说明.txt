@@ -1,0 +1,71 @@
+原 project_PCIE 工程：FMC ADC 125 MSPS 采集版（2026-10-04）
+
+打开的工程：E:\FPGA_Doc\project_PCIE\project_PCIE.xpr
+BD：xdma_pcie
+采集与 SPI 控制：project_PCIE.srcs\sources_1\new\old_prj_src\top_layer.v
+LVDS 接收与采样时钟：同目录 adc_driver.v
+新增 FMC 引脚约束：project_PCIE.srcs\constrs_1\new\fmc_adc_pins.xdc
+
+当前通路
+  AD9643 -> top_layer_0（SPI 初始化、DDR 接收、1024 组快照缓存）
+         -> axis_data_fifo_0 -> wr_addr_0 -> SmartConnect -> DDR4
+  电脑通过原 XDMA Memory Mapped C2H 通道读取 DDR4。
+  原测试数据发生器已退出 BD；尚未接通的 DDS、乘法器和位宽不匹配 FIFO
+  支路已从当前 BD 移除。修改前整个 BD、顶层及约束保存在
+  adc_integration_backup_20261004，可恢复原图中的实验支路。
+
+采集方式
+  125 MSPS，A/B 两通道同时采集；每轮各 1024 点，窗口 8.192 微秒。
+  先在 FPGA 块 RAM 连续捕获完整窗口，再按后端握手速度写 DDR，
+  因此 DDR 暂停不会在该窗口内抽掉采样点。
+  每轮写入 DDR 字节地址 0x00000000..0x00000FFF，共 4096 字节。
+  完成后保留该窗口；这不是连续无间断数据流。
+
+启动和读取
+  1. 重新打开上述 xpr，让 Vivado 载入已更新的 BD 和 wrapper。
+     如果旧窗口提示保存旧图，请不要用旧图覆盖磁盘上的新版本。
+  2. 加载 adc_capture_build\xdma_pcie_wrapper.bit 和同名 .ltx。
+  3. 确认 vio_pcie/probe_in0=1（PCIe 建链），
+     vio_readback/probe_in0=1（DDR 校准完成），probe_in1=0（无 AXI 错误）。
+  4. 复位释放后自动初始化，约 5 秒后开始第一轮正常信号采集。
+     等 vio_readback/probe_in4=1 后，通过 C2H 从卡地址 0 读取 4096 字节。
+     保存为原始二进制 capture.bin；不要对样本区做 H2C 写入。
+  5. 再次采集：确认 probe_in4=1，再将 vio_readback/probe_out1 翻转一次
+     （0->1 或 1->0 都可以）。等待 probe_in4 先变 0 再变 1，重新读取。
+     忙碌期间的翻转会被忽略。重触发不需要重新初始化 ADC/时钟芯片。
+  6. python scripts/decode_adc.py capture.bin
+     输出 capture.csv，包含采样序号、相对时间(us)、A/B 有符号码值。
+     电压换算需要按前端增益及实际量程标定。
+
+格式
+  一个小端 32 位字 = {B 的有符号 16 位数, A 的有符号 16 位数}。
+  两路实际有效位都是 14 位，扩展高两位为符号位，范围 -8192..8191。
+  文件字节排列：A低字节、A高字节、B低字节、B高字节，重复 1024 次。
+  PC C2H 路径没有 wr_addr 旧回读 ILA 支路的字节翻转。
+  原 scripts/check_capture.py 只检查旧 LFSR，不适用于真实 ADC 数据。
+
+VIO / ILA
+  vio_readback 输入：in0 DDR校准，in1 AXI错误，in2 SPI初始化完成，
+    in3 连续窗口已采入 RAM，in4 全部 DDR 写突发已经返回响应。
+  vio_readback 输出：out0 保留原 0xF000 四字回读触发，out1 新增快照触发翻转。
+  ila_readback：probe0..4 保留原回读数据/valid/last/错误/写突发完成；
+    probe5 为送入 wr_addr 的 32 位采样字，probe6=valid，probe7=ready。
+    probe6 与 probe7 同时为 1 时，该样本被 wr_addr 接受。
+  读 DDR 前必须等待 in4；仅 in2 或 in3 为 1 还不足以保证 DDR 数据完整。
+
+硬件配置与验证边界
+  按用户选择使用旧版独立片选子卡、10 MHz 参考晶振、KU060 / MLK-H4。
+  AD9516 0x1E0=0x02，ADC 125 MHz；AD9643 正常双通道交织 DDR、二进制补码。
+  MMCM 采样相位 123.750 度，IDELAY 固定 COUNT 10，EN_VTC=0。
+  实际 ADC 输入采样相位仍应通过上板测试码/已知模拟信号核对；
+  固定 COUNT 延迟不作温度、电压补偿。
+  SPI init_done 表示写序列和等待结束，没有读回 AD9516 PLL 锁定状态。
+  板载晶振尚未实物确认；若实际为 50 MHz，需更换对应初始化表。
+  DDR4 颗粒与 PCIe 驱动沿用原工程配置，未在本轮更改。
+  本轮不包含板卡下载、ADC 实测或电脑 C2H 实测，最终验证记录见
+  adc_capture_build\validation.txt。
+
+复现
+  Vivado 2018.3 执行 scripts/build_adc.tcl，输出 adc_capture_build。
+  该构建检查布线后时序、DRC、实际封装引脚；通过后才生成 bitstream。
+  仿真及脚本源码保留在 E:\Documents\ChatGPT\project_PCIE\adc_bd_integration。

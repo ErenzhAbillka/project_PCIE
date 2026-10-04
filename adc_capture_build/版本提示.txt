@@ -1,0 +1,1 @@
+此目录是旧版原始 ADC 直送 DDR 的 bit/ltx。当前源码已接入 DAS 混频、滤波、幅相和差分累加处理链。新构建位于 das_processing_build；是否通过实现请看 DAS验证记录.txt。

@@ -22,7 +22,9 @@ module wr_addr #
 (
 		parameter integer C_M00_AXI_ID_WIDTH	= 1,
 		parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
-		parameter integer C_M00_AXI_DATA_WIDTH	= 32
+		parameter integer C_M00_AXI_DATA_WIDTH	= 32,
+        parameter [31:0] WRITE_BASE_ADDR = 32'h00000000,
+        parameter [31:0] WRITE_WINDOW_BYTES = 32'h00001000
 	)
 
 (
@@ -86,7 +88,7 @@ module wr_addr #
 		output wire  m00_axi_rready          
 );
 
-    // Fixed 32-bit AXI master: four beats per packet, 4 KiB write window.
+    // Fixed 32-bit AXI master: four beats per packet; parameterized write ring.
     // clk and m00_axi_aclk MUST be the same clock; this is not a CDC bridge.
     wire reset_n = rst_n & m00_axi_aresetn;
     localparam [1:0] IDLE = 0, ADDRESS = 1, DATA = 2, RESPONSE = 3;
@@ -114,7 +116,7 @@ module wr_addr #
     always @(posedge clk or negedge reset_n) begin
         if (!reset_n) begin
             state <= IDLE;
-            aw_addr <= 0;
+            aw_addr <= WRITE_BASE_ADDR;
             beat <= 0;
             write_done <= 0;
             write_error <= 0;
@@ -135,7 +137,7 @@ module wr_addr #
                 RESPONSE: if (b_valid && b_ready) begin
                     write_done <= 1;
                     if (b_resp != 2'b00) write_error <= 1;
-                    aw_addr <= (aw_addr == 32'h00000ff0) ? 0 : aw_addr + 32'd16;
+                    aw_addr <= (aw_addr >= WRITE_BASE_ADDR + WRITE_WINDOW_BYTES - 32'd16) ? WRITE_BASE_ADDR : aw_addr + 32'd16;
                     state <= IDLE;
                 end
                 default: state <= IDLE;

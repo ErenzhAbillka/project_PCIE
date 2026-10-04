@@ -1,0 +1,84 @@
+project_PCIE DAS 迁移验证记录
+日期：2026-10-04；工具：Vivado / XSim 2018.3。
+目标工程：E:\FPGA_Doc\project_PCIE\project_PCIE.xpr
+验证工作目录：E:\Documents\ChatGPT\project_PCIE\das_template_integration
+
+一、功能验证
+
+1. 实际 Xilinx DDS/FIR/CORDIC：通过。
+   3200 个检查样本覆盖四象限相位、幅值、窗口标签及背压保持。
+   输入结束后另送 64 个窗外样本，使 DDS 内部管线继续运行；真实 ADC 连续送入窗外数据。
+   日志：reports/native_test.log，DAS_NATIVE_IQ_TEST_PASS。
+
+2. 持续吞吐：通过。
+   200 MHz 下连续接收 3264 个输入样本，DDS/FIR/CORDIC 输入等待拍均为 0。
+   此项验证每时钟一输入的吞吐能力，覆盖 125 MSPS；不是板上采集测量。
+   日志：reports/throughput.log。
+
+3. ADC 至原生异步 FIFO：通过。
+   125 MHz 写、200 MHz 读，70002 对 A/B 样本及 2 位窗口标记顺序一致。
+   覆盖默认 31250 点周期、16320 点窗口、背压、满溢锁存及复位恢复。
+   日志：reports/markers.log，DAS_ADC_MARKER_FIFO_TEST_PASS。
+
+4. 差分/相位组帧及真实 wr_addr RTL：通过。
+   小规模精确值检查覆盖双 bank、下游停顿、四拍 WLAST、写地址回绕和 B 响应完成计数。
+   日志：reports/trace_test.log，DAS_TRACE_WRITER_TEST_PASS。
+
+5. 默认规模整帧：通过。
+   输入 100 x 16320 个幅相样本；ROI 起点 16000、每条 100 点。
+   逐字检查全部 16384 个输出字，覆盖 10000 个相位值、差分结果、补零及头尾。
+   日志：production_sim/xsim.log，DAS_PRODUCTION_FRAME_PASS。
+
+6. SPI/LVDS 回归：通过。
+   检查 76 个时钟芯片寄存器写入、23 个 ADC 写入、无 DCO 启动、SPI 时序、
+   事务中复位重启，以及 120 对 DDR 接收样本。
+   MMCM 锁定在仿真中强制控制；此项不能证明实际硬件 PLL 锁定或 ADC 采样眼图。
+   日志：sim_output/xsim.log。
+
+7. BD 与后端保留检查：通过。
+   FIFO 的数据/valid/ready/TUSER 接入 DAS，DAS 输出经四拍打包接入 wr_addr_0。
+   DDR4、XDMA、SmartConnect 配置、原 AXI 接口连线和地址映射与修改前备份一致。
+   adc_driver.v、FMC 引脚约束未变；wr_addr.v 仅地址参数、复位起点、回绕条件变化。
+   检查：原工程 scripts/check_das_bd.py；参照原工程 das_template_backup_20261004。
+
+8. 主机解码：通过。
+   检查有符号相位、缩放差分、旧槽/截断/头尾不一致、并发覆盖槽排除及解缠绕。
+   使用 --completed 和 --completed-after 提供 C2H 前后完成计数；两次计数间不能复位。
+   日志：reports/decoder_test.log。
+
+二、完整实现
+
+状态：综合、布局、物理优化、布线及 bitstream 生成全部通过。
+完成时间：2026-10-04 21:54；标记：DAS_PROCESSING_BITSTREAM_BUILD_PASS。
+静态时序：WNS=+0.089 ns，WHS=+0.004 ns，TNS/THS=0；已设定时序约束满足。
+无时钟寄存器=0；未约束内部最大延迟端点=0；无组合环。
+总线偏斜：通过。布线：未布通网络=0、部分布通网络=0、节点冲突=0。
+物理管脚：PCIe 管脚检查通过；全部 188 个顶层端口的物理管脚与约束一致。
+DRC：0 Error、0 Critical Warning，9 项普通 Warning。
+普通 DRC 项包括 SPI SDIO 未使用读回端、乘法器流水级建议和原 IP 内无负载信号。
+资源：48768 LUT (14.70%)，63018 寄存器 (9.50%)，155.5 BRAM Tile (14.40%)，39 DSP (1.41%)。
+输出：原工程 das_processing_build/xdma_pcie_wrapper.bit 及同名 .ltx。
+时序裕量较小，后续改动应重新跑完整实现；不能沿用本次结果判断改动后的时序。
+
+CDC 报告保留原始结构提示，并非零告警：CDC-1=131、CDC-4=2、CDC-7=1、
+CDC-10=59、CDC-11=2 条 Critical。新增 DAS 处理模块均位于同一个 200 MHz 域。
+涉及 ADC 自定义逻辑的 3 条 Critical 均为复位组合逻辑进入异步置位/清零同步链；
+启动/运行/溢出状态使用 ASYNC_REG 同步链，数据/窗口标记使用原生异步 FIFO。
+其余提示落在 DDR4、SmartConnect、PCIe 和调试 IP 内部。未通过隐藏提示声称全工程 CDC 零告警。
+
+I/O 补查：未设输出延迟的端口是原 DDR4 IP 的 C0_DDR4_0_reset_n；
+4 个 SPI 管理端口沿用原低速控制 false-path 约束，SPI 边沿关系另由功能仿真检查。
+原 ADC XDC 在差分 P 端设置输入窗口。另对同一个 routed.dcp 的 N 端施加相同
+[-1.100,-0.300] ns DDR 输入窗口做独立分析，建立/保持裕量分别为 +0.924/+0.972 ns。
+补查通过；未修改原 XDC、物理布线或 bit 文件。日志：validation/io_audit.log。
+
+构建脚本：原工程 scripts/build_das.tcl。
+日志：工作目录 reports/build.log；交付副本位于原工程 das_processing_build/validation。
+
+三、尚未做硬件验证的项目
+
+未下载本轮 bit 到板卡，未验证实际 PCIe C2H、ADC 模拟输入和光学振动信号。
+板载参考晶振仍按用户选择假设为 10 MHz；上板前需核对实物版本。
+AOM 只有与采样窗同源的内部节点，未绑定外部引脚；没有完成真实光学触发同步。
+FIR 的物理频带、固定群延迟及相位 ROI 起点仍须按实验系统校准。
+空间和时间解缠绕由主机解码脚本处理，FPGA 输出的是原始 atan2 相位 ROI。

@@ -1,0 +1,32 @@
+2026-10-04 ADC/FIFO/DSP 预留边界验证记录
+
+交付位置：E:\FPGA_Doc\project_PCIE\project_PCIE.xpr
+当前行为：ADC -> top_layer_0 -> axis_data_fifo_0 后停止。
+FIFO ready=0，wr_addr 数据/valid/last 输入为 0；VIO 采集使能默认 0。
+32 位、4096 深度、普通模式、无 TLAST，125 MHz -> 200 MHz 异步 FIFO。
+
+通过的检查：
+1. 原生 Xilinx AXIS Data FIFO 仿真：12002 对连续有符号 A/B 样本，
+   读端暂停与背压保持、停止后排空、满溢出锁存、复位恢复。
+2. SPI/LVDS 仿真：76 次时钟芯片写入、23 次 ADC 写入、无 DCO 启动、
+   SPI 时序、传输中复位重启、120 对 UNISIM DDR 接收数据。
+   此测试中 MMCM 时钟/锁定使用仿真强制值，不替代真实硬件锁定测试。
+3. 完整原工程 validate_bd_design、生成 BD/IP 目标及 RTL 展开通过。
+   RTL 展开最终摘要：0 Critical Warnings、0 Errors；存在 IP 内部常规警告。
+4. 前端独立综合通过；CDC 约束对象核对：3 个控制同步首级，9 个异步复位
+   同步链引脚；14 个本地 lane reset 仍参与时序检查。
+   未用全时钟组 false-path 屏蔽原生 FIFO 的 XPM 指针 max-delay/bus-skew。
+   独立综合启动有 Tcl Store 目录写权限提示，不影响综合/对象核对结果。
+5. wr_addr.v、adc_driver.v、AXI_data_out_0.v、project_pcie_pins.xdc 与修改前
+   SHA256 一致；writer 与 2026-10-01 副本逐字节一致。
+   后端 DDR4/XDMA/SmartConnect 配置、AXI 接口连接和地址映射相同。
+6. 实际安装的 top_layer、FMC XDC、构建脚本和接口说明与验证副本一致。
+
+范围：本轮交付源码与 BD，未做新的全工程布局布线、时序收敛或生成 bit，
+也未进行 ADC 实板或主机采集验证。旧 adc_capture_build 中的 bit/ltx 是
+此前 ADC 直送 DDR 的版本，不能代表本轮源码。后续接好 DSP 后重新实现；
+scripts/build_adc.tcl 输出到 adc_fifo_boundary_build，避免覆盖历史构建。
+
+详细日志：E:\Documents\ChatGPT\project_PCIE\adc_dsp_boundary\reports
+接口用法：原工程 ADC前端与DSP预留接口说明.txt
+修改前备份：原工程 adc_dsp_boundary_backup_20261004

@@ -1,0 +1,61 @@
+project_PCIE 原工程 ADC 集成验证，2026-10-04
+
+结果：ADC_PCIE_BITSTREAM_BUILD_PASS
+工程：E:\FPGA_Doc\project_PCIE\project_PCIE.xpr
+器件：xcku060-ffva1156-2-i；工具：Vivado 2018.3
+配置：旧版独立 SPI 片选子卡；默认 10 MHz 参考；双通道 125 MSPS。
+
+已完成
+  top_layer.v 内含 AD9516/AD9643 初始化、ADC 接收实例、1024 组连续快照
+  缓存、跨时钟传输、AXIS 分包和 VIO 重新采集控制。
+  adc_driver.v 使用 UltraScale MMCM、IDELAYE3、IDDRE1。
+  原 xdma_pcie BD 已接入 top_layer_0，替换原 LFSR 测试数据源。
+  FMC 引脚和 14 位数据宽度已修正，控制时钟使用 DDR4 UI 200 MHz。
+  DDR4、XDMA、SmartConnect、FIFO、wr_addr 的原配置参数保持一致。
+
+仿真
+  76 次时钟寄存器写入 + 23 次 ADC 寄存器写入及其等待时间正确。
+  初始化不依赖 DCO；SPI 半周期、片选和中途复位重启检查通过。
+  真实 UNISIM IDELAYE3/IDDRE1 检查通过，120 组 A/B DDR 数据匹配。
+  此测试强制 MMCM 时钟/锁定信号以隔离模拟相位模型，实际 MMCM
+  的频率、相位与时钟树通过布线后静态时序检查，不宣称完整模拟 PLL 仿真。
+  两轮各 1024 组连续样本，符号扩展、4 KB 地址回绕、每 4 字分包、
+  周期性 AXI 等待、包尾暂停、B 响应延迟、重触发均通过。
+  AXIS FIFO 在该测试中使用行为模型；实际 IP 经过 BD、综合与实现检查。
+  原 DDR 回读触发、字节翻转及错误响应处理测试仍通过。
+  Python 解析脚本验证了正负码值边界、A/B 顺序、1024 点及时间列。
+
+完整工程构建
+  BD 验证、综合、优化、布局、布线、bitstream 生成通过。
+  WNS +0.294 ns，TNS 0；WHS +0.004 ns，THS 0；WPWS 0.000 ns。
+  单独检查 ADC 输入路径：最差 setup +0.936 ns，hold +0.968 ns。
+  所有 188 个顶层物理引脚核对通过，未布通/部分布通网络均为 0。
+  总线 skew 无违例；无缺失时钟、无未约束的内部寄存器端点。
+  DRC：0 Error、0 Critical Warning、2 Warning：
+    BUFC-1：SPI SDIO 只写，输入缓冲输出未使用；
+    RTSTAT-10：未使用的 IP 状态/内部网络无负载。
+
+约束和 CDC 复核说明
+  原 MIG 端口 C0_DDR4_0_reset_n 沿用原工程的无输出延时设置，
+  check_timing 会报告这一项；未将其描述为“所有 IO 均有延时约束”。
+  SPI GPIO 使用明确的 false-path 例外，其发送边沿/等待在 RTL 仿真验证。
+  ADC 的 14 条 LVDS 数据线两沿均设置输入 min/max 延时，没有豁免数据路径。
+  ADC->UI 的完成标记为 4 级 ASYNC_REG，同步后才读取冻结的双口 RAM。
+  report_cdc 对新增逻辑报告 3 条 CDC-10：MMCM 锁定与复位组合、
+  采样有效释放条件、VIO 重采集复位组合；均进入异步置位/同步解除链。
+  已按上述结构复核；没有屏蔽或删除 CDC 报告中的这些记录。
+  其余报告包含原 MIG、XDMA、SmartConnect 和 JTAG 调试核的 CDC 条目。
+  调试 hub 使用独立于 ADC 的 MIG 50 MHz 时钟 mmcm_clkout5。
+
+输出
+  adc_capture_build\xdma_pcie_wrapper.bit（8597344 字节）
+  SHA256：4bc12796ee7b109af6475653d7cad493a085661bd362f1713952a01e921c6328
+  adc_capture_build\xdma_pcie_wrapper.ltx
+  adc_capture_build\routed.dcp、timing_summary.rpt、drc.rpt、cdc.rpt 等。
+  ADC采集使用说明.txt，scripts\decode_adc.py，scripts\check_adc_bd.py。
+
+未进行板卡下载、实际 ADC 信号采集或主机 C2H 实测。
+板载参考晶振仍按用户选择采用 10 MHz 假设；实际 50 MHz 版本需换配置表。
+每轮是 1024 组快照，不是连续无限流；重新采集前先读完 DDR 中的上一轮。
+修改前文件保存在 adc_integration_backup_20261004。
+

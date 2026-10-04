@@ -4,66 +4,88 @@
 #  -string -flagsOSRD
 preplace port C0_SYS_CLK_0 -pg 1 -y 90 -defaultsOSRD
 preplace port C0_DDR4_0 -pg 1 -y 70 -defaultsOSRD
+preplace port adc_data_clk_p_0 -pg 1 -y -1180 -defaultsOSRD
 preplace port diff_clock_rtl_0 -pg 1 -y -140 -defaultsOSRD
+preplace port adc_data_clk_n_0 -pg 1 -y -1160 -defaultsOSRD
 preplace port pcie_7x_mgt_rtl_0 -pg 1 -y -210 -defaultsOSRD
 preplace port reset_rtl_0 -pg 1 -y 70 -defaultsOSRD
-preplace inst zero_1 -pg 1 -lvl 2 -y -450 -defaultsOSRD
-preplace inst one -pg 1 -lvl 2 -y -550 -defaultsOSRD
-preplace inst ila_readback -pg 1 -lvl 5 -y -400 -defaultsOSRD
-preplace inst zero_19 -pg 1 -lvl 4 -y 100 -defaultsOSRD
-preplace inst zero_4 -pg 1 -lvl 4 -y 0 -defaultsOSRD
-preplace inst xdma_reset_invert -pg 1 -lvl 6 -y -50 -defaultsOSRD
-preplace inst axi_smc -pg 1 -lvl 8 -y -130 -defaultsOSRD
-preplace inst zero_32 -pg 1 -lvl 4 -y 400 -defaultsOSRD
-preplace inst vio_readback -pg 1 -lvl 5 -y -600 -defaultsOSRD
-preplace inst rst_ddr -pg 1 -lvl 7 -y -50 -defaultsOSRD
-preplace inst util_ds_buf -pg 1 -lvl 4 -y -140 -defaultsOSRD
-preplace inst xdma_0 -pg 1 -lvl 5 -y -150 -defaultsOSRD
-preplace inst ddr4_0 -pg 1 -lvl 4 -y 250 -defaultsOSRD
-preplace inst wr_addr_0 -pg 1 -lvl 3 -y -250 -defaultsOSRD
-preplace inst vio_pcie -pg 1 -lvl 6 -y -250 -defaultsOSRD
-preplace inst AXI_data_out_0_0 -pg 1 -lvl 1 -y -290 -defaultsOSRD
-preplace inst perst_invert -pg 1 -lvl 3 -y 130 -defaultsOSRD
-preplace inst axis_data_fifo_0 -pg 1 -lvl 2 -y -260 -defaultsOSRD
-preplace netloc wr_addr_0_o_valid 1 3 2 1140J -410 N
-preplace netloc one_dout 1 2 1 740J
-preplace netloc zero_19_dout 1 4 1 1620J
-preplace netloc ddr4_0_c0_init_calib_complete 1 4 3 1580 50 NJ 50 2500
-preplace netloc xdma_reset_invert_Res 1 6 1 N
-preplace netloc util_ds_buf_IBUF_DS_ODIV2 1 4 1 1600
-preplace netloc util_ds_buf_IBUF_OUT 1 4 1 1640
-preplace netloc wr_addr_0_fifo_ready 1 2 2 680J -80 1120
-preplace netloc axi_smc_M00_AXI 1 3 6 1210 -520 NJ -520 NJ -520 NJ -520 NJ -520 3160
-preplace netloc xdma_0_user_lnk_up 1 5 1 2140
-preplace netloc axis_data_fifo_0_m_axis_tdata 1 2 1 720
-preplace netloc xdma_0_axi_aclk 1 5 3 2160 -150 NJ -150 2860
-preplace netloc ddr4_0_c0_ddr4_ui_clk_sync_rst 1 4 3 1670J 60 2190J -110 2490
-preplace netloc axis_data_fifo_0_s_axis_tready 1 0 2 40 -210 280J
-preplace netloc diff_clock_rtl_0_1 1 0 4 NJ -140 280J -100 NJ -100 1190
-preplace netloc wr_addr_0_m00_axi_txn_done 1 3 2 1160J -350 N
-preplace netloc zero_1_dout 1 2 5 690 -70 1200J -210 1610 20 NJ 20 2490J
-preplace netloc xdma_0_axi_aresetn 1 5 1 2180
-preplace netloc AXI_data_out_0_0_last 1 1 1 290
-preplace netloc perst_invert_Res 1 3 1 1120
-preplace netloc C0_SYS_CLK_0_1 1 0 4 30J 60 NJ 60 NJ 60 1140
-preplace netloc wr_addr_0_o_last 1 3 2 NJ -250 1560
-preplace netloc zero_4_dout 1 4 1 1630J
-preplace netloc axis_data_fifo_0_m_axis_tlast 1 2 1 730
-preplace netloc xdma_0_M_AXI 1 5 3 2170J -170 NJ -170 N
-preplace netloc wr_addr_0_o_data 1 3 2 1130J -430 N
-preplace netloc reset_rtl_0_1 1 0 5 NJ 70 NJ 70 720 70 1180J -230 1590
-preplace netloc xdma_0_pcie_mgt 1 5 4 2150 -160 2490J -230 NJ -230 3170J
-preplace netloc wr_addr_0_m00_axi 1 3 5 1120J -510 NJ -510 NJ -510 NJ -510 2880
-preplace netloc zero_32_dout 1 4 1 1660J
-preplace netloc Net 1 0 8 30 -200 290J -130 750 -60 1160 -60 1550J 40 NJ 40 2510J 50 2870
-preplace netloc ddr4_0_C0_DDR4 1 4 5 1650 70 NJ 70 NJ 70 NJ 70 NJ
-preplace netloc vio_readback_probe_out0 1 2 4 760 -90 1170J -220 1650J 10 2130
-preplace netloc axis_data_fifo_0_m_axis_tvalid 1 2 1 710
-preplace netloc AXI_data_out_0_0_valid 1 1 1 300
-preplace netloc AXI_data_out_0_0_data 1 1 1 280
-preplace netloc wr_addr_0_m00_axi_error 1 3 2 1150J -360 1550
-preplace netloc ddr4_0_c0_ddr4_ui_clk 1 0 8 20 -190 300 -140 700 -400 NJ -400 1570 30 2150J -120 2500 -160 2870J
-levelinfo -pg 1 0 160 510 950 1380 1900 2340 2690 3020 3190 -top -680 -bot 970
+preplace portBus data_pin_n_0 -pg 1 -y -1120 -defaultsOSRD
+preplace portBus data_pin_p_0 -pg 1 -y -1140 -defaultsOSRD
+preplace inst dds_compiler_0 -pg 1 -lvl 3 -y -1200 -defaultsOSRD
+preplace inst zero_1 -pg 1 -lvl 2 -y -330 -defaultsOSRD
+preplace inst top_layer_0 -pg 1 -lvl 1 -y -1150 -defaultsOSRD
+preplace inst dds_compiler_1 -pg 1 -lvl 3 -y -1030 -defaultsOSRD -resize 240 136
+preplace inst xlslice_0 -pg 1 -lvl 4 -y -1210 -defaultsOSRD
+preplace inst xlslice_1 -pg 1 -lvl 4 -y -1030 -defaultsOSRD -resize 160 88
+preplace inst one -pg 1 -lvl 2 -y -430 -defaultsOSRD
+preplace inst ila_readback -pg 1 -lvl 6 -y -400 -defaultsOSRD
+preplace inst zero_19 -pg 1 -lvl 5 -y 100 -defaultsOSRD
+preplace inst zero_4 -pg 1 -lvl 5 -y 0 -defaultsOSRD
+preplace inst xdma_reset_invert -pg 1 -lvl 7 -y -50 -defaultsOSRD
+preplace inst axi_smc -pg 1 -lvl 9 -y -130 -defaultsOSRD
+preplace inst mult_gen_0 -pg 1 -lvl 5 -y -1220 -defaultsOSRD
+preplace inst zero_32 -pg 1 -lvl 5 -y 400 -defaultsOSRD
+preplace inst mult_gen_1 -pg 1 -lvl 5 -y -1050 -defaultsOSRD -resize 140 116
+preplace inst vio_readback -pg 1 -lvl 6 -y -600 -defaultsOSRD
+preplace inst rst_ddr -pg 1 -lvl 8 -y -50 -defaultsOSRD
+preplace inst util_ds_buf -pg 1 -lvl 5 -y -140 -defaultsOSRD
+preplace inst xdma_0 -pg 1 -lvl 6 -y -150 -defaultsOSRD
+preplace inst ddr4_0 -pg 1 -lvl 5 -y 250 -defaultsOSRD
+preplace inst fifo_generator_0 -pg 1 -lvl 2 -y -1110 -defaultsOSRD
+preplace inst wr_addr_0 -pg 1 -lvl 4 -y -250 -defaultsOSRD
+preplace inst vio_pcie -pg 1 -lvl 7 -y -250 -defaultsOSRD
+preplace inst AXI_data_out_0_0 -pg 1 -lvl 1 -y -740 -defaultsOSRD
+preplace inst perst_invert -pg 1 -lvl 4 -y 130 -defaultsOSRD
+preplace inst axis_data_fifo_0 -pg 1 -lvl 2 -y -140 -defaultsOSRD
+preplace netloc wr_addr_0_o_valid 1 4 2 1640J -280 2070
+preplace netloc one_dout 1 2 2 NJ -430 1260
+preplace netloc zero_19_dout 1 5 1 2130J
+preplace netloc ddr4_0_c0_init_calib_complete 1 5 3 2110 60 NJ 60 3050
+preplace netloc xlslice_1_Dout 1 4 1 1650
+preplace netloc xdma_reset_invert_Res 1 7 1 N
+preplace netloc util_ds_buf_IBUF_DS_ODIV2 1 5 1 2070
+preplace netloc util_ds_buf_IBUF_OUT 1 5 1 2160
+preplace netloc wr_addr_0_fifo_ready 1 2 3 NJ -120 1210 -100 1630
+preplace netloc axi_smc_M00_AXI 1 4 6 1730 -60 2080J 20 NJ 20 3070J 50 NJ 50 3710
+preplace netloc data_pin_n_0_1 1 0 1 -40
+preplace netloc xdma_0_user_lnk_up 1 6 1 2690
+preplace netloc axis_data_fifo_0_m_axis_tdata 1 2 2 750 -190 1280
+preplace netloc xdma_0_axi_aclk 1 6 3 2710 -150 3060J -180 3430
+preplace netloc ddr4_0_c0_ddr4_ui_clk_sync_rst 1 5 3 2190J 80 NJ 80 3080
+preplace netloc axis_data_fifo_0_s_axis_tready 1 0 2 -10 -140 NJ
+preplace netloc diff_clock_rtl_0_1 1 0 5 -40J -260 NJ -260 NJ -260 1230 -410 1680
+preplace netloc dds_compiler_0_m_axis_phase_tdata 1 3 1 1290
+preplace netloc adc_data_clk_n_0_1 1 0 1 -20
+preplace netloc wr_addr_0_m00_axi_txn_done 1 4 2 1700J -240 2160
+preplace netloc zero_1_dout 1 2 6 730 -230 1230J -90 1710J -220 2090 50 NJ 50 3040J
+preplace netloc xdma_0_axi_aresetn 1 6 1 2730
+preplace netloc AXI_data_out_0_0_last 1 1 1 330
+preplace netloc perst_invert_Res 1 4 1 1640
+preplace netloc C0_SYS_CLK_0_1 1 0 5 NJ 90 NJ 90 NJ 90 1230 220 N
+preplace netloc dds_compiler_1_m_axis_phase_tdata 1 3 1 1290
+preplace netloc wr_addr_0_o_last 1 4 2 1670J -260 2090
+preplace netloc zero_4_dout 1 5 1 2150J
+preplace netloc axis_data_fifo_0_m_axis_tlast 1 2 2 740 -210 1270
+preplace netloc xdma_0_M_AXI 1 6 3 2720J -170 NJ -170 N
+preplace netloc fifo_generator_0_dout 1 1 4 320 -940 N -940 N -940 1660
+preplace netloc top_layer_0_adc_data_ch1 1 1 1 320
+preplace netloc wr_addr_0_o_data 1 4 2 1650J -430 N
+preplace netloc reset_rtl_0_1 1 0 6 NJ 70 NJ 70 N 70 1270J 70 1720J -210 2140
+preplace netloc wr_addr_0_m00_axi 1 4 5 1660J -230 2120J 10 2700J -140 3070J -150 N
+preplace netloc xdma_0_pcie_mgt 1 6 4 2700 -160 3050J -230 NJ -230 3710J
+preplace netloc data_pin_p_0_1 1 0 1 -30
+preplace netloc zero_32_dout 1 5 1 2180J
+preplace netloc Net 1 0 9 -20 -270 350J -270 720 -200 1220 -70 1690 -70 2070J 40 NJ 40 3060J 60 3420
+preplace netloc ddr4_0_C0_DDR4 1 5 5 2170 90 2730J 70 NJ 70 NJ 70 NJ
+preplace netloc adc_data_clk_p_0_1 1 0 1 -10
+preplace netloc vio_readback_probe_out0 1 3 4 1290J -400 1690J -270 2170J 30 2680
+preplace netloc axis_data_fifo_0_m_axis_tvalid 1 2 2 730 -220 1250
+preplace netloc AXI_data_out_0_0_valid 1 1 1 340
+preplace netloc AXI_data_out_0_0_data 1 1 1 320
+preplace netloc xlslice_0_Dout 1 4 1 1660
+preplace netloc wr_addr_0_m00_axi_error 1 4 2 1690J -250 2080
+preplace netloc ddr4_0_c0_ddr4_ui_clk 1 0 9 -30 -80 330 -20 760 -180 1240J -420 NJ -420 2100 70 2720J -110 3080 -160 3420J
+levelinfo -pg 1 -60 160 550 1070 1460 1900 2450 2890 3250 3570 3730 -top -1810 -bot 970
 "
 }
 {

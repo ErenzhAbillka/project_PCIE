@@ -1,0 +1,281 @@
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
+| Date              : Sun Oct  4 16:29:05 2026
+| Host              : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
+| Command           : report_timing -from [get_ports {data_pin_p_0[*]}] -delay_type max -max_paths 4 -file E:/Documents/ChatGPT/project_PCIE/adc_bd_integration/reports/adc_setup.rpt
+| Design            : xdma_pcie_wrapper
+| Device            : xcku060-ffva1156
+| Speed File        : -2  PRODUCTION 1.25 10-29-2018
+| Temperature Grade : I
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.936ns  (required time - arrival time)
+  Source:                 data_pin_p_0[4]
+                            (input port clocked by adc_dco  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[4].data_ddr/D
+                            (rising edge-triggered cell ISERDESE3 clocked by adc_clk_raw  {rise@2.750ns fall@6.750ns period=8.000ns})
+  Path Group:             adc_clk_raw
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            2.750ns  (adc_clk_raw rise@2.750ns - adc_dco rise@0.000ns)
+  Data Path Delay:        1.023ns  (logic 0.767ns (74.971%)  route 0.256ns (25.029%))
+  Logic Levels:           3  (DIFFINBUF=1 IBUFCTRL=1 IDELAYE3=1)
+  Input Delay:            -0.300ns
+  Clock Path Skew:        -1.058ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -1.058ns = ( 1.692 - 2.750 ) 
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.166ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.097ns
+  Clock Net Delay (Destination): 1.278ns (routing 0.309ns, distribution 0.969ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock adc_dco rise edge)    0.000     0.000 r  
+                         input delay                 -0.300    -0.300    
+    AP20                                              0.000    -0.300 r  data_pin_p_0[4] (IN)
+                         net (fo=0)                   0.000    -0.300    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[4].data_ibuf/I
+    HPIOBDIFFINBUF_X1Y21 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.513     0.213 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[4].data_ibuf/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.090     0.303    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[4].data_ibuf/OUT
+    AP20                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_I_O)
+                                                      0.000     0.303 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[4].data_ibuf/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.166     0.469    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/data_buffered_4
+    BITSLICE_RX_TX_X1Y45 IDELAYE3 (Prop_IDELAY_BITSLICE_COMPONENT_RX_TX_IDATAIN_DATAOUT)
+                                                      0.253     0.723 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[4].data_delay/DATAOUT
+                         net (fo=1, routed)           0.000     0.723    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/data_delayed_4
+    BITSLICE_RX_TX_X1Y45 ISERDESE3                                    r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[4].data_ddr/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock adc_clk_raw rise edge)
+                                                      2.750     2.750 r  
+    AJ21                                              0.000     2.750 r  adc_data_clk_p_0 (IN)
+                         net (fo=0)                   0.000     2.750    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/I
+    HPIOBDIFFINBUF_X1Y12 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.286     3.036 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.051     3.087    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/OUT
+    AJ21                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_I_O)
+                                                      0.000     3.087 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.778     3.865    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_dco
+    MMCME3_ADV_X1Y0      MMCME3_ADV (Prop_MMCME3_ADV_CLKIN1_CLKOUT0)
+                                                     -3.898    -0.033 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_clock_mmcm/CLKOUT0
+                         net (fo=1, routed)           0.372     0.339    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_clk_raw
+    BUFGCE_X1Y14         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.075     0.414 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_bufg/O
+    X2Y0 (CLOCK_ROOT)    net (fo=63, routed)          1.278     1.692    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/CLK
+    BITSLICE_RX_TX_X1Y45 ISERDESE3                                    f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[4].data_ddr/CLK_B  (IS_INVERTED)
+                         clock pessimism              0.000     1.692    
+                         clock uncertainty           -0.166     1.526    
+    BITSLICE_RX_TX_X1Y45 ISERDESE3 (Setup_ISERDES_BITSLICE_COMPONENT_RX_TX_CLK_B_D)
+                                                      0.133     1.659    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[4].data_ddr
+  -------------------------------------------------------------------
+                         required time                          1.659    
+                         arrival time                          -0.723    
+  -------------------------------------------------------------------
+                         slack                                  0.936    
+
+Slack (MET) :             0.942ns  (required time - arrival time)
+  Source:                 data_pin_p_0[9]
+                            (input port clocked by adc_dco  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[9].data_ddr/D
+                            (rising edge-triggered cell ISERDESE3 clocked by adc_clk_raw  {rise@2.750ns fall@6.750ns period=8.000ns})
+  Path Group:             adc_clk_raw
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            2.750ns  (adc_clk_raw rise@2.750ns - adc_dco rise@0.000ns)
+  Data Path Delay:        1.011ns  (logic 0.765ns (75.663%)  route 0.246ns (24.337%))
+  Logic Levels:           3  (DIFFINBUF=1 IBUFCTRL=1 IDELAYE3=1)
+  Input Delay:            -0.300ns
+  Clock Path Skew:        -1.067ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -1.067ns = ( 1.683 - 2.750 ) 
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.166ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.097ns
+  Clock Net Delay (Destination): 1.269ns (routing 0.309ns, distribution 0.960ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock adc_dco rise edge)    0.000     0.000 r  
+                         input delay                 -0.300    -0.300    
+    AM24                                              0.000    -0.300 r  data_pin_p_0[9] (IN)
+                         net (fo=0)                   0.000    -0.300    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[9].data_ibuf/I
+    HPIOBDIFFINBUF_X1Y20 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.513     0.213 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[9].data_ibuf/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.090     0.303    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[9].data_ibuf/OUT
+    AM24                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_I_O)
+                                                      0.000     0.303 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[9].data_ibuf/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.156     0.459    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/data_buffered_9
+    BITSLICE_RX_TX_X1Y43 IDELAYE3 (Prop_IDELAY_BITSLICE_COMPONENT_RX_TX_IDATAIN_DATAOUT)
+                                                      0.251     0.711 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[9].data_delay/DATAOUT
+                         net (fo=1, routed)           0.000     0.711    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/data_delayed_9
+    BITSLICE_RX_TX_X1Y43 ISERDESE3                                    r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[9].data_ddr/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock adc_clk_raw rise edge)
+                                                      2.750     2.750 r  
+    AJ21                                              0.000     2.750 r  adc_data_clk_p_0 (IN)
+                         net (fo=0)                   0.000     2.750    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/I
+    HPIOBDIFFINBUF_X1Y12 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.286     3.036 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.051     3.087    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/OUT
+    AJ21                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_I_O)
+                                                      0.000     3.087 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.778     3.865    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_dco
+    MMCME3_ADV_X1Y0      MMCME3_ADV (Prop_MMCME3_ADV_CLKIN1_CLKOUT0)
+                                                     -3.898    -0.033 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_clock_mmcm/CLKOUT0
+                         net (fo=1, routed)           0.372     0.339    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_clk_raw
+    BUFGCE_X1Y14         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.075     0.414 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_bufg/O
+    X2Y0 (CLOCK_ROOT)    net (fo=63, routed)          1.269     1.683    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/CLK
+    BITSLICE_RX_TX_X1Y43 ISERDESE3                                    f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[9].data_ddr/CLK_B  (IS_INVERTED)
+                         clock pessimism              0.000     1.683    
+                         clock uncertainty           -0.166     1.517    
+    BITSLICE_RX_TX_X1Y43 ISERDESE3 (Setup_ISERDES_BITSLICE_COMPONENT_RX_TX_CLK_B_D)
+                                                      0.136     1.653    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[9].data_ddr
+  -------------------------------------------------------------------
+                         required time                          1.653    
+                         arrival time                          -0.711    
+  -------------------------------------------------------------------
+                         slack                                  0.942    
+
+Slack (MET) :             0.943ns  (required time - arrival time)
+  Source:                 data_pin_p_0[8]
+                            (input port clocked by adc_dco  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[8].data_ddr/D
+                            (falling edge-triggered cell ISERDESE3 clocked by adc_clk_raw  {rise@2.750ns fall@6.750ns period=8.000ns})
+  Path Group:             adc_clk_raw
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            2.750ns  (adc_clk_raw fall@6.750ns - adc_dco fall@4.000ns)
+  Data Path Delay:        1.026ns  (logic 0.783ns (76.313%)  route 0.243ns (23.687%))
+  Logic Levels:           3  (DIFFINBUF=1 IBUFCTRL=1 IDELAYE3=1)
+  Input Delay:            -0.300ns
+  Clock Path Skew:        -1.049ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -1.049ns = ( 5.701 - 6.750 ) 
+    Source Clock Delay      (SCD):    0.000ns = ( 4.000 - 4.000 ) 
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.166ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.097ns
+  Clock Net Delay (Destination): 1.287ns (routing 0.309ns, distribution 0.978ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock adc_dco fall edge)    4.000     4.000 f  
+                         input delay                 -0.300     3.700    
+    AN23                                              0.000     3.700 r  data_pin_p_0[8] (IN)
+                         net (fo=0)                   0.000     3.700    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[8].data_ibuf/I
+    HPIOBDIFFINBUF_X1Y23 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.533     4.233 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[8].data_ibuf/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.090     4.323    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[8].data_ibuf/OUT
+    AN23                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_I_O)
+                                                      0.000     4.323 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[8].data_ibuf/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.153     4.476    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/data_buffered_8
+    BITSLICE_RX_TX_X1Y49 IDELAYE3 (Prop_IDELAY_BITSLICE_COMPONENT_RX_TX_IDATAIN_DATAOUT)
+                                                      0.249     4.726 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[8].data_delay/DATAOUT
+                         net (fo=1, routed)           0.000     4.726    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/data_delayed_8
+    BITSLICE_RX_TX_X1Y49 ISERDESE3                                    r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[8].data_ddr/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock adc_clk_raw fall edge)
+                                                      6.750     6.750 f  
+    AJ21                                              0.000     6.750 f  adc_data_clk_p_0 (IN)
+                         net (fo=0)                   0.000     6.750    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/I
+    HPIOBDIFFINBUF_X1Y12 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.286     7.036 f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.051     7.087    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/OUT
+    AJ21                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_I_O)
+                                                      0.000     7.087 f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.778     7.865    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_dco
+    MMCME3_ADV_X1Y0      MMCME3_ADV (Prop_MMCME3_ADV_CLKIN1_CLKOUT0)
+                                                     -3.898     3.967 f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_clock_mmcm/CLKOUT0
+                         net (fo=1, routed)           0.372     4.339    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_clk_raw
+    BUFGCE_X1Y14         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.075     4.414 f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_bufg/O
+    X2Y0 (CLOCK_ROOT)    net (fo=63, routed)          1.287     5.701    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/CLK
+    BITSLICE_RX_TX_X1Y49 ISERDESE3                                    f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[8].data_ddr/CLK
+                         clock pessimism              0.000     5.701    
+                         clock uncertainty           -0.166     5.535    
+    BITSLICE_RX_TX_X1Y49 ISERDESE3 (Setup_ISERDES_BITSLICE_COMPONENT_RX_TX_CLK_D)
+                                                      0.134     5.669    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[8].data_ddr
+  -------------------------------------------------------------------
+                         required time                          5.669    
+                         arrival time                          -4.726    
+  -------------------------------------------------------------------
+                         slack                                  0.943    
+
+Slack (MET) :             0.947ns  (required time - arrival time)
+  Source:                 data_pin_p_0[3]
+                            (input port clocked by adc_dco  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[3].data_ddr/D
+                            (falling edge-triggered cell ISERDESE3 clocked by adc_clk_raw  {rise@2.750ns fall@6.750ns period=8.000ns})
+  Path Group:             adc_clk_raw
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            2.750ns  (adc_clk_raw fall@6.750ns - adc_dco fall@4.000ns)
+  Data Path Delay:        1.020ns  (logic 0.764ns (74.910%)  route 0.256ns (25.090%))
+  Logic Levels:           3  (DIFFINBUF=1 IBUFCTRL=1 IDELAYE3=1)
+  Input Delay:            -0.300ns
+  Clock Path Skew:        -1.057ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -1.057ns = ( 5.693 - 6.750 ) 
+    Source Clock Delay      (SCD):    0.000ns = ( 4.000 - 4.000 ) 
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.166ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.097ns
+  Clock Net Delay (Destination): 1.279ns (routing 0.309ns, distribution 0.970ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock adc_dco fall edge)    4.000     4.000 f  
+                         input delay                 -0.300     3.700    
+    AM21                                              0.000     3.700 r  data_pin_p_0[3] (IN)
+                         net (fo=0)                   0.000     3.700    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[3].data_ibuf/I
+    HPIOBDIFFINBUF_X1Y18 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.513     4.213 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[3].data_ibuf/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.090     4.303    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[3].data_ibuf/OUT
+    AM21                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_I_O)
+                                                      0.000     4.303 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[3].data_ibuf/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.166     4.469    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/data_buffered_3
+    BITSLICE_RX_TX_X1Y39 IDELAYE3 (Prop_IDELAY_BITSLICE_COMPONENT_RX_TX_IDATAIN_DATAOUT)
+                                                      0.251     4.720 r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[3].data_delay/DATAOUT
+                         net (fo=1, routed)           0.000     4.720    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/data_delayed_3
+    BITSLICE_RX_TX_X1Y39 ISERDESE3                                    r  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[3].data_ddr/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock adc_clk_raw fall edge)
+                                                      6.750     6.750 f  
+    AJ21                                              0.000     6.750 f  adc_data_clk_p_0 (IN)
+                         net (fo=0)                   0.000     6.750    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/I
+    HPIOBDIFFINBUF_X1Y12 DIFFINBUF (Prop_DIFFINBUF_HPIOBDIFFINBUF_DIFF_IN_P_O)
+                                                      0.286     7.036 f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/DIFFINBUF_INST/O
+                         net (fo=1, routed)           0.051     7.087    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/OUT
+    AJ21                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_I_O)
+                                                      0.000     7.087 f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_ibuf/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.778     7.865    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_dco
+    MMCME3_ADV_X1Y0      MMCME3_ADV (Prop_MMCME3_ADV_CLKIN1_CLKOUT0)
+                                                     -3.898     3.967 f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_clock_mmcm/CLKOUT0
+                         net (fo=1, routed)           0.372     4.339    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_clk_raw
+    BUFGCE_X1Y14         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.075     4.414 f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/dco_bufg/O
+    X2Y0 (CLOCK_ROOT)    net (fo=63, routed)          1.279     5.693    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/CLK
+    BITSLICE_RX_TX_X1Y39 ISERDESE3                                    f  xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[3].data_ddr/CLK
+                         clock pessimism              0.000     5.693    
+                         clock uncertainty           -0.166     5.527    
+    BITSLICE_RX_TX_X1Y39 ISERDESE3 (Setup_ISERDES_BITSLICE_COMPONENT_RX_TX_CLK_D)
+                                                      0.140     5.667    xdma_pcie_i/top_layer_0/inst/adc_driver_inst/adc_lane[3].data_ddr
+  -------------------------------------------------------------------
+                         required time                          5.667    
+                         arrival time                          -4.720    
+  -------------------------------------------------------------------
+                         slack                                  0.947    
+
+
+
+

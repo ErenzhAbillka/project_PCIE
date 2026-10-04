@@ -1,7 +1,7 @@
 //Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-//Date        : Wed Sep 30 19:06:26 2026
+//Date        : Sun Oct  4 21:20:46 2026
 //Host        : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
 //Command     : generate_target xdma_pcie.bd
 //Design      : xdma_pcie
@@ -9,7 +9,215 @@
 //--------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CORE_GENERATION_INFO = "xdma_pcie,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=xdma_pcie,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=18,numReposBlks=18,numNonXlnxBlks=0,numHierBlks=0,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=2,numPkgbdBlks=0,bdsource=USER,da_board_cnt=3,da_xdma_cnt=1,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "xdma_pcie.hwdef" *) 
+module das_processing_imp_JUZY4P
+   (accumulator_clipped,
+    adc_data,
+    adc_ready,
+    adc_user,
+    adc_valid,
+    alignment_error,
+    banks_full,
+    clk,
+    format_error,
+    frame_data,
+    frame_last,
+    frame_ready,
+    frame_valid,
+    groups_completed,
+    input_fault,
+    phase_start,
+    reset_n);
+  output accumulator_clipped;
+  input [31:0]adc_data;
+  output adc_ready;
+  input [1:0]adc_user;
+  input adc_valid;
+  output alignment_error;
+  output [1:0]banks_full;
+  input clk;
+  output format_error;
+  output [31:0]frame_data;
+  output frame_last;
+  input frame_ready;
+  output frame_valid;
+  output [31:0]groups_completed;
+  input input_fault;
+  input [15:0]phase_start;
+  input reset_n;
+
+  wire [31:0]adc_data_1;
+  wire [1:0]adc_user_1;
+  wire adc_valid_1;
+  wire clk_1;
+  wire [31:0]cordic_amp_phase_0_m_axis_dout_tdata;
+  wire [1:0]cordic_amp_phase_0_m_axis_dout_tuser;
+  wire cordic_amp_phase_0_m_axis_dout_tvalid;
+  wire cordic_amp_phase_0_s_axis_cartesian_tready;
+  wire [31:0]dds_compiler_0_m_axis_data_tdata;
+  wire [15:0]dds_compiler_0_m_axis_data_tuser;
+  wire dds_compiler_0_m_axis_data_tvalid;
+  wire dds_compiler_0_s_axis_phase_tready;
+  wire dif_acc_phase_0_accumulator_clipped;
+  wire [1:0]dif_acc_phase_0_banks_full;
+  wire dif_acc_phase_0_format_error;
+  wire [31:0]dif_acc_phase_0_frame_data;
+  wire dif_acc_phase_0_frame_last;
+  wire dif_acc_phase_0_frame_valid;
+  wire [31:0]dif_acc_phase_0_groups_completed;
+  wire dif_acc_phase_0_sample_ready;
+  wire [15:0]fir_compiler_i_m_axis_data_tdata;
+  wire [1:0]fir_compiler_i_m_axis_data_tuser;
+  wire fir_compiler_i_m_axis_data_tvalid;
+  wire fir_compiler_i_s_axis_data_tready;
+  wire [15:0]fir_compiler_q_m_axis_data_tdata;
+  wire [1:0]fir_compiler_q_m_axis_data_tuser;
+  wire fir_compiler_q_m_axis_data_tvalid;
+  wire fir_compiler_q_s_axis_data_tready;
+  wire frame_ready_1;
+  wire input_fault_1;
+  wire iq_align_0_alignment_error;
+  wire [31:0]iq_align_0_cartesian_data;
+  wire [1:0]iq_align_0_cartesian_user;
+  wire iq_align_0_cartesian_valid;
+  wire iq_align_0_i_ready;
+  wire iq_align_0_q_ready;
+  wire [23:0]mult_iq_0_i_data;
+  wire [1:0]mult_iq_0_i_user;
+  wire mult_iq_0_i_valid;
+  wire mult_iq_0_lo_ready;
+  wire [23:0]mult_iq_0_q_data;
+  wire [1:0]mult_iq_0_q_user;
+  wire mult_iq_0_q_valid;
+  wire phase_source_0_adc_ready;
+  wire [15:0]phase_source_0_phase_data;
+  wire [15:0]phase_source_0_phase_user;
+  wire phase_source_0_phase_valid;
+  wire [15:0]phase_start_1;
+  wire reset_n_1;
+
+  assign accumulator_clipped = dif_acc_phase_0_accumulator_clipped;
+  assign adc_data_1 = adc_data[31:0];
+  assign adc_ready = phase_source_0_adc_ready;
+  assign adc_user_1 = adc_user[1:0];
+  assign adc_valid_1 = adc_valid;
+  assign alignment_error = iq_align_0_alignment_error;
+  assign banks_full[1:0] = dif_acc_phase_0_banks_full;
+  assign clk_1 = clk;
+  assign format_error = dif_acc_phase_0_format_error;
+  assign frame_data[31:0] = dif_acc_phase_0_frame_data;
+  assign frame_last = dif_acc_phase_0_frame_last;
+  assign frame_ready_1 = frame_ready;
+  assign frame_valid = dif_acc_phase_0_frame_valid;
+  assign groups_completed[31:0] = dif_acc_phase_0_groups_completed;
+  assign input_fault_1 = input_fault;
+  assign phase_start_1 = phase_start[15:0];
+  assign reset_n_1 = reset_n;
+  xdma_pcie_cordic_amp_phase_0_0 cordic_amp_phase_0
+       (.aclk(clk_1),
+        .aresetn(reset_n_1),
+        .m_axis_dout_tdata(cordic_amp_phase_0_m_axis_dout_tdata),
+        .m_axis_dout_tready(dif_acc_phase_0_sample_ready),
+        .m_axis_dout_tuser(cordic_amp_phase_0_m_axis_dout_tuser),
+        .m_axis_dout_tvalid(cordic_amp_phase_0_m_axis_dout_tvalid),
+        .s_axis_cartesian_tdata(iq_align_0_cartesian_data),
+        .s_axis_cartesian_tready(cordic_amp_phase_0_s_axis_cartesian_tready),
+        .s_axis_cartesian_tuser(iq_align_0_cartesian_user),
+        .s_axis_cartesian_tvalid(iq_align_0_cartesian_valid));
+  xdma_pcie_dds_compiler_0_0 dds_compiler_0
+       (.aclk(clk_1),
+        .aresetn(reset_n_1),
+        .m_axis_data_tdata(dds_compiler_0_m_axis_data_tdata),
+        .m_axis_data_tready(mult_iq_0_lo_ready),
+        .m_axis_data_tuser(dds_compiler_0_m_axis_data_tuser),
+        .m_axis_data_tvalid(dds_compiler_0_m_axis_data_tvalid),
+        .s_axis_phase_tdata(phase_source_0_phase_data),
+        .s_axis_phase_tready(dds_compiler_0_s_axis_phase_tready),
+        .s_axis_phase_tuser(phase_source_0_phase_user),
+        .s_axis_phase_tvalid(phase_source_0_phase_valid));
+  xdma_pcie_dif_acc_phase_0_0 dif_acc_phase_0
+       (.accumulator_clipped(dif_acc_phase_0_accumulator_clipped),
+        .amp_phase_data(cordic_amp_phase_0_m_axis_dout_tdata),
+        .banks_full(dif_acc_phase_0_banks_full),
+        .clk(clk_1),
+        .format_error(dif_acc_phase_0_format_error),
+        .frame_data(dif_acc_phase_0_frame_data),
+        .frame_last(dif_acc_phase_0_frame_last),
+        .frame_ready(frame_ready_1),
+        .frame_valid(dif_acc_phase_0_frame_valid),
+        .groups_completed(dif_acc_phase_0_groups_completed),
+        .input_fault(input_fault_1),
+        .phase_start_cfg(phase_start_1),
+        .reset_n(reset_n_1),
+        .sample_ready(dif_acc_phase_0_sample_ready),
+        .sample_user(cordic_amp_phase_0_m_axis_dout_tuser),
+        .sample_valid(cordic_amp_phase_0_m_axis_dout_tvalid));
+  xdma_pcie_fir_compiler_i_0 fir_compiler_i
+       (.aclk(clk_1),
+        .aresetn(reset_n_1),
+        .m_axis_data_tdata(fir_compiler_i_m_axis_data_tdata),
+        .m_axis_data_tready(iq_align_0_i_ready),
+        .m_axis_data_tuser(fir_compiler_i_m_axis_data_tuser),
+        .m_axis_data_tvalid(fir_compiler_i_m_axis_data_tvalid),
+        .s_axis_data_tdata(mult_iq_0_i_data),
+        .s_axis_data_tready(fir_compiler_i_s_axis_data_tready),
+        .s_axis_data_tuser(mult_iq_0_i_user),
+        .s_axis_data_tvalid(mult_iq_0_i_valid));
+  xdma_pcie_fir_compiler_q_0 fir_compiler_q
+       (.aclk(clk_1),
+        .aresetn(reset_n_1),
+        .m_axis_data_tdata(fir_compiler_q_m_axis_data_tdata),
+        .m_axis_data_tready(iq_align_0_q_ready),
+        .m_axis_data_tuser(fir_compiler_q_m_axis_data_tuser),
+        .m_axis_data_tvalid(fir_compiler_q_m_axis_data_tvalid),
+        .s_axis_data_tdata(mult_iq_0_q_data),
+        .s_axis_data_tready(fir_compiler_q_s_axis_data_tready),
+        .s_axis_data_tuser(mult_iq_0_q_user),
+        .s_axis_data_tvalid(mult_iq_0_q_valid));
+  xdma_pcie_iq_align_0_0 iq_align_0
+       (.alignment_error(iq_align_0_alignment_error),
+        .cartesian_data(iq_align_0_cartesian_data),
+        .cartesian_ready(cordic_amp_phase_0_s_axis_cartesian_tready),
+        .cartesian_user(iq_align_0_cartesian_user),
+        .cartesian_valid(iq_align_0_cartesian_valid),
+        .clk(clk_1),
+        .i_data(fir_compiler_i_m_axis_data_tdata),
+        .i_ready(iq_align_0_i_ready),
+        .i_user(fir_compiler_i_m_axis_data_tuser),
+        .i_valid(fir_compiler_i_m_axis_data_tvalid),
+        .q_data(fir_compiler_q_m_axis_data_tdata),
+        .q_ready(iq_align_0_q_ready),
+        .q_user(fir_compiler_q_m_axis_data_tuser),
+        .q_valid(fir_compiler_q_m_axis_data_tvalid),
+        .reset_n(reset_n_1));
+  xdma_pcie_mult_iq_0_0 mult_iq_0
+       (.clk(clk_1),
+        .i_data(mult_iq_0_i_data),
+        .i_ready(fir_compiler_i_s_axis_data_tready),
+        .i_user(mult_iq_0_i_user),
+        .i_valid(mult_iq_0_i_valid),
+        .lo_data(dds_compiler_0_m_axis_data_tdata),
+        .lo_ready(mult_iq_0_lo_ready),
+        .lo_user(dds_compiler_0_m_axis_data_tuser),
+        .lo_valid(dds_compiler_0_m_axis_data_tvalid),
+        .q_data(mult_iq_0_q_data),
+        .q_ready(fir_compiler_q_s_axis_data_tready),
+        .q_user(mult_iq_0_q_user),
+        .q_valid(mult_iq_0_q_valid),
+        .reset_n(reset_n_1));
+  xdma_pcie_phase_source_0_0 phase_source_0
+       (.adc_data(adc_data_1),
+        .adc_ready(phase_source_0_adc_ready),
+        .adc_user(adc_user_1),
+        .adc_valid(adc_valid_1),
+        .clk(clk_1),
+        .phase_data(phase_source_0_phase_data),
+        .phase_ready(dds_compiler_0_s_axis_phase_tready),
+        .phase_user(phase_source_0_phase_user),
+        .phase_valid(phase_source_0_phase_valid),
+        .reset_n(reset_n_1));
+endmodule
+
+(* CORE_GENERATION_INFO = "xdma_pcie,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=xdma_pcie,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=29,numReposBlks=28,numNonXlnxBlks=0,numHierBlks=1,maxHierDepth=1,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=7,numPkgbdBlks=0,bdsource=USER,da_board_cnt=3,da_xdma_cnt=1,synth_mode=Global}" *) (* HW_HANDOFF = "xdma_pcie.hwdef" *) 
 module xdma_pcie
    (C0_DDR4_0_act_n,
     C0_DDR4_0_adr,
@@ -27,6 +235,16 @@ module xdma_pcie
     C0_DDR4_0_reset_n,
     C0_SYS_CLK_0_clk_n,
     C0_SYS_CLK_0_clk_p,
+    adc_data_clk_n_0,
+    adc_data_clk_p_0,
+    adc_spi_csb,
+    adc_sync,
+    adk_spi_csb,
+    dac_spi_csb,
+    data_pin_n_0,
+    data_pin_p_0,
+    device_spi_sclk,
+    device_spi_sda,
     diff_clock_rtl_0_clk_n,
     diff_clock_rtl_0_clk_p,
     pcie_7x_mgt_rtl_0_rxn,
@@ -50,6 +268,16 @@ module xdma_pcie
   (* X_INTERFACE_INFO = "xilinx.com:interface:ddr4:1.0 C0_DDR4_0 RESET_N" *) output C0_DDR4_0_reset_n;
   (* X_INTERFACE_INFO = "xilinx.com:interface:diff_clock:1.0 C0_SYS_CLK_0 CLK_N" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME C0_SYS_CLK_0, CAN_DEBUG false, FREQ_HZ 100000000" *) input C0_SYS_CLK_0_clk_n;
   (* X_INTERFACE_INFO = "xilinx.com:interface:diff_clock:1.0 C0_SYS_CLK_0 CLK_P" *) input C0_SYS_CLK_0_clk_p;
+  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.ADC_DATA_CLK_N_0 CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.ADC_DATA_CLK_N_0, CLK_DOMAIN xdma_pcie_adc_data_clk_n_0, FREQ_HZ 125000000, INSERT_VIP 0, PHASE 0.000" *) input adc_data_clk_n_0;
+  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.ADC_DATA_CLK_P_0 CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.ADC_DATA_CLK_P_0, CLK_DOMAIN xdma_pcie_adc_data_clk_p_0, FREQ_HZ 125000000, INSERT_VIP 0, PHASE 0.000" *) input adc_data_clk_p_0;
+  output adc_spi_csb;
+  output adc_sync;
+  output adk_spi_csb;
+  output dac_spi_csb;
+  input [13:0]data_pin_n_0;
+  input [13:0]data_pin_p_0;
+  output device_spi_sclk;
+  inout device_spi_sda;
   (* X_INTERFACE_INFO = "xilinx.com:interface:diff_clock:1.0 diff_clock_rtl_0 CLK_N" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME diff_clock_rtl_0, CAN_DEBUG false, FREQ_HZ 100000000" *) input [0:0]diff_clock_rtl_0_clk_n;
   (* X_INTERFACE_INFO = "xilinx.com:interface:diff_clock:1.0 diff_clock_rtl_0 CLK_P" *) input [0:0]diff_clock_rtl_0_clk_p;
   (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt_rtl_0 rxn" *) input [7:0]pcie_7x_mgt_rtl_0_rxn;
@@ -59,11 +287,13 @@ module xdma_pcie
   (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 RST.RESET_RTL_0 RST" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RST.RESET_RTL_0, INSERT_VIP 0, POLARITY ACTIVE_LOW" *) input reset_rtl_0;
 
   wire [31:0]AXI_data_out_0_0_data;
-  wire AXI_data_out_0_0_last;
   wire AXI_data_out_0_0_valid;
   wire C0_SYS_CLK_0_1_CLK_N;
   wire C0_SYS_CLK_0_1_CLK_P;
   wire [0:0]Net;
+  wire Net1;
+  wire adc_data_clk_n_0_1;
+  wire adc_data_clk_p_0_1;
   wire [31:0]axi_smc_M00_AXI_ARADDR;
   wire [1:0]axi_smc_M00_AXI_ARBURST;
   wire [3:0]axi_smc_M00_AXI_ARCACHE;
@@ -98,9 +328,25 @@ module xdma_pcie
   wire [63:0]axi_smc_M00_AXI_WSTRB;
   wire axi_smc_M00_AXI_WVALID;
   wire [31:0]axis_data_fifo_0_m_axis_tdata;
-  wire axis_data_fifo_0_m_axis_tlast;
+  wire [1:0]axis_data_fifo_0_m_axis_tuser;
   wire axis_data_fifo_0_m_axis_tvalid;
   wire axis_data_fifo_0_s_axis_tready;
+  wire das_processing_accumulator_clipped;
+  wire das_processing_adc_ready;
+  wire das_processing_alignment_error;
+  wire [1:0]das_processing_banks_full;
+  wire das_processing_format_error;
+  wire [31:0]das_processing_frame_data;
+  wire das_processing_frame_last;
+  wire das_processing_frame_valid;
+  wire [31:0]das_processing_groups_completed;
+  wire [31:0]das_writer_packet_0_ddr_frames_done;
+  wire das_writer_packet_0_framing_error;
+  wire [31:0]das_writer_packet_0_writer_data;
+  wire das_writer_packet_0_writer_last;
+  wire das_writer_packet_0_writer_valid;
+  wire [13:0]data_pin_n_0_1;
+  wire [13:0]data_pin_p_0_1;
   wire ddr4_0_C0_DDR4_ACT_N;
   wire [16:0]ddr4_0_C0_DDR4_ADR;
   wire [1:0]ddr4_0_C0_DDR4_BA;
@@ -120,12 +366,27 @@ module xdma_pcie
   wire ddr4_0_c0_init_calib_complete;
   wire [0:0]diff_clock_rtl_0_1_CLK_N;
   wire [0:0]diff_clock_rtl_0_1_CLK_P;
+  wire frame_ready_1;
   wire [0:0]one_dout;
   wire [0:0]perst_invert_Res;
   wire reset_rtl_0_1;
+  wire top_layer_0_acquisition_active;
+  wire [13:0]top_layer_0_adc_data_ch1;
+  wire top_layer_0_adc_fifo_aresetn;
+  wire top_layer_0_adc_overflow;
+  wire top_layer_0_adc_spi_csb;
+  wire top_layer_0_adc_sync;
+  wire top_layer_0_adk_spi_csb;
+  wire top_layer_0_dac_spi_csb;
+  wire top_layer_0_device_spi_sclk;
+  wire top_layer_0_init_done;
+  wire [1:0]top_layer_0_stream_user;
+  wire top_layer_0_sys_clk;
   wire [0:0]util_ds_buf_IBUF_DS_ODIV2;
   wire [0:0]util_ds_buf_IBUF_OUT;
   wire [0:0]vio_readback_probe_out0;
+  wire [0:0]vio_readback_probe_out1;
+  wire [15:0]vio_readback_probe_out2;
   wire wr_addr_0_fifo_ready;
   wire [31:0]wr_addr_0_m00_axi_ARADDR;
   wire [1:0]wr_addr_0_m00_axi_ARBURST;
@@ -229,6 +490,15 @@ module xdma_pcie
   assign C0_DDR4_0_reset_n = ddr4_0_C0_DDR4_RESET_N;
   assign C0_SYS_CLK_0_1_CLK_N = C0_SYS_CLK_0_clk_n;
   assign C0_SYS_CLK_0_1_CLK_P = C0_SYS_CLK_0_clk_p;
+  assign adc_data_clk_n_0_1 = adc_data_clk_n_0;
+  assign adc_data_clk_p_0_1 = adc_data_clk_p_0;
+  assign adc_spi_csb = top_layer_0_adc_spi_csb;
+  assign adc_sync = top_layer_0_adc_sync;
+  assign adk_spi_csb = top_layer_0_adk_spi_csb;
+  assign dac_spi_csb = top_layer_0_dac_spi_csb;
+  assign data_pin_n_0_1 = data_pin_n_0[13:0];
+  assign data_pin_p_0_1 = data_pin_p_0[13:0];
+  assign device_spi_sclk = top_layer_0_device_spi_sclk;
   assign diff_clock_rtl_0_1_CLK_N = diff_clock_rtl_0_clk_n[0];
   assign diff_clock_rtl_0_1_CLK_P = diff_clock_rtl_0_clk_p[0];
   assign pcie_7x_mgt_rtl_0_txn[7:0] = xdma_0_pcie_mgt_txn;
@@ -236,13 +506,6 @@ module xdma_pcie
   assign reset_rtl_0_1 = reset_rtl_0;
   assign xdma_0_pcie_mgt_rxn = pcie_7x_mgt_rtl_0_rxn[7:0];
   assign xdma_0_pcie_mgt_rxp = pcie_7x_mgt_rtl_0_rxp[7:0];
-  xdma_pcie_AXI_data_out_0_0_0 AXI_data_out_0_0
-       (.clk(ddr4_0_c0_ddr4_ui_clk),
-        .data(AXI_data_out_0_0_data),
-        .fifo_ready(axis_data_fifo_0_s_axis_tready),
-        .last(AXI_data_out_0_0_last),
-        .rst_n(Net),
-        .valid(AXI_data_out_0_0_valid));
   xdma_pcie_axi_smc_0 axi_smc
        (.M00_AXI_araddr(axi_smc_M00_AXI_ARADDR),
         .M00_AXI_arburst(axi_smc_M00_AXI_ARBURST),
@@ -355,16 +618,49 @@ module xdma_pcie
         .aclk1(xdma_0_axi_aclk),
         .aresetn(Net));
   xdma_pcie_axis_data_fifo_0_0 axis_data_fifo_0
-       (.m_axis_tdata(axis_data_fifo_0_m_axis_tdata),
-        .m_axis_tlast(axis_data_fifo_0_m_axis_tlast),
-        .m_axis_tready(wr_addr_0_fifo_ready),
+       (.m_axis_aclk(ddr4_0_c0_ddr4_ui_clk),
+        .m_axis_tdata(axis_data_fifo_0_m_axis_tdata),
+        .m_axis_tready(das_processing_adc_ready),
+        .m_axis_tuser(axis_data_fifo_0_m_axis_tuser),
         .m_axis_tvalid(axis_data_fifo_0_m_axis_tvalid),
-        .s_axis_aclk(ddr4_0_c0_ddr4_ui_clk),
-        .s_axis_aresetn(Net),
+        .s_axis_aclk(top_layer_0_sys_clk),
+        .s_axis_aresetn(top_layer_0_adc_fifo_aresetn),
         .s_axis_tdata(AXI_data_out_0_0_data),
-        .s_axis_tlast(AXI_data_out_0_0_last),
         .s_axis_tready(axis_data_fifo_0_s_axis_tready),
+        .s_axis_tuser(top_layer_0_stream_user),
         .s_axis_tvalid(AXI_data_out_0_0_valid));
+  das_processing_imp_JUZY4P das_processing
+       (.accumulator_clipped(das_processing_accumulator_clipped),
+        .adc_data(axis_data_fifo_0_m_axis_tdata),
+        .adc_ready(das_processing_adc_ready),
+        .adc_user(axis_data_fifo_0_m_axis_tuser),
+        .adc_valid(axis_data_fifo_0_m_axis_tvalid),
+        .alignment_error(das_processing_alignment_error),
+        .banks_full(das_processing_banks_full),
+        .clk(ddr4_0_c0_ddr4_ui_clk),
+        .format_error(das_processing_format_error),
+        .frame_data(das_processing_frame_data),
+        .frame_last(das_processing_frame_last),
+        .frame_ready(frame_ready_1),
+        .frame_valid(das_processing_frame_valid),
+        .groups_completed(das_processing_groups_completed),
+        .input_fault(top_layer_0_adc_overflow),
+        .phase_start(vio_readback_probe_out2),
+        .reset_n(Net));
+  xdma_pcie_das_writer_packet_0_0 das_writer_packet_0
+       (.burst_done(wr_addr_0_m00_axi_txn_done),
+        .clk(ddr4_0_c0_ddr4_ui_clk),
+        .ddr_frames_done(das_writer_packet_0_ddr_frames_done),
+        .frame_data(das_processing_frame_data),
+        .frame_last(das_processing_frame_last),
+        .frame_ready(frame_ready_1),
+        .frame_valid(das_processing_frame_valid),
+        .framing_error(das_writer_packet_0_framing_error),
+        .reset_n(Net),
+        .writer_data(das_writer_packet_0_writer_data),
+        .writer_last(das_writer_packet_0_writer_last),
+        .writer_ready(wr_addr_0_fifo_ready),
+        .writer_valid(das_writer_packet_0_writer_valid));
   xdma_pcie_ddr4_0_2 ddr4_0
        (.c0_ddr4_act_n(ddr4_0_C0_DDR4_ACT_N),
         .c0_ddr4_adr(ddr4_0_C0_DDR4_ADR),
@@ -422,13 +718,62 @@ module xdma_pcie
         .c0_sys_clk_n(C0_SYS_CLK_0_1_CLK_N),
         .c0_sys_clk_p(C0_SYS_CLK_0_1_CLK_P),
         .sys_rst(perst_invert_Res));
+  xdma_pcie_ila_das_0 ila_das
+       (.clk(ddr4_0_c0_ddr4_ui_clk),
+        .probe0(das_processing_frame_data),
+        .probe1({das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid}),
+        .probe10({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .probe11(1'b0),
+        .probe12(1'b0),
+        .probe13({1'b0,1'b0}),
+        .probe14({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .probe15({1'b1,1'b1,1'b1,1'b1}),
+        .probe16(1'b0),
+        .probe17({1'b0,1'b0,1'b0}),
+        .probe18({1'b0,1'b0,1'b0}),
+        .probe19(1'b0),
+        .probe2({frame_ready_1,frame_ready_1}),
+        .probe20(1'b0),
+        .probe21({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .probe22(1'b0),
+        .probe23({1'b0,1'b1,1'b0}),
+        .probe24({1'b0,1'b1}),
+        .probe25(1'b0),
+        .probe26(1'b0),
+        .probe27({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .probe28({1'b0,1'b1,1'b0}),
+        .probe29({1'b0,1'b1}),
+        .probe3(das_processing_frame_last),
+        .probe30(1'b0),
+        .probe31({1'b0,1'b0,1'b1,1'b1}),
+        .probe32({1'b0,1'b0,1'b1,1'b1}),
+        .probe33({1'b0,1'b0,1'b0,1'b0}),
+        .probe34({1'b0,1'b0,1'b0,1'b0}),
+        .probe35(1'b0),
+        .probe36({1'b0,1'b0,1'b0,1'b0}),
+        .probe37({1'b0,1'b0,1'b0,1'b0}),
+        .probe38(1'b0),
+        .probe39(1'b0),
+        .probe4(das_processing_groups_completed),
+        .probe40(1'b0),
+        .probe41(1'b0),
+        .probe42(1'b0),
+        .probe43(1'b0),
+        .probe5(das_writer_packet_0_ddr_frames_done),
+        .probe6(das_processing_banks_full),
+        .probe7(das_processing_format_error),
+        .probe8(1'b0),
+        .probe9(1'b0));
   xdma_pcie_ila_readback_0 ila_readback
        (.clk(ddr4_0_c0_ddr4_ui_clk),
         .probe0(wr_addr_0_o_data),
         .probe1(wr_addr_0_o_valid),
         .probe2(wr_addr_0_o_last),
         .probe3(wr_addr_0_m00_axi_error),
-        .probe4(wr_addr_0_m00_axi_txn_done));
+        .probe4(wr_addr_0_m00_axi_txn_done),
+        .probe5(axis_data_fifo_0_m_axis_tdata),
+        .probe6(axis_data_fifo_0_m_axis_tvalid),
+        .probe7(top_layer_0_adc_overflow));
   xdma_pcie_one_0 one
        (.dout(one_dout));
   xdma_pcie_perst_invert_0 perst_invert
@@ -441,6 +786,30 @@ module xdma_pcie
         .mb_debug_sys_rst(zero_1_dout),
         .peripheral_aresetn(Net),
         .slowest_sync_clk(ddr4_0_c0_ddr4_ui_clk));
+  xdma_pcie_top_layer_0_0 top_layer_0
+       (.acquisition_active(top_layer_0_acquisition_active),
+        .acquisition_enable(vio_readback_probe_out1),
+        .adc_data_ch1(top_layer_0_adc_data_ch1),
+        .adc_data_clk_n(adc_data_clk_n_0_1),
+        .adc_data_clk_p(adc_data_clk_p_0_1),
+        .adc_fifo_aresetn(top_layer_0_adc_fifo_aresetn),
+        .adc_overflow(top_layer_0_adc_overflow),
+        .adc_spi_csb(top_layer_0_adc_spi_csb),
+        .adc_sync(top_layer_0_adc_sync),
+        .adk_spi_csb(top_layer_0_adk_spi_csb),
+        .ctrl_clk(ddr4_0_c0_ddr4_ui_clk),
+        .dac_spi_csb(top_layer_0_dac_spi_csb),
+        .data_pin_n(data_pin_n_0_1),
+        .data_pin_p(data_pin_p_0_1),
+        .device_spi_sclk(top_layer_0_device_spi_sclk),
+        .device_spi_sda(device_spi_sda),
+        .init_done(top_layer_0_init_done),
+        .rst_n(Net),
+        .stream_data(AXI_data_out_0_0_data),
+        .stream_ready(axis_data_fifo_0_s_axis_tready),
+        .stream_user(top_layer_0_stream_user),
+        .stream_valid(AXI_data_out_0_0_valid),
+        .sys_clk(top_layer_0_sys_clk));
   xdma_pcie_util_ds_buf_0 util_ds_buf
        (.IBUF_DS_N(diff_clock_rtl_0_1_CLK_N),
         .IBUF_DS_ODIV2(util_ds_buf_IBUF_DS_ODIV2),
@@ -454,14 +823,25 @@ module xdma_pcie
        (.clk(ddr4_0_c0_ddr4_ui_clk),
         .probe_in0(ddr4_0_c0_init_calib_complete),
         .probe_in1(wr_addr_0_m00_axi_error),
-        .probe_out0(vio_readback_probe_out0));
+        .probe_in10(das_writer_packet_0_framing_error),
+        .probe_in2(top_layer_0_init_done),
+        .probe_in3(top_layer_0_acquisition_active),
+        .probe_in4(top_layer_0_adc_overflow),
+        .probe_in5(das_processing_alignment_error),
+        .probe_in6(das_processing_format_error),
+        .probe_in7(das_processing_groups_completed),
+        .probe_in8(das_writer_packet_0_ddr_frames_done),
+        .probe_in9(das_processing_accumulator_clipped),
+        .probe_out0(vio_readback_probe_out0),
+        .probe_out1(vio_readback_probe_out1),
+        .probe_out2(vio_readback_probe_out2));
   xdma_pcie_wr_addr_0_0 wr_addr_0
        (.clk(ddr4_0_c0_ddr4_ui_clk),
         .fifo_ready(wr_addr_0_fifo_ready),
-        .i_data(axis_data_fifo_0_m_axis_tdata),
+        .i_data(das_writer_packet_0_writer_data),
         .i_fifo_ready(one_dout),
-        .i_last(axis_data_fifo_0_m_axis_tlast),
-        .i_valid(axis_data_fifo_0_m_axis_tvalid),
+        .i_last(das_writer_packet_0_writer_last),
+        .i_valid(das_writer_packet_0_writer_valid),
         .m00_axi_aclk(ddr4_0_c0_ddr4_ui_clk),
         .m00_axi_araddr(wr_addr_0_m00_axi_ARADDR),
         .m00_axi_arburst(wr_addr_0_m00_axi_ARBURST),

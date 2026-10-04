@@ -1,0 +1,84 @@
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
+| Date         : Sun Oct  4 21:52:59 2026
+| Host         : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
+| Command      : report_drc -file E:/FPGA_Doc/project_PCIE/das_processing_build/drc.rpt
+| Design       : xdma_pcie_wrapper
+| Device       : xcku060-ffva1156-2-i
+| Speed File   : -2
+| Design State : Fully Routed
+----------------------------------------------------------------------------------------
+
+Report DRC
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: xdma_pcie_wrapper
+          Floorplan: design_1
+      Design limits: <entire design considered>
+           Ruledeck: default
+             Max violations: <unlimited>
+             Violations found: 9
++-----------+----------+--------------------------+------------+
+| Rule      | Severity | Description              | Violations |
++-----------+----------+--------------------------+------------+
+| BUFC-1    | Warning  | Input Buffer Connections | 1          |
+| DPIP-2    | Warning  | Input pipelining         | 4          |
+| DPOP-4    | Warning  | MREG Output pipelining   | 3          |
+| RTSTAT-10 | Warning  | No routable loads        | 1          |
++-----------+----------+--------------------------+------------+
+
+2. REPORT DETAILS
+-----------------
+BUFC-1#1 Warning
+Input Buffer Connections  
+Input buffer xdma_pcie_i/top_layer_0/inst/spi_sdio_buffer/IBUFCTRL_INST (in xdma_pcie_i/top_layer_0/inst/spi_sdio_buffer macro) has no loads. It is recommended to have an input buffer drive an internal load.
+Related violations: <none>
+
+DPIP-2#1 Warning
+Input pipelining  
+DSP xdma_pcie_i/das_processing/mult_iq_0/inst/i_data_reg input xdma_pcie_i/das_processing/mult_iq_0/inst/i_data_reg/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#2 Warning
+Input pipelining  
+DSP xdma_pcie_i/das_processing/mult_iq_0/inst/i_data_reg input xdma_pcie_i/das_processing/mult_iq_0/inst/i_data_reg/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#3 Warning
+Input pipelining  
+DSP xdma_pcie_i/das_processing/mult_iq_0/inst/q_data_reg input xdma_pcie_i/das_processing/mult_iq_0/inst/q_data_reg/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#4 Warning
+Input pipelining  
+DSP xdma_pcie_i/das_processing/mult_iq_0/inst/q_data_reg input xdma_pcie_i/das_processing/mult_iq_0/inst/q_data_reg/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPOP-4#1 Warning
+MREG Output pipelining  
+DSP xdma_pcie_i/das_processing/cordic_amp_phase_0/U0/i_synth/i_synth/gen_cordic.output_stage/gen_scaling.gen_x_out.scale/multiplier/gCCM.iCCM/emb_mult_ccm.dsp_ccm.dsp48_array/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e2.iDSP48E2 multiplier stage xdma_pcie_i/das_processing/cordic_amp_phase_0/U0/i_synth/i_synth/gen_cordic.output_stage/gen_scaling.gen_x_out.scale/multiplier/gCCM.iCCM/emb_mult_ccm.dsp_ccm.dsp48_array/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e2.iDSP48E2/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-4#2 Warning
+MREG Output pipelining  
+DSP xdma_pcie_i/das_processing/mult_iq_0/inst/i_data_reg multiplier stage xdma_pcie_i/das_processing/mult_iq_0/inst/i_data_reg/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-4#3 Warning
+MREG Output pipelining  
+DSP xdma_pcie_i/das_processing/mult_iq_0/inst/q_data_reg multiplier stage xdma_pcie_i/das_processing/mult_iq_0/inst/q_data_reg/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+RTSTAT-10#1 Warning
+No routable loads  
+146 net(s) have no routable loads. The problem bus(es) and/or net(s) are xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_ddr_cal_riu/LMB_CE_riu, xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_ddr_cal_riu/LMB_UE_riu, xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_ddr_cal_top/u_ddr_cal/u_xsdb_arbiter/Q[12], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_ddr_cal_top/u_ddr_cal/u_xsdb_arbiter/Q[13], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_ddr_cal_top/u_ddr_cal/u_xsdb_arbiter/Q[14], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_ddr_cal_top/u_ddr_cal/u_xsdb_arbiter/Q[15], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_phy2clb_phy_rdy_low/SYNC[0].sync_reg[1], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_phy2clb_fixdly_rdy_upp/SYNC[0].sync_reg[1], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_phy2clb_fixdly_rdy_low/SYNC[0].sync_reg[1], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_phy2clb_phy_rdy_upp/SYNC[0].sync_reg[1], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_phy2clb_phy_rdy_low/SYNC[1].sync_reg[1], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_phy2clb_fixdly_rdy_upp/SYNC[1].sync_reg[1], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_phy2clb_fixdly_rdy_low/SYNC[1].sync_reg[1], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_phy2clb_phy_rdy_upp/SYNC[1].sync_reg[1], xdma_pcie_i/ddr4_0/inst/u_ddr4_mem_intfc/u_phy2clb_phy_rdy_upp/SYNC[2].sync_reg[1] (the first 15 of 139 listed).
+Related violations: <none>
+
+
