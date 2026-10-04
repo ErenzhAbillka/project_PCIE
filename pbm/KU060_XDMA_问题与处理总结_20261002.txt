@@ -1,0 +1,199 @@
+KU060 PCIe XDMA 与现有 Windows 驱动兼容问题及处理总结
+记录日期：2026-10-02，Asia/Shanghai
+证据截止：2026-10-02 18:36:30 的硬件观察及已保存日志
+
+一、目前的结果
+
+保持原 Windows XDMA 驱动不变，当前诊断版 FPGA 已完成电脑→DDR4→电脑的 AXI-MM DMA：
+  首次 64 字节回环：1/1 通过。
+  64 字节重复回环：100/100 通过。
+  4096 字节重复回环：100/100 通过。
+后两组每轮换数据，200 对发送/接收文件另行独立核对，全部一致；没有超时、取消或比较错误。
+测试后的 BAR 标识仍正常，两个通道非清除式状态均为 0。
+
+已经完成的是 FPGA BAR 布局适配、主机资源重新枚举以及上述范围内的数据通路验证。
+不能写成“所有问题永久修复”：此前 H2C 超时的根因没有最终确定，短测试不等于长期稳定性测试；
+另发现硬核链路速度采样从 Gen2 变为 Gen1，Windows 属性仍显示 Gen2，需要继续排查。
+
+二、项目背景与已纠正的信息
+
+硬件：KU060，xcku060-ffva1156-2-i，Vivado 2018.3。
+通路：PC ↔ XDMA ↔ SmartConnect ↔ DDR4。
+XDMA 配置：10EE:8028、Gen2 ×8、AXI-MM、256 bit / 125 MHz。
+DDR4 配置：64 位物理总线、512 位 AXI / 200 MHz、4 GiB。
+DDR 颗粒暂按 MT40A512M16HA-083E 配置，实物丝印尚未确认。
+配置为 ×8 不代表实际协商为 ×8；目前 Windows 和 ILA 观察到的宽度均为 ×4。
+
+原项目目录：E:\FPGA_Doc\project_PCIE
+工作及证据目录：E:\Documents\ChatGPT\project_PCIE
+用户只有这一台测试电脑；FPGA 独立供电，电脑重启时 FPGA 不一定掉电。
+
+用户已澄清，本项目原先没有构建好的 Windows 测试 EXE。光纤目录找到的其他上位机 EXE 与本项目无关，
+不是继续测试或恢复的前置条件。check_capture.py 是离线数据分析脚本，不是 DMA 主机程序。
+本次使用已审查的 xdma_rw.exe 做有限寄存器读取，并在工作目录准备 Python AXI-MM 测试工具。
+streaming_dma.exe 不适合当前 AXI-MM 通路；不能将参考 AXI-Stream 工程的应用协议直接套用到本项目。
+
+三、曾出现的问题及处理办法
+
+问题 1：历史蓝屏，驱动向地址 0x1 写入
+
+现象与证据：
+  转储：E:\Documents\ChatGPT\PCIE\100126-9734-01.dmp。
+  Bugcheck 0xD1，IRQL 7，向地址 0x1 写入。
+  故障位置 XDMA.sys+0x281D；匹配 PDB 定位 EvtInterruptDpc+0x101，libxdma\interrupt.c:417。
+  对应 WRITE_REGISTER_BUFFER_ULONG 内联写操作。
+  原包 SYS、当前安装 SYS 的 SHA256 一致，符号 GUID/Age 匹配，未强行加载不匹配 PDB。
+
+分析判断：
+  匹配二进制中，驱动 DPC 直接使用 bar[userBarIdx]，此处未检查索引 -1，userIrqPending=0 时仍会写。
+  userBarIdx 初始化为 -1；只有识别控制 BAR 索引为 1 时，才将用户 BAR 索引设为 0。
+  注意：正确条件是 configBarIdx==1；早期报告中的“!=0”已被后续分析纠正。
+  原新工程关闭 AXI-Lite Master，缺少该驱动假定存在的用户 BAR。
+  bar[-1] 与设备结构的 numBars/填充区域重叠；numBars=1 且填充为 0 时可得到指针 1，与转储相符。
+  这是最有证据支持的机制，但 minidump 缺少实际设备上下文页，不能声称已恢复全部字段、触发命令或唯一原因。
+  用户中断输入接 0 不能防止 DMA 通道中断进入 DPC。
+
+采用的处理：
+  不替换驱动；在 FPGA 工作副本开启 XDMA AXI-Lite Master，增加标准 AXI BRAM Controller 和 32 KiB BRAM。
+  新 BAR0：32 位、非预取、32 KiB，用户 BRAM。
+  新 BAR1：32 位、非预取、64 KiB，XDMA 控制寄存器。
+  BAR2～5 关闭。用户 BRAM 使用 XDMA 125 MHz 时钟/复位，不依赖 DDR 校准。
+  保留 8028、AXI-MM DDR 通路、原发生器、用户中断接 0。
+
+验证和边界：
+  离线 BD、地址、引脚、原 RTL、新 BRAM 控制器模型仿真及构建验证通过。
+  实机识别到两段正确大小的内存资源；用户 BRAM 曾写入并读回 C3 3C 5A A5。
+  后续当前诊断版完成 DMA 回环，支持这条 FPGA 适配路线可用。
+  驱动中未检查用户 BAR 索引的缺陷没有被修改；本次通过提供匹配布局避免缺失用户 BAR 的场景。
+  这不是“驱动对任何 bit 都安全”的证明，也没有实现无关采集程序的自定义用户寄存器协议。
+
+问题 2：设备 ID、BAR 布局与主机资源状态不一致的风险
+
+  用户历史记录曾出现 8038 旧枚举，整机重启后恢复 8028；旧枚举来源没有被单独证明。
+  新 bit 改变了 BAR 布局，FPGA 持续供电不能保证主机 PCIe 资源自动更新。
+  处理原则是先让目标设备正常停止，再下载，随后整机重启并重新枚举，复核资源后才访问。
+  本次实际资源为 F44E8000–F44EFFFF（32 KiB）和 F44F0000–F44FFFFF（64 KiB）。
+  地址是本次分配结果，不应硬编码为下次启动永远不变的物理地址。
+  control+0 读到 1FC00006，control+0x1000 读到 1FC10006。
+
+问题 3：兼容候选首次 64 字节 H2C 超时，随后 BAR 读取全 FF
+
+  2026-10-02 16:49:28，在 DDR 0x10000 提交 64 字节 H2C，等待 5 秒后请求取消。
+  取消后的 API 完成错误为 995；没有提交 C2H，没有接收文件，也没有通过比较。
+  后续 control 标识、通道状态及 user BRAM 均读到 FFFFFFFF。
+  工具返回“4 bytes received”及退出码 0，只表示 API 返回了数据，不能把全 FF 当作有效硬件值。
+  同时 JTAG 的 link_up、axi_aresetn、DDR 校准仍为 1，Windows 设备状态正常。
+  因此，设备管理器正常和 link_up=1 都不能单独证明 PCIe BAR 事务正常。
+
+  处理：停止追加 DMA，保存失败记录，离线检查准确驱动二进制的提交、取消及中断路径。
+  用户在 FPGA 持续供电、不重下 bit 的情况下重启整台电脑；17:57:50 启动后，BAR 标识恢复正常，
+  用户 BRAM 还保留此前 C3 3C 5A A5。重启恢复了本次访问状态，但不是根因修复的证明。
+
+  驱动取消路径中可见 EngineStop 清 RUN、读取控制值刷新，未见等待 busy 清零的循环。
+  因此 API 返回“已取消”不独立证明硬件已经静止；不能在取消后马上盲目重试或热下载。
+  由于失败前缺少紧邻请求的 BAR 检查，现有证据不能区分失效发生于 DMA 前、期间还是取消阶段。
+
+问题 4：原调试核心无法定位 XDMA 事务卡在哪一段
+
+  原 ILA 主要观察发生器读回，原 VIO 的 m00_axi_error 也属于 wr_addr，并非 XDMA 通道错误标志。
+  处理：复用兼容候选的综合网表，增加输入型 diag_dma_ila，单独生成诊断 bit/ltx。
+  61 个探针覆盖 PCIe 配置状态、LTSSM、速度/宽度、错误、RQ/RC/CQ/CC、MSI，以及 XDMA AXI-MM 握手。
+  深度 2048；按 125 MHz 计算连续窗口约 16.384 微秒。AXI WDATA/RDATA 只采低 32 位，主机负责完整字节比较。
+  没有修改功能 RTL 的 BAR 布局、设备 ID、地址映射或驱动；但新增 ILA 会影响实现布线，不能当作物理上完全相同的 bit。
+
+  18:10:49 正常禁用目标设备，确认 ProblemCode 22。
+  随后下载诊断 bit/ltx，Vivado 编程成功、DONE=1，调试核心匹配；再次观察 DDR 校准完成。
+  18:14:35 整机重启；18:17:09 恢复启用，ProblemCode 0，再核对资源、BAR、DDR 和 PCIe 配置。
+  18:22:10 首次 64 字节双向回环通过，ILA 看到 DDR 写响应成功及 MSI sent。
+  18:32:27 和 18:33:23 两组重复测试全部通过；4 KiB 波形看到完整 DDR 读回及 MSI sent。
+
+  此结果证明当前驱动能够执行本项目标准 AXI-MM DMA，不能再笼统判断为“驱动只支持其他旧应用”。
+  但重新配置、停用/启用、整机重启、实现布线变化同时存在，不能单独把成功归因于新增 ILA。
+
+问题 5：禁用命令第一次返回“常规故障”
+
+  当时运行进程虽属于 Administrator 用户，但没有管理员提升令牌；设备实际仍启用。
+  处理：通过标准 Windows RunAs 提升，仅执行针对唯一 XDMA 实例的正常禁用，再独立核对 ProblemCode 22。
+  确认停止成功后才下载。没有强制卸载驱动，没有在禁用失败时绕过检查直接下载。
+  这是操作权限问题；没有证据表明它是 FPGA 或 DMA 超时根因。
+
+四、新发现的链路速度问题
+
+  18:32:27 的 64 字节组波形：cfg_current_speed_o=2，cfg_negotiated_width_o=4。
+  18:33:24 Vivado 标记触发的 4 KiB 波形：speed=1，width=4。
+  18:35:24 Windows PnP 属性：CurrentLinkSpeed=2、CurrentLinkWidth=4，最大为 2/8。
+  18:36:22 新采集的空闲波形：speed 仍为 1，width 仍为 4。
+  上述时间来自不同工具记录，不能据此推算微秒级的跨工具事件顺序。
+
+  已核对探针映射及生成 RTL，cfg_current_speed_o 直接来自 cfg_current_speed。
+  AMD PG156 定义 001 为 2.5 GT/s（Gen1），010 为 5.0 GT/s（Gen2），宽度 0100 为 ×4。
+  板上证据支持速度状态发生了变化；Windows 属性与硬核采样不一致，原因仍未确定。
+  不得直接把 PnP 属性认定为实时 PCI 配置寄存器，也不能未经核验断言它一定是缓存。
+  尚未捕获变化瞬间，不能将降速归因于 4 KiB 长度、Windows 电源策略、信号完整性、驱动或某个具体命令。
+  目前也未证明降速与早先超时/全 FF 同源。
+
+  实际只有 ×4 是另一项需要单独核对的事实：可能涉及插槽电气通道、主板拓扑、通道分配或链路训练，
+  不能仅凭工程设置 ×8 就断言硬件必须协商 ×8，也不能仅凭 ×4 就认定板卡故障。
+
+五、当前文件与版本
+
+已完成实机回环的当前诊断版本：
+  E:\Documents\ChatGPT\project_PCIE\fpga_diag_20261002\xdma_pcie_wrapper_diag.bit
+  SHA256 1372b2fd44dff725e0d75d7024b70a373192d1bb6beaba9e4a8d65d8050ab815
+  E:\Documents\ChatGPT\project_PCIE\fpga_diag_20261002\xdma_pcie_wrapper_diag.ltx
+  SHA256 9d51856b8f50fdb7af3a786eafc02e11702b250a9a2e4ba5375282b840aa3765
+
+前一兼容候选，保留作对照，不等于已经验证稳定的回退方案：
+  E:\Documents\ChatGPT\project_PCIE\fpga_compat_20261001\vivado\compat.xpr
+  E:\Documents\ChatGPT\project_PCIE\fpga_compat_20261001\link_build\xdma_pcie_wrapper.bit
+  bit SHA256 eb592c9ee10766ace6c75eff0dbac20361a954b7a3b144202bbdd6d415992d24
+  配套 ltx SHA256 7effbe4deaa4c22702f598d2dc67dea2284404e7dc9c75f57a5d1df0fd0c45b7
+  不使用候选根目录残留的 project_PCIE.xpr 或 compat.xpr。
+
+当前驱动：
+  C:\Windows\System32\drivers\XDMA.sys
+  SHA256 5cdbaf12776444e45ad3cb837e42b4d2487c3bffd9acac9bb08515ae980f8396
+  版本 16.57.30.830，服务 XDMA，历史安装记录为 oem3.inf。
+  PE 时间戳 5F38F4FE，ImageSize C000，CheckSum 83A5。
+  PDB GUID 20592D59-91C5-405D-8DE5-0D9B97335839，Age 1；未找到准确版本驱动源码。
+
+地址约定：
+  user 0–0x7FFF 是 BRAM，不是 DDR；user+0 留给驱动写入，+0x2000/+0x3000 保持 0，+0x100 用于有限暂存验证。
+  h2c_0/c2h_0 访问 DDR；已测试区域为 0x10000–0x10FFF；原发生器占用 0–0xFFF。
+
+六、恢复资料和验证限制
+
+原驱动包副本、SYS/PDB/INF/CAT 等、DriverStore/OEM 安装资料快照和历史转储已在工作目录保留，
+清单见 recovery_review_20261002\backup_manifest.json。直接复制 SYS 不是完整驱动恢复方案，重新安装恢复能力未实际验证。
+原主工程 bit、兼容候选和当前诊断 bit 均有文件留存；缺用户 BAR 的旧 bit 不能直接作为安全运行当前驱动的基线。
+尚未确认与本板原有启动配置对应的 Flash 映像、烧写地址及完整恢复流程；本次没有烧写 Flash。
+FPGA 源文件受哈希核对的范围保持；此前 Vivado GUI 曾在原工程 .hw 目录自动保存显示布局，不能概括为整个原目录绝无变化。
+
+兼容候选时序 WNS +0.522 ns、WHS +0.004 ns；诊断版 WNS +0.433 ns、WHS +0.004 ns，TNS/THS 均 0。
+二者均有 1 条 RTSTAT-10 Warning。原有 42 条 CDC Critical 保留；诊断版新增 153 条位于 ILA 内部，共 195 条。
+没有因此认定 CDC 全部安全，也未通过降级告警或笼统 false-path 隐藏问题。
+未完成长时间压力测试、跨页大块 SG 测试、全 DDR 空间测试、Gen2 ×8 吞吐验收或所有启动/恢复场景验证。
+
+七、原始证据索引
+
+以下文件均在 E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002：
+  continued_diagnosis_20261002.txt：失败 H2C、BAR 全 FF、取消路径分析。
+  post_reboot_1757_result.txt：不重下 bit 的整机重启恢复 BAR。
+  diagnostic_program_result_20261002.txt：正常禁用、诊断下载与重启交接。
+  diagnostic_dma64_result_20261002.txt：首次诊断版 64 字节成功证据。
+  repeat_test_result_20261002.txt：200 次回环及速度差异。
+  repeat_independent_verification.json：独立文件/日志及波形核对。
+  repeat_link_properties.json：18:35:24 Windows 链路属性。
+  dma64_run_20261002_164928_6d262bef：失败测试。
+  dma64_run_20261002_182210_9ed730e4：首次成功测试。
+  dma_repeat_64_20261002_183227_13b8676d：100 次 64 字节原始文件和日志。
+  dma_repeat_4096_20261002_183323_f784fe55：100 次 4 KiB 原始文件和日志。
+  diagnostic_repeat_capture_64\arm.*：Gen2 ×4 的 H2C 波形。
+  diagnostic_repeat_capture_4096\arm.*：速度字段 1 的 C2H 波形。
+  diagnostic_repeat_capture_4096\after.*：后续空闲复查波形。
+
+AMD 接口编码参考：
+https://docs.amd.com/r/en-US/pg156-ultrascale-pcie-gen3/Configuration-Status-Interface
+
+阅读历史报告时以时间和更正段为准。早期“未上板”“没有 EXE 恢复入口”“configBarIdx!=0”等旧表述，
+不能覆盖后续已完成的实机测试、用户澄清以及反汇编条件更正。

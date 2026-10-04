@@ -4,12 +4,12 @@
 <!-- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.        -->
 
 <hwsession version="1" minor="2">
-  <device name="xcku060_0" gui_info="dashboard1=hw_ila_1[xcku060_0/hw_ila_1/Capture Setup=ILA_CAPTURE_1;xcku060_0/hw_ila_1/Waveform=ILA_WAVE_1;xcku060_0/hw_ila_1/Status=ILA_STATUS_1;xcku060_0/hw_ila_1/Settings=ILA_SETTINGS_1;xcku060_0/hw_ila_1/Trigger Setup=ILA_TRIGGER_1;],dashboard2=dashboard_1[xcku060_0/hw_vio_2=VIO_PROBES_2;xcku060_0/hw_vio_1=VIO_PROBES_1;]"/>
+  <device name="xcku060_0" gui_info="dashboard1=hw_ila_1[xcku060_0/hw_ila_1/Capture Setup=ILA_CAPTURE_1;xcku060_0/hw_ila_1/Waveform=ILA_WAVE_1;xcku060_0/hw_ila_1/Status=ILA_STATUS_1;xcku060_0/hw_ila_1/Settings=ILA_SETTINGS_1;xcku060_0/hw_ila_1/Trigger Setup=ILA_TRIGGER_1;],dashboard2=dashboard_1[xcku060_0/hw_vio_2=VIO_PROBES_1;],dashboard3=dashboard_2[xcku060_0/hw_vio_1=VIO_PROBES_1;]"/>
   <ObjectList object_type="hw_device" gui_info="">
     <Object name="xcku060_0" gui_info="">
-      <Properties Property="FULL_PROBES.FILE" value="link_build/xdma_pcie_wrapper.ltx"/>
-      <Properties Property="PROBES.FILE" value="link_build/xdma_pcie_wrapper.ltx"/>
-      <Properties Property="PROGRAM.HW_BITSTREAM" value="link_build/xdma_pcie_wrapper.bit"/>
+      <Properties Property="FULL_PROBES.FILE" value="E:/Documents/ChatGPT/project_PCIE/fpga_compat_20261001/link_build/xdma_pcie_wrapper.ltx"/>
+      <Properties Property="PROBES.FILE" value="E:/Documents/ChatGPT/project_PCIE/fpga_compat_20261001/link_build/xdma_pcie_wrapper.ltx"/>
+      <Properties Property="PROGRAM.HW_BITSTREAM" value="E:/Documents/ChatGPT/project_PCIE/fpga_compat_20261001/link_build/xdma_pcie_wrapper.bit"/>
       <Properties Property="SLR.COUNT" value="1"/>
     </Object>
   </ObjectList>
@@ -24,11 +24,11 @@
     </Object>
   </ObjectList>
   <ObjectList object_type="hw_probe" gui_info="">
-    <Object name="xdma_pcie_i/ddr4_0_c0_init_calib_complete" gui_info="dashboard_1/hw_vio_2=2"/>
+    <Object name="xdma_pcie_i/ddr4_0_c0_init_calib_complete" gui_info="dashboard_1/hw_vio_2=0"/>
     <Object name="xdma_pcie_i/vio_readback_probe_out0" gui_info="dashboard_1/hw_vio_2=0"/>
     <Object name="xdma_pcie_i/wr_addr_0_m00_axi_error" gui_info="dashboard_1/hw_vio_2=1"/>
-    <Object name="xdma_pcie_i/xdma_0_axi_aresetn" gui_info="dashboard_1/hw_vio_1=1"/>
-    <Object name="xdma_pcie_i/xdma_0_user_lnk_up" gui_info="dashboard_1/hw_vio_1=0"/>
+    <Object name="xdma_pcie_i/xdma_0_axi_aresetn" gui_info="dashboard_1/hw_vio_1=1,dashboard_2/hw_vio_1=1"/>
+    <Object name="xdma_pcie_i/xdma_0_user_lnk_up" gui_info="dashboard_1/hw_vio_1=0,dashboard_2/hw_vio_1=0"/>
   </ObjectList>
   <probeset name="hw project" active="false">
     <probe type="ila" busType="net" source="netlist" spec="ILA_V2_RT">

@@ -1,0 +1,38 @@
+Windows PowerShell
+版权所有（C） Microsoft Corporation。保留所有权利。
+
+安装最新的 PowerShell，了解新功能和改进！https://aka.ms/PSWindows
+
+PS C:\WINDOWS\system32> cd E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002
+PS E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002> python .\dma64_probe.py --run-64
+{"time": 1791086156.8820038, "device": "\\\\?\\PCI#VEN_10EE&DEV_8028&SUBSYS_000710EE&REV_00#6&1fae92ce&0&00400011#{74c7e4a9-6d5d-4a70-bc0d-20691dff9e9d}", "address": "0x10000", "length": 64}
+{"time": 1791086156.8820038, "preflight_offset": "0x0", "bytes": 4, "value": "0x1fc00006"}
+{"time": 1791086156.8820038, "preflight_offset": "0x1000", "bytes": 4, "value": "0x1fc10006"}
+{"time": 1791086156.8820038, "direction": "h2c_0", "address": "0x10000", "bytes": 64}
+{"time": 1791086156.8820038, "preflight_offset": "0x0", "bytes": 4, "value": "0x1fc00006"}
+{"time": 1791086156.8820038, "preflight_offset": "0x1000", "bytes": 4, "value": "0x1fc10006"}
+{"time": 1791086156.8820038, "direction": "c2h_0", "address": "0x10000", "bytes": 64}
+{"time": 1791086156.8833556, "result": "PASS", "compared_bytes": 64}
+PS E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002> python .\dma_repeat_probe.py --run-stage 64
+OUTPUT=E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002\dma_repeat_64_20261004_115606_71e04d5a
+PASS size=64 rounds=10/100
+PASS size=64 rounds=20/100
+PASS size=64 rounds=30/100
+PASS size=64 rounds=40/100
+PASS size=64 rounds=50/100
+PASS size=64 rounds=60/100
+PASS size=64 rounds=70/100
+PASS size=64 rounds=80/100
+PASS size=64 rounds=90/100
+PASS size=64 rounds=100/100
+{"size": 64, "address": "0x10000", "requested_rounds": 100, "result": "PASS", "completed_rounds": 100, "compared_bytes": 6400, "elapsed_s": 1.1245844999998553}
+PS E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002> python .\dma_repeat_probe.py --run-stage 4096 --prior "上一步OUTPUT后面的完整目录"
+Traceback (most recent call last):
+  File "E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002\dma_repeat_probe.py", line 143, in <module>
+    run(args.run_stage, args.prior)
+  File "E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002\dma_repeat_probe.py", line 40, in run
+    validate_prior(prior)
+  File "E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002\dma_repeat_probe.py", line 29, in validate_prior
+    raise ValueError('Expected a 64-byte stage result in the working directory')
+ValueError: Expected a 64-byte stage result in the working directory
+PS E:\Documents\ChatGPT\project_PCIE\recovery_review_20261002>
