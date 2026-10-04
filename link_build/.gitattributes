@@ -1,0 +1,3 @@
+# Preserve generated release artifacts byte-for-byte across Git checkouts.
+xdma_pcie_wrapper.bit binary
+xdma_pcie_wrapper.ltx binary

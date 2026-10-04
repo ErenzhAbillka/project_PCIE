@@ -1,7 +1,17 @@
-PASS: Original and validation BD component parameters, net endpoints, addressing and top ports match.
-e498f1fb6c577c4b511cf91bc105fbd3e3876ce5e6dbb9cf0f16939dcc7721d8  project_PCIE.srcs/sources_1/new/wr_addr.v
-55c9fe0173de544147408990808d5c4434a06623400afd4aed255b40c7cff5c7  project_PCIE.srcs/sources_1/new/AXI_data_out_0.v
-62b1b9e1938e8cd9f24fbb0a2d46d01c30eb16960df06bab65415322b6475d68  project_PCIE.srcs/constrs_1/new/project_pcie_pins.xdc
-01f85915a306adbfbe97e3c10989df9c457aff78a62d3fdbc04c8e95602e11b2  xdma_pcie_wrapper.bit
-7effbe4deaa4c22702f598d2dc67dea2284404e7dc9c75f57a5d1df0fd0c45b7  xdma_pcie_wrapper.ltx
-1f9acac29eb9d03ab761d434ccd7950a856160c95aedd2239794b76621a6c47d  routed.dcp
+CURRENT RELEASE: KU060-XDMA-DIAG-20261002-DMA-PASS-20261004
+Build timestamp in BIT header: 2026/10/02 17:52:53, Vivado 2018.3
+DMA validated: 2026-10-04; details: RELEASE_20261004_DMA_VALIDATED.txt
+
+Current files in this directory:
+1372b2fd44dff725e0d75d7024b70a373192d1bb6beaba9e4a8d65d8050ab815  xdma_pcie_wrapper.bit
+9d51856b8f50fdb7af3a786eafc02e11702b250a9a2e4ba5375282b840aa3765  xdma_pcie_wrapper.ltx
+
+Source files were copied byte-for-byte from:
+E:/Documents/ChatGPT/project_PCIE/fpga_diag_20261002/xdma_pcie_wrapper_diag.bit
+E:/Documents/ChatGPT/project_PCIE/fpga_diag_20261002/xdma_pcie_wrapper_diag.ltx
+
+Historical files retained; NOT the source/checkpoint/report set for this current release:
+project_PCIE.xpr, original RTL/BD, link_build/synth.dcp, link_build/routed.dcp, link_build/*.rpt.
+Their prior manifest is preserved in Git parent 7077609e29382977dd02860b934d6920502a4eb5.
+Running scripts/build_link.tcl can overwrite the current release filenames with a different build.
+Use the above hashes to identify the validated input for later Flash-image generation.

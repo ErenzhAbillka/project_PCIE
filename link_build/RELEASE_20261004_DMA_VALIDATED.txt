@@ -1,0 +1,67 @@
+当前BIT版本：KU060-XDMA-DIAG-20261002-DMA-PASS-20261004
+归档日期：2026-10-04
+
+后续固化选用的输入文件
+  link_build/xdma_pcie_wrapper.bit
+配套调试探针
+  link_build/xdma_pcie_wrapper.ltx
+二者必须作为同一版本使用。下列SHA256是识别本次版本的依据，不能仅凭8028设备ID判断bit身份。
+
+这是哪一次生成的bit
+源文件：E:/Documents/ChatGPT/project_PCIE/fpga_diag_20261002/xdma_pcie_wrapper_diag.bit
+源LTX：E:/Documents/ChatGPT/project_PCIE/fpga_diag_20261002/xdma_pcie_wrapper_diag.ltx
+BIT内部头：xdma_pcie_wrapper;UserID=0XFFFFFFFF;Version=2018.3
+BIT内部生成时间：2026/10/02 17:52:53
+器件：xcku060-ffva1156-2-i
+这是10月2日生成、10月4日恢复到板上并通过DMA验证的诊断版；本次只复制归档，没有重新构建。
+diag_dma_ila UUID：A86563A838CE5776A9E0B89B8EE2E823，61探针，2048样本。
+PCIe设备10EE:8028；Gen2×8配置，本次实测Gen2×4；AXI-MM 256位/125MHz。
+BAR0：32KiB用户BRAM；BAR1：64KiB XDMA控制。不能换回缺用户BAR的旧bit配合当前驱动运行。
+
+SHA256
+BIT 1372b2fd44dff725e0d75d7024b70a373192d1bb6beaba9e4a8d65d8050ab815
+LTX 9d51856b8f50fdb7af3a786eafc02e11702b250a9a2e4ba5375282b840aa3765
+BIT字节数24125030；LTX字节数375691。
+同目录.gitattributes将bit/ltx作为二进制产物保存，避免Git自动换行或文本合并改变已验证文件字节。
+匹配的诊断routed.dcp保留在E:/Documents/ChatGPT/project_PCIE/fpga_diag_20261002/routed.dcp，
+SHA256：0ea8fd55854e90c4d30ac664c4f4484180fd6601366944fde99ddcb30b124048。
+
+验证记录
+2026-10-04 11:13：64B单次H2C/C2H，64/64字节一致。
+2026-10-04 11:34：64B×100，100/100 PASS。
+2026-10-04 11:35：4096B×100，100/100 PASS。
+两组200对文件独立核对416000字节全部一致，400次单向DMA完整完成，无超时、取消、短读或数据错误。
+地址均为DDR 0x10000；测试区域最大0x10000–0x10FFF。
+11:33:42–11:38:42五分钟观察未捕获设定的降速/宽度变化/LTSSM离开L0/掉链/复位事件，末态Gen2×4。
+2026-10-04 11:55/11:56，用户再次执行64B单次和64B×100，均通过，文件独立核对一致。
+用户随后4KiB命令因--prior仍为中文占位符，在前置路径校验处退出，未提交DMA；这不是DMA传输失败。
+当前4KiB通过依据为11:35的100次实测。
+摘要及每轮接收数据SHA256见同目录dma_validation_20261004.json。
+完整原始证据保留于E:/Documents/ChatGPT/project_PCIE/recovery_review_20261002/各测试目录；
+报告：E:/Documents/ChatGPT/project_PCIE/link_review_20261004/DMA两组100次验证结果_20261004.txt。
+
+驱动基线
+XDMA.sys 16.57.30.830 / oem3.inf
+SHA256：5cdbaf12776444e45ad3cb837e42b4d2487c3bffd9acac9bb08515ae980f8396。
+本次归档未更换驱动、下载FPGA、写Flash或改BIOS。
+
+构建来源与目录边界
+诊断版复用工作副本fpga_compat_20261001/link_build/synth.dcp，增加输入型ILA后实现，
+构建脚本保留在E:/Documents/ChatGPT/project_PCIE/recovery_review_20261002/build_dma_observer.tcl。
+本Git工程的原RTL/BD、project_PCIE.xpr、link_build/synth.dcp、routed.dcp及原.rpt报告仍是历史版本，
+本次没有将它们替换或声称它们可直接重建本次诊断bit。
+scripts/build_link.tcl会覆盖link_build里的同名bit/ltx；运行旧构建后不得将输出当作本次验证版本。
+固化前按上述SHA256核对输入；将来若从bit生成MCS/BIN，需另按实际Flash型号、接口和启动配置生成并验证。
+本次交付只确定固化输入bit，尚未进行Flash写入或冷启动验证。
+
+追溯
+替换前Git父提交：7077609e29382977dd02860b934d6920502a4eb5（develop）。
+旧BIT SHA256：01f85915a306adbfbe97e3c10989df9c457aff78a62d3fdbc04c8e95602e11b2。
+旧LTX SHA256：7effbe4deaa4c22702f598d2dc67dea2284404e7dc9c75f57a5d1df0fd0c45b7。
+旧文件可由父提交追溯，另备份于工作目录link_review_20261004/release_stage_20261004/previous/。
+它们是历史产物，不是本次推荐的固化输入。
+
+已知边界
+用户已决定不继续追查历史降速，本记录不宣称其根因已修复；×4不与降速混为一谈。
+本次验证覆盖64B/4KiB串行DMA和五分钟观察，未覆盖大块吞吐、所有DDR地址或长期运行。
+诊断版保留195条CDC Critical；现有core/user时钟不同也限制部分错误指示的可靠性。
