@@ -61,7 +61,7 @@ set adc_diagnostic_sync [get_pins -hier -regexp {.*(ramp_checker_inst/enable_syn
 set_false_path -to $adc_diagnostic_sync
 # Held snapshot bundle is stable through the synchronized acknowledgement.
 # Earliest destination capture is >=15 ns after source hold; budget 10 ns.
-set adc_snapshot_source [get_pins -hier -regexp {.*test_snapshot_inst/snapshot_data_reg\[[0-9]+\]/Q}]
+set adc_snapshot_source [get_pins -hier -regexp {.*test_snapshot_inst/snapshot_data_reg\[[0-9]+\]/C}]
 set adc_snapshot_target [get_pins -hier -regexp {.*test_snapshot_inst/(error_reg|error_count_reg\[[0-9]+\]|checked_count_reg\[[0-9]+\])/D}]
 set_max_delay -datapath_only 10.000 -from $adc_snapshot_source -to $adc_snapshot_target
 # Async assertion / synchronous release chains; keep local lane reset recovery timed.

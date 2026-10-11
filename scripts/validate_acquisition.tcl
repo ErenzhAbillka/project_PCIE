@@ -25,7 +25,7 @@ foreach reference {adc_capture_monitor adc_ramp_checker adc_test_snapshot acquis
 foreach {pattern expected} {
     {.*capture_monitor_inst/(heartbeat_sync_reg|sample_valid_sync_reg)\[0\]/D} 2
     {.*(ramp_checker_inst/enable_sync_reg|test_snapshot_inst/request_sync_reg|test_snapshot_inst/ack_sync_reg)\[0\]/D} 3
-    {.*test_snapshot_inst/snapshot_data_reg\[[0-9]+\]/Q} 65
+    {.*test_snapshot_inst/snapshot_data_reg\[[0-9]+\]/C} 65
     {.*test_snapshot_inst/(error_reg|error_count_reg\[[0-9]+\]|checked_count_reg\[[0-9]+\])/D} 65
     {.*(tx_adc_valid_sync_reg|tx_arm_sync_reg|tx_kill_sync_reg|tx_ready_ctrl_sync_reg|tx_started_ctrl_sync_reg|tx_done_ctrl_sync_reg)\[0\]/D} 6
 } {

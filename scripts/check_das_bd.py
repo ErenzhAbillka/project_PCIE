@@ -113,7 +113,7 @@ diagnostic_constraint = (
     'set_false_path -to $adc_diagnostic_sync\n'
     '# Held snapshot bundle is stable through the synchronized acknowledgement.\n'
     '# Earliest destination capture is >=15 ns after source hold; budget 10 ns.\n'
-    'set adc_snapshot_source [get_pins -hier -regexp {.*test_snapshot_inst/snapshot_data_reg\\[[0-9]+\\]/Q}]\n'
+    'set adc_snapshot_source [get_pins -hier -regexp {.*test_snapshot_inst/snapshot_data_reg\\[[0-9]+\\]/C}]\n'
     'set adc_snapshot_target [get_pins -hier -regexp {.*test_snapshot_inst/(error_reg|error_count_reg\\[[0-9]+\\]|checked_count_reg\\[[0-9]+\\])/D}]\n'
     'set_max_delay -datapath_only 10.000 -from $adc_snapshot_source -to $adc_snapshot_target\n'
 )
