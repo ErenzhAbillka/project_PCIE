@@ -1,5 +1,9 @@
-ADC_RAW_TX 是合并后主工程的新构建输出目录。
-运行 scripts/build_das.tcl 后，综合检查点、布线检查点、时序/CDC/DRC/I/O 报告和新 bit/LTX 写入此处。
-目录存在不表示本版已完成构建。本次合并不以完整实现为 push 门槛，也不声明已有新 bit。
-PCIEv2_0 中的旧 bit/LTX 属于历史 DAS 设计，继续原地保留，不能用于验证当前 ADC/RAW/TX 源码。
-构建与源码打包说明：../../project_PCIE.doc/ADC_RAW_TX/构建与交付说明.txt。
+ADC_RAW_TX 本轮完整构建输出（2026-10-11）
+
+已成功生成 xdma_pcie_wrapper.bit 和同次 xdma_pcie_wrapper.ltx。
+对应功能源码提交：19405f40bbd7a371a321711392d9771d7b9a45c9。
+最终WNS +0.083ns、WHS +0.004ns；DRC无Error/Critical Warning。
+首次上板步骤和SHA256：../../project_PCIE.doc/ADC_RAW_TX/20261011_完整构建记录.txt。
+完整日志、时序/CDC/DRC/I/O报告和综合/布线检查点保存在本目录。
+CDC报告不是零告警，ADC/DAC板级预算尚未实测；先TX关闭做ADC ramp/RAW检查。
+旧PCIEv2_0产物属于历史版本，不支持本轮新增VIO/RAW/TX功能。

@@ -1,0 +1,51 @@
+ADC_RAW_TX 完整构建记录（2026-10-11）
+
+器件：xcku060-ffva1156-2-i；Vivado 2018.3。
+对应功能源码提交：19405f40bbd7a371a321711392d9771d7b9a45c9。
+构建命令：vivado -mode batch -source scripts/build_das.tcl。
+从合并提交 b1f8e8e 的隔离副本构建，并修正快照 max-delay 起点 Q→C；
+该修复及两个检查脚本同步更新已包含在 19405f4。
+修复后重新完整综合、实现，没有复用带旧路径分段的检查点。
+
+本轮产物（第一工程 link_bulid/ADC_RAW_TX）：
+  xdma_pcie_wrapper.bit：9,724,644 字节
+  SHA256 87158C2DC74CDD1E5E529B61C875A0A2C28843AEAEAD468793938402B872E412
+  xdma_pcie_wrapper.ltx：258,572 字节
+  SHA256 9F47FA5E2B3AAF40D7351321EC5AF5B83712AF5C67A1326339EFFE97B6F39372
+两者必须配套下载；旧 PCIEv2_0 bit/LTX 不支持本次 VIO/RAW/TX。
+
+实现结果：
+  最终 WNS +0.083 ns、WHS +0.004 ns、WPWS 0.000 ns，失败端点均为0。
+  Bus skew 20条路径全部MET，最低余量+3.769 ns。
+  DRC 0 Error、0 Critical Warning、8项普通Warning。
+  118563条可布线网络全部完成，routing errors=0。
+  224个顶层物理管脚核验通过。
+  ADC输入setup/hold约+0.892/+0.931 ns；DAC数据约+0.083/+0.057 ns。
+  数据时钟与DAC DCI同源125MHz，DCI相位延后2ns。
+  日志标记 ADC_RAW_TX_BITSTREAM_BUILD_PASS。
+
+CDC报告并非零告警。新增快照采用65位保持数据+request/ack握手，
+源C→目标D使用10ns datapath约束；单bit同步、初始化和sticky-fault控制已复核。
+补充报告确认65个不同目标全部含C→Q时序弧，Requirement均为10ns，
+最差快照路径余量+8.685ns；POST_ROUTE_REPORTS_PASS。
+慢SPI读回依赖协议稳定窗口；板级偏斜预算、ADC/DAC模拟性能尚未实板验证。
+check_timing的缺output-delay输出为原MIG DDR reset，并非新DAC数据。
+完整日志、CDC/DRC/时序/管脚报告及检查点随本地产物保留。
+
+首次上板（先关闭TX）：
+1. Vivado Hardware Manager 下载本轮bit并选择同目录LTX。
+2. 系统复位，vio_readback：out0/out1/out7/out8=0；out3=1（RAW），
+   out4=1（ADC ramp），out5=0x20261011（本次未用epoch），out6=0x52414D50。
+3. 等待in0=1（DDR）、in2=1（ADC init）、in11=1（ramp），
+   in13未饱和时增长，in4/in12/in14=0。
+4. out1置1；检查in24/in15/in20=1、in19=0；等待in8从0变1。
+5. 确认in1/in4/in10/in12/in14/in17/in19全0；记录DMA前in8=1。
+   用已可用的XDMA AXI Memory-Mapped C2H工具，从卡地址0x00100000
+   读取65536字节为raw.bin；全程不复位、不换bit，DMA后in8仍=1且错误全0。
+6. 在第一工程根目录执行：
+   python scripts/decode_raw.py raw.bin --completed 1 --completed-after 1 --expected-epoch 0x20261011 --expected-config-id 0x52414D50 --ramp --output raw_decoded
+   退出码0，summary.json的publication_verified=true、ramp_check_pass=true，
+   A/B bad_edges=0才通过本项数字链路检查。
+7. 通过后再做正常模拟输入RAW、最后DAC电测。再次抓取须系统复位并更换epoch。
+
+完整VIO定义及后续步骤见HOST_CAPTURE_GUIDE.txt。

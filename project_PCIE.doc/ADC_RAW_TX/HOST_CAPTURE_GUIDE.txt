@@ -1,7 +1,7 @@
 RAW1 离线抓取与验证 (2026-10-10)
 
 本工具不打开PCIe设备、不配置ADC/DAC、不读写虚构CSR。
-需要后续在有许可环境完成综合/实现、通过新时序与引脚检查并下载新bit/LTX。
+2026-10-11 已在本机完成综合/实现并生成新bit/LTX；本轮记录和首次上板步骤见20261011_完整构建记录.txt。
 旧10月4日bit不支持本轮RAW1/ADC诊断/TX接口，不能混用新的VIO说明。
 格式准确word表：project_PCIE.doc/ADC_RAW_TX/RAW1_FORMAT.txt。
 
