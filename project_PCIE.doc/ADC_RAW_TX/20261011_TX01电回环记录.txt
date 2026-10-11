@@ -1,0 +1,146 @@
+2026-10-11 TX01 单次电回环测试记录
+记录状态：实际数据及波形已人工复核，基本电回环功能通过；未完成校准模拟性能验收。
+
+一、结论与适用范围
+
+本次使用既有正式固件，在用户确认的 OUT1→IN1 直接射频线连接下，完成一次
+TX01 发射、正常 ADC 采集、DDR 单帧发布及首次实际 65536 字节 C2H 读取。
+RAW1 发布与格式检查通过，解码 A 通道观察到与既有 5..15MHz/20us TX01 模板
+高度一致的单次扫频脉冲，支持本连接下 DAC→模拟回环→ADC→DDR→PCIe 的
+基本功能通过。该判断属于人工审核的基本功能观察，不是自动或校准模拟验收。
+
+本轮没有更改 RTL、DAC/ADC 时序、采样相位、IDELAY、ROM 幅度或 TX01 参数，
+没有生成或下载新 bit；使用此前已下载、重启恢复后保持运行的正式镜像。
+没有删除重复样本、降采样、拼接采集窗口或按观测数据修补波形；capture_stride=1。
+
+既有默认 PN9 严格验收仍有效。当前正常模拟扫频可正确接收，并不回溯证明
+AD9643 内部 ramp 0x0F 重复根因已经解决，也不表示所有时序问题已彻底排除。
+内部 ramp 重复的根因继续作为未结项保留。
+
+二、固件、接线与幅度条件
+
+源码基线：d1b87414a31fc80bddff4435e20c44b3a50e34f8
+提交主题：Use strict AD9643 PN9 validation and expose ADC SPI readback
+镜像位置：E:/FPGA_Doc/project_PCIE/link_bulid/ADC_RAW_TX/xdma_pcie_wrapper.bit
+配套探针：同目录 xdma_pcie_wrapper.ltx
+bit SHA256：51EC228971CAB810FD96A6192007980987F9F5F23E8D1F92F825490AD55A8FEB
+LTX SHA256：8169BD52C728E68A74FF5DC6361013B3237379BA746D6B7487EA069304D804BB
+
+用户确认接线为 OUT1→IN1，未使用示波器实测电压；不经过 AOM、EDFA 或光纤。
+本次沿用 TX01：单次 20us、5..15MHz 扫频，ROM signed16 峰值 30000，数字源
+每路标称 125MSPS，DAC 设计为四倍插值。实际时钟频率没有独立仪器测量。
+
+发波前已按两版子卡原理图及手册核对直接回环：AD9122 复位默认满量程电流
+约 20mA、1:1 变压器、50Ω 输入负载下，理想估算幅度约 0.61Vpp，低于手册
+2Vpp 输入限制。该值仅为电路估算，不能用来把本次 ADC 码值转换为校准电压。
+实际 DAC 满量程寄存器及 ADC 0x18 输入量程未在本轮直接读回。
+资料页码、源文件 hash、公式及限制保存在本地 amplitude_preflight.txt/json。
+
+三、采集及主机恢复过程
+
+1. 初始只读状态确认 ADC 正常模式，SPI bundle=0x0100000500000382；
+   TX=0、start=0、frames=0，DDR/ADC 初始化完成，既有全部故障门限为 0。
+2. 设置新 epoch=B85B4490、config_id=54583031（TX01），保持正常 ADC test_mode=0。
+   按既有单次协议发射一次 TX01 并完成一帧采集。JTAG 记录获得
+   TX01_SINGLE_SHOT_DDR_PASS_NO_DMA，确认最终 DDR 写响应完成及单帧发布。
+3. 首次主机调用在 Control BAR 预检偏移 0x0 读到 FFFFFFFF，立即拒绝继续；
+   events.jsonl 中没有 c2h_0 数据请求。该失败不是一次已提交的 DMA 失败，
+   不计作一次实际 RAW 数据读取。
+4. 在没有在途 DMA 的条件下，正常禁用并重新启用同一 XDMA 设备。
+   ProblemCode 从 0→22→0，原驱动 hash 保持不变。恢复前、恢复后的 JTAG
+   postcheck 均核对同一 epoch/config、单帧发布状态及全部故障位，均通过。
+   未重新发波、重新采集或下载镜像；已发布的同一帧被保留。
+5. 恢复后 Control BAR 预检读得偏移 0x0=1FC00006、0x1000=1FC10006，
+   标识检查通过。随后才首次实际提交一次 c2h_0：DDR 地址 0x100000，
+   长度 65536 字节，结果 RAW_C2H_READ_PASS，实际收到 65536 字节。
+   本轮没有 H2C 写入或自动重复读取。
+6. DMA 后 JTAG postcheck 再次通过，仍为同一 epoch/config、单次完成计数 1，
+   ADC 正常模式、TX 初始化/完成状态符合协议，全部故障位为 0。
+   主机读取前后核对包围同一次发布；XOR32 校验不能检测所有可能的数据破坏。
+
+XDMA 设备：PCI VEN_10EE / DEV_8028 / SUBSYS_000710EE / REV_00。
+驱动 SHA256：5CDBAF12776444E45AD3CB837E42B4D2487C3BFFD9ACAC9BB08515AE980F8396
+本次正常禁用/启用可恢复 Control BAR，不代表所有 JTAG 热枚举场景均可恢复；
+此前需正常重启 Windows 的情况仍按原正式交付记录保留。
+
+四、RAW1 发布与完整性结果
+
+epoch=B85B4490；config_id=54583031；slot=0；frame_seq=0；trace_id=0。
+单帧有效样本为 16320 对 A/B 实数样本，各 14bit，capture_stride=1。
+test_mode=0，error_flags=0，config_flags=6；completed_before=1、completed_after=1。
+RAW1 解码 accepted_frames=1，rejected_slots=[]，publication_verified=true。
+元数据 sample_rate_hz=125000000、trace_period_samples=31250 是设计参数，
+不能替代仪器对实际采样时钟频率的测量。
+raw.bin SHA256：BAEC04532F00594C6325BCE63553C3D0BC37B2564A6652D66381AD7A1683C7B4
+
+五、波形离线观察
+
+以下时间、频率均按标称 125MSPS 换算，幅度单位为 signed14 ADC 码值。
+分析保留全部原始样本，使用与正式 ROM 一致的离线模板，没有以样本删除、
+抽取、重采样或错误后重锁来提高匹配结果。
+
+A 通道：
+  全帧范围 -2177..2332，峰峰值 4509 码；rail 样本为 0，距 rail 2% 内样本为 0。
+  与 2500 样本 TX01 ROM 模板的峰值归一化相关为 0.9975519642。
+  峰值 lag=91 样本，按标称时钟为 0.728us；这是相对采集起点和离线模板的
+  对齐量，包含数字管线及模拟链影响，不能当作已校准绝对硬件延迟或距离。
+  采用 Hann 256 样本 STFT、64 样本步长，主正频率脊线拟合起止约
+  4.956MHz→15.026MHz，R²=0.99719，名义频率分辨率约 0.488MHz。
+  结果支持本次约 5..15MHz 上扫频基本功能；不构成精密频率校准或频谱指标。
+  64 样本平滑解析包络、门外中位基线以上 25% 阈值给出区间 [73,2607)，
+  宽度 2534 样本，即名义 20.272us。平滑、阈值及前后沿响应会影响该宽度，
+  它与设定 20us 相符的程度仅用于基本功能观察，不是精确脉宽测量。
+  匹配窗内 RMS≈1525.52 码、窗外 RMS≈10.08 码，差值指标约 43.60dB；
+  这是本次窗口 RMS 对比，不能称作校准 SNR。
+
+独立相邻重复复核：
+  A 匹配区 [91,2591) 共 2500 样本，2499 个相邻差全部非 0；偶/奇位置重复
+  率均为 0%，该次单脉冲区未见历史 ramp 的固定约 50% 保持痕迹。
+  A 门外低幅背景重复率约 14.94%，偶/奇约 14.59%/15.30%。背景量化可出现
+  合法同码，不能把逐个相邻码必须不同或上述百分比设为门外 PASS 硬门槛。
+  这些统计只描述本次正常模拟波形，不证明内部 ramp 0x0F 重复根因已修复。
+
+B 通道：
+  全帧范围 2..16，峰峰值 14 码，AC RMS≈2.04 码，未见明显同等扫频激励。
+  与模板相关约 0.236，分析器给出弱相关及包络宽度不符的筛查标志。
+  本次 B 仅作为弱背景观察，不据此判断 B 模拟链、双通道隔离或单路性能通过，
+  也不把 A/B 当作一组已验证的 IQ 输入。物理身份仍需独立接线和激励试验确认。
+
+六、未覆盖项目与保留问题
+
+未完成电压/阻抗/增益标定、SNR、THD/SFDR、模拟带宽、采样眼图裕量、PVT、
+长期稳定性、多次重复发射、持续 DMA、绝对相位/延迟或真实采样时钟频率验证。
+ADC 无 rail 样本不能排除 DAC、前端放大器或非 rail 形式的削顶。
+本次仅一次已捕获脉冲，不能验证重复周期或整套 DAS 算法与光学距离精度。
+本次没有 AOM/EDFA/光学链路或 200MHz 输出验收，既有 5..15MHz TX01 参数未改。
+AD9643 内部 ramp 0x0F 重复根因仍未结；默认严格 PN9 验收与本次回环各自有效。
+
+七、本地证据位置
+
+本地根目录：E:/Documents/ChatGPT/project_PCIE/loopback_20261011/
+  amplitude_preflight.txt、amplitude_preflight.json、amplitude_preflight_evidence/
+  tx01_capture.log、tx01_capture.jou、epoch_B85B4490.txt
+  raw_c2h_20261011_165407_4ecdd05f/result.json、events.jsonl（预检 FF，未提交 DMA）
+  host_disable.json、host_enable.json、host_admin_disable.log、host_admin_enable.log
+  tx01_postcheck_before_recovery.log、tx01_postcheck_after_recovery.log
+  raw_c2h_20261011_165642_f3441f81/raw.bin、result.json、events.jsonl（首次实际读取）
+  tx01_postcheck_after_dma.log
+  decoded_B85B4490/summary.json、samples.csv
+  analysis_B85B4490/loopback.json、loopback.png
+  offline_review.json（独立离线复核与相邻重复统计）
+  hardware_acceptance.json、host_recovery_note.txt
+
+同一证据集在主工程本地另存于 link_bulid/ADC_RAW_TX/loopback_20261011/，
+按既有规则不将全套生成数据入 Git。Git 中保存本记录及同目录
+20261011_TX01电回环波形.png，供远程查看实际波形。
+
+analysis_B85B4490/loopback.json SHA256：
+3624A7DE83E246A097FC0D203B1B8155A5D4D06CB40F74A181C3F02DBF30CCA0
+analysis_B85B4490/loopback.png SHA256：
+7EC5FBCD5E5146B609CF8BE0C50976DA88BE8B6C7EADB93D553FE16EFD3F9680
+
+本地原始日志、RAW 数据及图供审阅追溯，不因记录入 Git 而声称大产物已上传。
+
+本轮结束时单次 TX 已完成，保持当前接线不会自动重复发波，无需激光源。
+接入光学模块前仍需核对 AOM 驱动器电控接口及要求的电平/功率；当前 TX01
+只输出上述 5..15MHz 测试扫频，尚未配置或验证 200MHz AOM 驱动。
