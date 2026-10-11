@@ -64,6 +64,7 @@ module xdma_pcie_top_layer_0_0 (
   adc_test_checked_count,
   adc_test_error_count,
   adc_test_config_locked,
+  adc_spi_readback,
   tx_enable,
   tx_abort,
   tx_init_done,
@@ -113,6 +114,7 @@ output wire adc_test_error;
 output wire [31 : 0] adc_test_checked_count;
 output wire [31 : 0] adc_test_error_count;
 output wire adc_test_config_locked;
+output wire [63 : 0] adc_spi_readback;
 input wire tx_enable;
 input wire tx_abort;
 output wire tx_init_done;
@@ -166,7 +168,7 @@ output wire adc_sync;
     .TRACE_PERIOD(31250),
     .TRACE_POINTS(16320),
     .AOM_WIDTH(12),
-    .TX_SINE_MEM("sine_4096.mem")
+    .TX_SINE_MEM("E:/FPGA_Doc/project_PCIE/project_PCIE.srcs/sources_1/new/tgd_tx/sine_4096.mem")
   ) inst (
     .ctrl_clk(ctrl_clk),
     .rst_n(rst_n),
@@ -177,6 +179,7 @@ output wire adc_sync;
     .adc_test_checked_count(adc_test_checked_count),
     .adc_test_error_count(adc_test_error_count),
     .adc_test_config_locked(adc_test_config_locked),
+    .adc_spi_readback(adc_spi_readback),
     .tx_enable(tx_enable),
     .tx_abort(tx_abort),
     .tx_init_done(tx_init_done),

@@ -1,7 +1,7 @@
 KU060 ADC／RAW／DAC 扫频开发说明
-更新日期：2026-10-10
+更新日期：2026-10-11
 
-本轮修改直接进入 project_PCIE.xpr 主工程，活动 top 是 xdma_pcie_wrapper。
+本轮源码用于 project_PCIE.xpr 主工程，活动 top 是 xdma_pcie_wrapper。
 old_prj_src/top_layer.v 和 adc_driver.v 虽然目录名含 old，仍是当前综合源。
 本说明描述合并后的新源码，当前验证范围见文末与同目录合并验证记录。
 历史 link_bulid/PCIEv2_0 中的 bit/LTX 不包含本轮功能，不能配合新的 VIO 映射使用。
@@ -9,9 +9,9 @@ old_prj_src/top_layer.v 和 adc_driver.v 虽然目录名含 old，仍是当前�
 一、已经修改的内容
 
 1. ADC 接收可独立验证
-   在原 AD9643 接收链上增加持续 ramp 模式、双通道递减码校验、sticky 错误和
+   在原 AD9643 接收链上增加持续 PN9 模式、双通道逐拍序列校验、sticky 错误和
    饱和计数。65 位计数／错误快照通过 request/ack 跨时钟域，不直接双拍多位计数。
-   上电原有 3 秒 ramp 现在也接受检查；正式开始采集前可以切换正常／ramp 模式。
+   上电原有 3 秒 PN9 现在也接受检查；正式开始采集前可以切换正常／PN9 模式。
    首次 start 后配置锁定到系统复位，避免运行中 SPI 重配破坏数据连续性。
    保留独立控制时钟域的 DCO／valid 连续性监控；失效后恢复时钟不会自动消除故障。
 
@@ -39,7 +39,7 @@ old_prj_src/top_layer.v 和 adc_driver.v 虽然目录名含 old，仍是当前�
 4. 主工程、约束和主机工具已同步
    BD 接入 ADC 诊断、RAW 路由、DAC 状态／引脚及扩展 VIO；原 XDMA／DDR 后端沿用。
    新增 ADC 快照 CDC 与 DAC DDR 输出约束，未通过整组异步时钟 false_path 掩盖问题。
-   scripts/decode_raw.py 检查帧、epoch、前后完成计数、配置和 ramp，并导出双通道 CSV。
+   scripts/decode_raw.py 检查帧、epoch、前后完成计数、配置和 PN9，并导出双通道 CSV。
    TX01 离线匹配使用与 FPGA 相同的定点相位、实际 LUT 和 SHA256，输出相关峰和相位。
    build_das.tcl 会按当前工程位置刷新 ROM 路径，输出改为 link_bulid/ADC_RAW_TX，
    保留历史 link_bulid/PCIEv2_0。合并前文件与提交可从 Git 历史和 archive/backups 追溯。
@@ -55,8 +55,8 @@ old_prj_src/top_layer.v 和 adc_driver.v 虽然目录名含 old，仍是当前�
 原 40→60 MHz 研究示例没有用作本次 AD9122 4 倍插值的生产默认参数。
 
 FPGA 产生数字 I/Q，由 DAC 变成模拟信号，再经实际射频／光学链路驱动 AOM。
-当前尚不知道你的 AOM 型号、中心频率、可扫带宽、驱动器和光纤长度，因此不能把
-TX01 当成已匹配 AOM 的光学工作频段。独立 AOM gate 外部引脚也尚未指定。
+现已知实物报告中的 AOM 频移为200MHz；型号、可扫带宽、控制接口、驱动器和光纤长度
+仍待确认，因此不能把 TX01 当成已匹配 AOM 的光学工作频段。独立 AOM gate 外部引脚也尚未指定。
 先做 DAC 电测与 ADC 回采；得到器件参数后再确定最终 RF 频段、带宽、门宽和周期。
 
 共同 run 接受到第一个物理 I 数据边沿有 2 个 125 MHz 样本时钟，再到 DCI 边沿约
@@ -77,20 +77,20 @@ IO 和 route 报告，再使用同次生成的 bit 与 LTX。源码修改后旧 
 若实物是 50 MHz 参考，须按实际硬件改 AD9516 配置，不能沿用本参数直接判断 ADC 坏。
 XPR 保留 xcku060-ffva1156-2-i；用户描述的 I/E 与“商业版”需按芯片丝印确认。
 
-第二步：保持 TX 关闭，完成 ADC ramp 和 RAW→DDR→PCIe 验证。
+第二步：保持 TX 关闭，完成 ADC PN9 和 RAW→DDR→PCIe 验证。
 第三步：RAW 正常模式输入已知电平／正弦，确认 A/B 身份、极性、幅度及频谱。
 第四步：RAW 正常模式启用 TX01，测 DAC 频谱／包络并回采，标定时延后再接入光路。
 完整逐步操作、VIO 输入输出编号和 decode 命令见 HOST_CAPTURE_GUIDE.txt。
 
 常用模式（vio_readback 输出）：
-  模式             out3 RAW    out4 ADC ramp    out7 TX
+  模式             out3 RAW    out4 ADC PN9    out7 TX
   原 DAS               0             0              0
   ADC 数字验收          1             1              0
   ADC 模拟验收          1             0              0
   TX01 电测             1             0              1
 out0 是原 writer 诊断读触发，采集时保持 0；out1 才是 start。
 out5 是每次采集的新 epoch；out6 是用户配置 ID（TX01 启用后自动用固定 ID）。
-out8 是锁存式 tx_abort，默认 0。非法 DAS+ramp 或 TX+ramp／DAS 组合会拒绝启动。
+out8 是锁存式 tx_abort，默认 0。非法 DAS+PN9 或 TX+PN9／DAS 组合会拒绝启动。
 触发 start 前先确认 in0 DDR 校准完成=1，并完成所选 ADC 模式的初始化与稳定检查。
 首次 start 立即锁定路由配置，in24=1；等待 DAC 时 in15 可能仍为 0，不能因此改配置。
 重新采集需要系统复位并更换 epoch，禁止用旧 DDR 内容冒充本次数据。
@@ -98,12 +98,12 @@ out8 是锁存式 tx_abort，默认 0。非法 DAS+ramp 或 TX+ramp／DAS 组合
 单次 RAW 验收必须同时满足：
   in1 writer_error、in4 ADC continuity/overflow、in10 framing_error、
   in17 RAW error、in19 configuration_error 均为 0；TX 模式还须 in22=0。
-  ramp 模式 in12/in14 为 0，in13 在尚未饱和时持续增长。
+  PN9 模式 in12/in14 为 0，in13 在尚未饱和时持续增长。
   in8 DDR frames-done=1，DMA 读取前后保持 1；读取期间不得复位或换 bit。
   从卡地址 0x00100000 读 65536 字节，decode 的 epoch／config 与本次设置一致。
   in16 capture_complete 或 in18 frame_sent 单独变为 1，不能据此开始读取。
-ramp 计数包含上电检查历史，约满速 34.36 秒后饱和；时钟停掉导致快照不再刷新
-不能算检查通过。同一 ramp 码型也不能单独证明 A/B 物理通道没有交换。
+PN9 计数包含上电检查历史，约满速 34.36 秒后饱和；时钟停掉导致快照不再刷新
+不能算检查通过。同一 PN9 码型也不能单独证明 A/B 物理通道没有交换。
 
 四、合并后的验证入口与边界（2026-10-11）
 
@@ -118,3 +118,6 @@ link_bulid/PCIEv2_0 下历史 bit/LTX 不包含本轮新功能，必须重新构
 ADC、DAC 模拟输出和整个光学链路尚未实测。
 DAC 输出约束的板级偏斜和裕量仍是设计预算，需实板校准。
 AD9516/AD9643 的 init_done 只说明配置等待流程结束，不能证明PLL或模拟链正常。
+
+实物AOM频移200MHz、脉宽10..1000ns等用户参数已记录在实物光学模块参数_20261011.txt。
+当前TX01电测频段/20us不能直接作为该光学模块配置；ADC PN9调试记录见20261011_ADC_PN9调试记录.txt。

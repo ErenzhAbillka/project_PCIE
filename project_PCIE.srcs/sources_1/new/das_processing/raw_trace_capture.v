@@ -58,7 +58,7 @@ module raw_trace_capture #(
                     if (!in_window) begin
                         in_window <= 1;
                         epoch <= epoch_cfg; config_id <= config_id_cfg;
-                        test_mode <= test_active ? 8'h0f : 8'h00;
+                        test_mode <= test_active ? 8'h06 : 8'h00;
                     end
                     payload_xor <= payload_xor ^ adc_data;
                     if (adc_user[1] != (point == TRACE_POINTS-1)) capture_error <= 1;

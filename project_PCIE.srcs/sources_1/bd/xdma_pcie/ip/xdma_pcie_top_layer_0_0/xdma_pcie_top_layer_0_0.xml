@@ -241,7 +241,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:09ef8a9b</spirit:value>
+            <spirit:value>9:15d0dd88</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -257,11 +257,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sat Oct 10 14:09:53 UTC 2026</spirit:value>
+            <spirit:value>Sun Oct 11 07:41:35 UTC 2026</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:09ef8a9b</spirit:value>
+            <spirit:value>9:15d0dd88</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -273,7 +273,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:2a246a45</spirit:value>
+            <spirit:value>9:06951be9</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -289,11 +289,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sat Oct 10 14:09:53 UTC 2026</spirit:value>
+            <spirit:value>Sun Oct 11 07:41:35 UTC 2026</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:2a246a45</spirit:value>
+            <spirit:value>9:06951be9</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -415,6 +415,23 @@
         <spirit:name>adc_test_config_locked</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>adc_spi_readback</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">63</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
           <spirit:wireTypeDefs>
             <spirit:wireTypeDef>
               <spirit:typeName>wire</spirit:typeName>
@@ -957,7 +974,7 @@
       <spirit:modelParameter spirit:dataType="string">
         <spirit:name>TX_SINE_MEM</spirit:name>
         <spirit:displayName>Tx Sine Mem</spirit:displayName>
-        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.TX_SINE_MEM">sine_4096.mem</spirit:value>
+        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.TX_SINE_MEM">E:/FPGA_Doc/project_PCIE/project_PCIE.srcs/sources_1/new/tgd_tx/sine_4096.mem</spirit:value>
       </spirit:modelParameter>
     </spirit:modelParameters>
   </spirit:model>
@@ -1041,7 +1058,7 @@
     <spirit:parameter>
       <spirit:name>TX_SINE_MEM</spirit:name>
       <spirit:displayName>Tx Sine Mem</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.TX_SINE_MEM">sine_4096.mem</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.TX_SINE_MEM">E:/FPGA_Doc/project_PCIE/project_PCIE.srcs/sources_1/new/tgd_tx/sine_4096.mem</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Component_Name</spirit:name>

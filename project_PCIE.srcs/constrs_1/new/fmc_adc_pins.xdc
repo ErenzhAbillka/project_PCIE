@@ -57,7 +57,7 @@ set_false_path -to $adc_control_sync
 set adc_monitor_sync [get_pins -hier -regexp {.*capture_monitor_inst/(heartbeat_sync_reg|sample_valid_sync_reg)\[0\]/D}]
 set_false_path -to $adc_monitor_sync
 # ADC diagnostic controls/handshake: cut only the three first-stage D inputs.
-set adc_diagnostic_sync [get_pins -hier -regexp {.*(ramp_checker_inst/enable_sync_reg|test_snapshot_inst/request_sync_reg|test_snapshot_inst/ack_sync_reg)\[0\]/D}]
+set adc_diagnostic_sync [get_pins -hier -regexp {.*(test_checker_inst/enable_sync_reg|test_snapshot_inst/request_sync_reg|test_snapshot_inst/ack_sync_reg)\[0\]/D}]
 set_false_path -to $adc_diagnostic_sync
 # Held snapshot bundle is stable through the synchronized acknowledgement.
 # Earliest destination capture is >=15 ns after source hold; budget 10 ns.

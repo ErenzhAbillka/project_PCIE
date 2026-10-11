@@ -514,7 +514,7 @@
         "xci_name": "xdma_pcie_vio_readback_0",
         "parameters": {
           "C_NUM_PROBE_IN": {
-            "value": "25"
+            "value": "26"
           },
           "C_NUM_PROBE_OUT": {
             "value": "9"
@@ -2316,7 +2316,7 @@
         "xci_name": "xdma_pcie_top_layer_0_0",
         "parameters": {
           "TX_SINE_MEM": {
-            "value": "sine_4096.mem"
+            "value": "E:/FPGA_Doc/project_PCIE/project_PCIE.srcs/sources_1/new/tgd_tx/sine_4096.mem"
           }
         },
         "reference_info": {
@@ -2535,6 +2535,11 @@
           },
           "adc_sync": {
             "direction": "O"
+          },
+          "adc_spi_readback": {
+            "direction": "O",
+            "left": "63",
+            "right": "0"
           }
         }
       }
@@ -3245,6 +3250,12 @@
         "ports": [
           "acquisition_router_0/mode_locked",
           "vio_readback/probe_in24"
+        ]
+      },
+      "top_layer_0_adc_spi_readback": {
+        "ports": [
+          "top_layer_0/adc_spi_readback",
+          "vio_readback/probe_in25"
         ]
       }
     },

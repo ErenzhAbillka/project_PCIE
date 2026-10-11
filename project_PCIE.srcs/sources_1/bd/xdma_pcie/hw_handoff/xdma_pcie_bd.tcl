@@ -466,6 +466,20 @@ proc create_root_design { parentCell } {
    CONFIG.TUSER_WIDTH {2} \
  ] $axis_data_fifo_0
 
+  # Create instance: compat_bram, and set properties
+  set compat_bram [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 compat_bram ]
+  set_property -dict [ list \
+   CONFIG.EN_SAFETY_CKT {false} \
+   CONFIG.Memory_Type {Single_Port_RAM} \
+ ] $compat_bram
+
+  # Create instance: compat_bram_ctrl, and set properties
+  set compat_bram_ctrl [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_bram_ctrl:4.1 compat_bram_ctrl ]
+  set_property -dict [ list \
+   CONFIG.PROTOCOL {AXI4LITE} \
+   CONFIG.SINGLE_PORT_BRAM {1} \
+ ] $compat_bram_ctrl
+
   # Create instance: das_processing
   create_hier_cell_das_processing [current_bd_instance .] das_processing
 
@@ -558,7 +572,7 @@ proc create_root_design { parentCell } {
      return 1
    }
     set_property -dict [ list \
-   CONFIG.TX_SINE_MEM {sine_4096.mem} \
+   CONFIG.TX_SINE_MEM {E:/FPGA_Doc/project_PCIE/project_PCIE.srcs/sources_1/new/tgd_tx/sine_4096.mem} \
  ] $top_layer_0
 
   # Create instance: util_ds_buf, and set properties
@@ -577,7 +591,7 @@ proc create_root_design { parentCell } {
   # Create instance: vio_readback, and set properties
   set vio_readback [ create_bd_cell -type ip -vlnv xilinx.com:ip:vio:3.0 vio_readback ]
   set_property -dict [ list \
-   CONFIG.C_NUM_PROBE_IN {25} \
+   CONFIG.C_NUM_PROBE_IN {26} \
    CONFIG.C_NUM_PROBE_OUT {9} \
    CONFIG.C_PROBE_OUT0_INIT_VAL {0x0} \
    CONFIG.C_PROBE_OUT1_INIT_VAL {0x0} \
@@ -619,14 +633,16 @@ proc create_root_design { parentCell } {
    CONFIG.PF2_DEVICE_ID_mqdma {9028} \
    CONFIG.PF3_DEVICE_ID_mqdma {9028} \
    CONFIG.axi_data_width {256_bit} \
-   CONFIG.axilite_master_en {false} \
+   CONFIG.axilite_master_en {true} \
+   CONFIG.axilite_master_scale {Kilobytes} \
+   CONFIG.axilite_master_size {32} \
    CONFIG.axisten_freq {125} \
    CONFIG.en_gt_selection {true} \
    CONFIG.pcie_blk_locn {X0Y1} \
    CONFIG.pciebar2axibar_axist_bypass {0x0000000000000000} \
    CONFIG.pf0_device_id {8028} \
-   CONFIG.pf0_msix_cap_pba_bir {BAR_0} \
-   CONFIG.pf0_msix_cap_table_bir {BAR_0} \
+   CONFIG.pf0_msix_cap_pba_bir {BAR_1} \
+   CONFIG.pf0_msix_cap_table_bir {BAR_1} \
    CONFIG.pl_link_cap_max_link_speed {5.0_GT/s} \
    CONFIG.pl_link_cap_max_link_width {X8} \
    CONFIG.plltype {QPLL1} \
@@ -673,10 +689,12 @@ proc create_root_design { parentCell } {
   # Create interface connections
   connect_bd_intf_net -intf_net C0_SYS_CLK_0_1 [get_bd_intf_ports C0_SYS_CLK_0] [get_bd_intf_pins ddr4_0/C0_SYS_CLK]
   connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_pins ddr4_0/C0_DDR4_S_AXI]
+  connect_bd_intf_net -intf_net compat_bram_ctrl_BRAM_PORTA [get_bd_intf_pins compat_bram/BRAM_PORTA] [get_bd_intf_pins compat_bram_ctrl/BRAM_PORTA]
   connect_bd_intf_net -intf_net ddr4_0_C0_DDR4 [get_bd_intf_ports C0_DDR4_0] [get_bd_intf_pins ddr4_0/C0_DDR4]
   connect_bd_intf_net -intf_net diff_clock_rtl_0_1 [get_bd_intf_ports diff_clock_rtl_0] [get_bd_intf_pins util_ds_buf/CLK_IN_D]
   connect_bd_intf_net -intf_net wr_addr_0_m00_axi [get_bd_intf_pins axi_smc/S01_AXI] [get_bd_intf_pins wr_addr_0/m00_axi]
   connect_bd_intf_net -intf_net xdma_0_M_AXI [get_bd_intf_pins axi_smc/S00_AXI] [get_bd_intf_pins xdma_0/M_AXI]
+  connect_bd_intf_net -intf_net xdma_0_M_AXI_LITE [get_bd_intf_pins compat_bram_ctrl/S_AXI] [get_bd_intf_pins xdma_0/M_AXI_LITE]
   connect_bd_intf_net -intf_net xdma_0_pcie_mgt [get_bd_intf_ports pcie_7x_mgt_rtl_0] [get_bd_intf_pins xdma_0/pcie_mgt]
 
   # Create port connections
@@ -735,6 +753,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net top_layer_0_adc_fifo_aresetn [get_bd_pins axis_data_fifo_0/s_axis_aresetn] [get_bd_pins top_layer_0/adc_fifo_aresetn]
   connect_bd_net -net top_layer_0_adc_overflow [get_bd_pins acquisition_router_0/input_fault] [get_bd_pins das_processing/input_fault] [get_bd_pins ila_readback/probe7] [get_bd_pins top_layer_0/adc_overflow] [get_bd_pins vio_readback/probe_in4]
   connect_bd_net -net top_layer_0_adc_spi_csb [get_bd_ports adc_spi_csb] [get_bd_pins top_layer_0/adc_spi_csb]
+  connect_bd_net -net top_layer_0_adc_spi_readback [get_bd_pins top_layer_0/adc_spi_readback] [get_bd_pins vio_readback/probe_in25]
   connect_bd_net -net top_layer_0_adc_sync [get_bd_ports adc_sync] [get_bd_pins top_layer_0/adc_sync]
   connect_bd_net -net top_layer_0_adc_test_active [get_bd_pins acquisition_router_0/adc_test_active] [get_bd_pins top_layer_0/adc_test_active] [get_bd_pins vio_readback/probe_in11]
   connect_bd_net -net top_layer_0_adc_test_checked_count [get_bd_pins top_layer_0/adc_test_checked_count] [get_bd_pins vio_readback/probe_in13]
@@ -773,8 +792,8 @@ proc create_root_design { parentCell } {
   connect_bd_net -net wr_addr_0_o_data [get_bd_pins ila_readback/probe0] [get_bd_pins wr_addr_0/o_data]
   connect_bd_net -net wr_addr_0_o_last [get_bd_pins ila_readback/probe2] [get_bd_pins wr_addr_0/o_last]
   connect_bd_net -net wr_addr_0_o_valid [get_bd_pins ila_readback/probe1] [get_bd_pins wr_addr_0/o_valid]
-  connect_bd_net -net xdma_0_axi_aclk [get_bd_pins axi_smc/aclk1] [get_bd_pins vio_pcie/clk] [get_bd_pins xdma_0/axi_aclk]
-  connect_bd_net -net xdma_0_axi_aresetn [get_bd_pins vio_pcie/probe_in1] [get_bd_pins xdma_0/axi_aresetn] [get_bd_pins xdma_reset_invert/Op1]
+  connect_bd_net -net xdma_0_axi_aclk [get_bd_pins axi_smc/aclk1] [get_bd_pins compat_bram_ctrl/s_axi_aclk] [get_bd_pins vio_pcie/clk] [get_bd_pins xdma_0/axi_aclk]
+  connect_bd_net -net xdma_0_axi_aresetn [get_bd_pins compat_bram_ctrl/s_axi_aresetn] [get_bd_pins vio_pcie/probe_in1] [get_bd_pins xdma_0/axi_aresetn] [get_bd_pins xdma_reset_invert/Op1]
   connect_bd_net -net xdma_0_user_lnk_up [get_bd_pins vio_pcie/probe_in0] [get_bd_pins xdma_0/user_lnk_up]
   connect_bd_net -net xdma_reset_invert_Res [get_bd_pins rst_ddr/aux_reset_in] [get_bd_pins xdma_reset_invert/Res]
   connect_bd_net -net zero_19_dout [get_bd_pins xdma_0/cfg_mgmt_addr] [get_bd_pins zero_19/dout]
@@ -784,6 +803,7 @@ proc create_root_design { parentCell } {
 
   # Create address segments
   create_bd_addr_seg -range 0x000100000000 -offset 0x00000000 [get_bd_addr_spaces wr_addr_0/m00_axi] [get_bd_addr_segs ddr4_0/C0_DDR4_MEMORY_MAP/C0_DDR4_ADDRESS_BLOCK] SEG_ddr4_0_C0_DDR4_ADDRESS_BLOCK
+  create_bd_addr_seg -range 0x00008000 -offset 0x00000000 [get_bd_addr_spaces xdma_0/M_AXI_LITE] [get_bd_addr_segs compat_bram_ctrl/S_AXI/Mem0] SEG_compat_bram
   create_bd_addr_seg -range 0x000100000000 -offset 0x00000000 [get_bd_addr_spaces xdma_0/M_AXI] [get_bd_addr_segs ddr4_0/C0_DDR4_MEMORY_MAP/C0_DDR4_ADDRESS_BLOCK] SEG_ddr4_0_C0_DDR4_ADDRESS_BLOCK
 
 

@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
 module tb_raw_capture;
+    import adi_pn9_reference::*;
     reg clk=0; always #2.5 clk=~clk;
     reg reset_n=0, arm=0, fault=0, adc_valid=0;
     reg [31:0] adc_data=0;
@@ -14,7 +15,7 @@ module tb_raw_capture;
     reg [32:0] previous_output;
     raw_trace_capture dut(
         .clk(clk),.reset_n(reset_n),.arm(arm),.input_fault(fault),
-        .epoch_cfg(32'h1234),.config_id_cfg(32'habcd),.test_active(1'b1),
+        .epoch_cfg(32'h1234),.config_id_cfg(32'h504e3039),.test_active(1'b1),
         .adc_data(adc_data),.adc_user(adc_user),.adc_valid(adc_valid),.adc_ready(adc_ready),
         .frame_data(frame_data),.frame_valid(frame_valid),.frame_last(frame_last),.frame_ready(frame_ready),
         .capture_complete(complete),.capture_error(error),.frame_sent(sent));
@@ -23,9 +24,10 @@ module tb_raw_capture;
         .writer_data(writer_data),.writer_valid(writer_valid),.writer_last(writer_last),.writer_ready(writer_ready),
         .burst_done(burst_done),.ddr_frames_done(frames_done),.framing_error(framing_error));
 
+    reg [13:0] pn9_words[0:510];
     function automatic [31:0] sample_word(input integer n);
         reg [13:0] a,b;
-        begin a=3-n; b=8190-n; sample_word={{2{b[13]}},b,{2{a[13]}},a}; end
+        begin a=pn9_words[n%511]; b=pn9_words[(n+193)%511]; sample_word={{2{b[13]}},b,{2{a[13]}},a}; end
     endfunction
     function automatic [31:0] expected_word(input integer n);
         begin
@@ -39,9 +41,9 @@ module tb_raw_capture;
                 6: expected_word=125000000;
                 7: expected_word=31250;
                 8,14: expected_word=1;
-                9: expected_word=15;
+                9: expected_word=6;
                 11,16359: expected_word=6;
-                12: expected_word=32'habcd;
+                12: expected_word=32'h504e3039;
                 13: expected_word=14;
                 15,16354,16382: expected_word=32'hffffffff;
                 16360: expected_word=checksum;
@@ -119,6 +121,9 @@ module tb_raw_capture;
         .raw_capture_complete(),.raw_capture_error(),.raw_frame_sent());
     integer i;
     initial begin
+        pn9_words[0]=pn9_first(9'h1ff);
+        for(i=1;i<511;i=i+1) pn9_words[i]=pn9_next(pn9_words[i-1]);
+        if(pn9_next(pn9_words[510])!==pn9_words[0]) $fatal(1,"Independent PN9 fixture period wrong");
         for(i=0;i<16320;i=i+1) checksum=checksum^sample_word(i);
         reset_capture();
         adc(0,0); adc(sample_word(0),1); adc(sample_word(1),3); expect_rejected(); // early LAST
@@ -158,7 +163,7 @@ module tb_raw_capture;
         rrst=0; rstart=0; repeat(3) @(negedge clk);
         rrst=1; rraw=0; rtest=1; rstart=1;
         @(negedge clk);
-        if(!cfgerr || fe || drv || fv) $fatal(1,"Ramp was allowed into normal DAS");
+        if(!cfgerr || fe || drv || fv) $fatal(1,"ADC test was allowed into normal DAS");
         rrst=0; rstart=0; rv=0; repeat(3) @(negedge clk);
         rrst=1; rraw=1; rtest=0; rtx=1; rstart=1;
         @(negedge clk);

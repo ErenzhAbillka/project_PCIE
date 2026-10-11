@@ -2,7 +2,7 @@ project_PCIE：ADC / RAW / DAS / AD9122 TX 合并版本（2026-10-11）
 
 工程入口：project_PCIE.xpr；Vivado 2018.3；xcku060-ffva1156-2-i。
 本版保留第一个工程的目录和 DDR4/XDMA/DAS 后端，合入第二个工程的
-ADC ramp/连续性监控、RAW1 单帧、AD9122 单次扫频以及 writer 故障停机保护。
+ADC PN9自检/连续性监控、RAW1 单帧、AD9122 单次扫频以及 writer 故障停机保护。
 
 当前使用入口：
   python scripts/check_das_bd.py
@@ -26,14 +26,19 @@ BAR1 为 64 KiB 控制空间；DDR M_AXI 与 ADC/RAW/TX 通路保持原映射。
 新构建输出：link_bulid/ADC_RAW_TX。
 2026-10-11 旧驱动兼容修订及上板结果见 project_PCIE.doc/ADC_RAW_TX/20261011_XDMA兼容与上板记录.txt。
 实板已完成兼容bit下载、8028/BAR识别和单次64KiB DDR读取；ADC ramp出现
-每码两拍重复，正式斜坡验收未通过，须先校验ADC/DCO采样时序再做模拟/TX测试。
+每码两拍重复，历史斜坡验收未通过。后续PN9/toggle直采逐拍正确；本轮默认自检改严格PN9，
+完整固件已通过PN9/DDR/PCIe整帧验收（双通道各16320样本零错），
+详见20261011_ADC_PN9调试记录.txt；ramp根因、模拟/TX/光路仍待验证。
 历史 DAS bit/LTX 和报告继续保留在 link_bulid/PCIEv2_0；它们不包含本版新增功能。
 project_PCIE.doc/PCIEv2_0 是历史版本说明；archive/backups 保存旧迁移基线。
 旧 integrate_das_bd.tcl/trim_adc_to_fifo.tcl 等是历史迁移工具，正常构建无需重跑。
 
 当前 RAW 与 TX 每次系统复位只运行一次。首次 start 锁定配置；重新采集需要系统复位。
 只有 DDR 最终成功写响应完成后的 frames-done 才能作为发布依据；capture_complete
-或 frame_sent 单独为 1 不表示 DDR 已写完。TX 默认关闭，验收顺序为 ADC ramp、
+或 frame_sent 单独为 1 不表示 DDR 已写完。TX 默认关闭，验收顺序为 ADC PN9、
 RAW 正常模式、DAC 电测，最后按实物时钟/AOM 参数进行系统标定。
 
 本版数字测试不能替代完整实现、CDC/时序复核和 ADC/DAC 实板验收。
+
+本机交付bit重下载后的PCIe热枚举有一次失败，用户正常重启后已恢复，
+交付固件PN9再次通过，最终正常ADC/start0/TX0。详见20261011_ADC_PN9调试记录.txt。

@@ -57,6 +57,7 @@ for index,pin in {
     17:'acquisition_router_0/raw_capture_error',18:'acquisition_router_0/raw_frame_sent',
     19:'acquisition_router_0/configuration_error',20:'acquisition_router_0/raw_mode_active',
     24:'acquisition_router_0/mode_locked',
+    25:'top_layer_0/adc_spi_readback',
 }.items():
     wired(after,pin,'vio_readback/probe_in'+str(index))
 wired(after,'vio_readback/probe_out0','wr_addr_0/xdma_valid')
@@ -72,7 +73,7 @@ for index,pin in {0:'data',1:'valid',2:'ready',3:'last'}.items():
     wired(after,'acquisition_router_0/frame_'+pin,'ila_das/probe'+str(index))
 vio=after['components']['vio_readback']['parameters']
 assert int(vio['C_NUM_PROBE_OUT']['value'])==9
-assert int(vio['C_NUM_PROBE_IN']['value'])==25
+assert int(vio['C_NUM_PROBE_IN']['value'])==26
 for index in range(9):
     assert int(vio.get('C_PROBE_OUT'+str(index)+'_INIT_VAL',{'value':'0'})['value'],0)==0
 for index in (5,6):
@@ -85,6 +86,7 @@ wired(after,'top_layer_0/tx_status','vio_readback/probe_in23')
 # Input widths are inferred from connected nets and omitted from BD JSON.
 vio_hdl=(root/'project_PCIE.srcs/sources_1/bd/xdma_pcie/ip/xdma_pcie_vio_readback_0/synth/xdma_pcie_vio_readback_0.v').read_text()
 assert re.search(r'input\s*\[31\s*:\s*0\]\s*probe_in23\s*;',vio_hdl)
+assert re.search(r'input\s*\[63\s*:\s*0\]\s*probe_in25\s*;',vio_hdl)
 for signal in ('dac_data_p','dac_data_n','dac_dci_p','dac_dci_n','dac_frame_p','dac_frame_n'):
     wired(after,'top_layer_0/'+signal,signal)
 tx_rom=root/'project_PCIE.srcs/sources_1/new/tgd_tx/sine_4096.mem'
@@ -122,7 +124,7 @@ current_xdc=(root/xdc).read_text(encoding='utf-8')
 assert current_xdc.count(monitor_constraint)==1,'Missing or altered ADC monitor CDC constraints'
 diagnostic_constraint = (
     '# ADC diagnostic controls/handshake: cut only the three first-stage D inputs.\n'
-    'set adc_diagnostic_sync [get_pins -hier -regexp {.*(ramp_checker_inst/enable_sync_reg|test_snapshot_inst/request_sync_reg|test_snapshot_inst/ack_sync_reg)\\[0\\]/D}]\n'
+    'set adc_diagnostic_sync [get_pins -hier -regexp {.*(test_checker_inst/enable_sync_reg|test_snapshot_inst/request_sync_reg|test_snapshot_inst/ack_sync_reg)\\[0\\]/D}]\n'
     'set_false_path -to $adc_diagnostic_sync\n'
     '# Held snapshot bundle is stable through the synchronized acknowledgement.\n'
     '# Earliest destination capture is >=15 ns after source hold; budget 10 ns.\n'

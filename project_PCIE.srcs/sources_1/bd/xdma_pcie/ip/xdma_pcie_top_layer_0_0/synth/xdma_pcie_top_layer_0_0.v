@@ -52,8 +52,8 @@
 
 (* X_CORE_INFO = "top_layer,Vivado 2018.3" *)
 (* CHECK_LICENSE_TYPE = "xdma_pcie_top_layer_0_0,top_layer,{}" *)
-(* CORE_GENERATION_INFO = "xdma_pcie_top_layer_0_0,top_layer,{x_ipProduct=Vivado 2018.3,x_ipVendor=xilinx.com,x_ipLibrary=module_ref,x_ipName=top_layer,x_ipVersion=1.0,x_ipCoreRevision=1,x_ipLanguage=VERILOG,x_ipSimLanguage=MIXED,CTRL_CLK_HZ=200000000,SPI_CLK_HZ=1000000,POWERUP_DELAY_CYCLES=2000000,CLOCK_SETTLE_CYCLES=200000000,ADC_TEST_CYCLES=600000000,ADC_SETTLE_CYCLES=200000,INPUT_DELAY_TAPS=10,TRACE_PERIOD=31250,TRACE_POINTS=16320,AOM_WIDTH=12,TX_SINE_MEM=d_/Users/SuKi/Desktop/FPGA_Doc/project_PCIE/project_PCIE.srcs/s\
-ources_1/new/tgd_tx/sine_4096.mem}" *)
+(* CORE_GENERATION_INFO = "xdma_pcie_top_layer_0_0,top_layer,{x_ipProduct=Vivado 2018.3,x_ipVendor=xilinx.com,x_ipLibrary=module_ref,x_ipName=top_layer,x_ipVersion=1.0,x_ipCoreRevision=1,x_ipLanguage=VERILOG,x_ipSimLanguage=MIXED,CTRL_CLK_HZ=200000000,SPI_CLK_HZ=1000000,POWERUP_DELAY_CYCLES=2000000,CLOCK_SETTLE_CYCLES=200000000,ADC_TEST_CYCLES=600000000,ADC_SETTLE_CYCLES=200000,INPUT_DELAY_TAPS=10,TRACE_PERIOD=31250,TRACE_POINTS=16320,AOM_WIDTH=12,TX_SINE_MEM=E_/FPGA_Doc/project_PCIE/p\
+roject_PCIE.srcs/sources_1/new/tgd_tx/sine_4096.mem}" *)
 (* IP_DEFINITION_SOURCE = "module_ref" *)
 (* DowngradeIPIdentifiedWarnings = "yes" *)
 module xdma_pcie_top_layer_0_0 (
@@ -66,6 +66,7 @@ module xdma_pcie_top_layer_0_0 (
   adc_test_checked_count,
   adc_test_error_count,
   adc_test_config_locked,
+  adc_spi_readback,
   tx_enable,
   tx_abort,
   tx_init_done,
@@ -115,6 +116,7 @@ output wire adc_test_error;
 output wire [31 : 0] adc_test_checked_count;
 output wire [31 : 0] adc_test_error_count;
 output wire adc_test_config_locked;
+output wire [63 : 0] adc_spi_readback;
 input wire tx_enable;
 input wire tx_abort;
 output wire tx_init_done;
@@ -168,7 +170,7 @@ output wire adc_sync;
     .TRACE_PERIOD(31250),
     .TRACE_POINTS(16320),
     .AOM_WIDTH(12),
-    .TX_SINE_MEM("sine_4096.mem")
+    .TX_SINE_MEM("E:/FPGA_Doc/project_PCIE/project_PCIE.srcs/sources_1/new/tgd_tx/sine_4096.mem")
   ) inst (
     .ctrl_clk(ctrl_clk),
     .rst_n(rst_n),
@@ -179,6 +181,7 @@ output wire adc_sync;
     .adc_test_checked_count(adc_test_checked_count),
     .adc_test_error_count(adc_test_error_count),
     .adc_test_config_locked(adc_test_config_locked),
+    .adc_spi_readback(adc_spi_readback),
     .tx_enable(tx_enable),
     .tx_abort(tx_abort),
     .tx_init_done(tx_init_done),

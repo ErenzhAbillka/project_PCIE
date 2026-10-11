@@ -1,8 +1,8 @@
 //Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-//Date        : Sat Oct 10 22:09:33 2026
-//Host        : SuKi_no_Com running 64-bit major release  (build 9200)
+//Date        : Sun Oct 11 15:41:13 2026
+//Host        : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
 //Command     : generate_target xdma_pcie.bd
 //Design      : xdma_pcie
 //Purpose     : IP block netlist
@@ -217,7 +217,7 @@ module das_processing_imp_JUZY4P
         .reset_n(reset_n_1));
 endmodule
 
-(* CORE_GENERATION_INFO = "xdma_pcie,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=xdma_pcie,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=30,numReposBlks=29,numNonXlnxBlks=0,numHierBlks=1,maxHierDepth=1,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=8,numPkgbdBlks=0,bdsource=USER,da_board_cnt=3,da_xdma_cnt=1,synth_mode=Global}" *) (* HW_HANDOFF = "xdma_pcie.hwdef" *) 
+(* CORE_GENERATION_INFO = "xdma_pcie,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=xdma_pcie,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=32,numReposBlks=31,numNonXlnxBlks=0,numHierBlks=1,maxHierDepth=1,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=8,numPkgbdBlks=0,bdsource=USER,da_board_cnt=3,da_xdma_cnt=1,synth_mode=Global}" *) (* HW_HANDOFF = "xdma_pcie.hwdef" *) 
 module xdma_pcie
    (C0_DDR4_0_act_n,
     C0_DDR4_0_adr,
@@ -360,6 +360,13 @@ module xdma_pcie
   wire [1:0]axis_data_fifo_0_m_axis_tuser;
   wire axis_data_fifo_0_m_axis_tvalid;
   wire axis_data_fifo_0_s_axis_tready;
+  wire [14:0]compat_bram_ctrl_BRAM_PORTA_ADDR;
+  wire compat_bram_ctrl_BRAM_PORTA_CLK;
+  wire [31:0]compat_bram_ctrl_BRAM_PORTA_DIN;
+  wire [31:0]compat_bram_ctrl_BRAM_PORTA_DOUT;
+  wire compat_bram_ctrl_BRAM_PORTA_EN;
+  wire compat_bram_ctrl_BRAM_PORTA_RST;
+  wire [3:0]compat_bram_ctrl_BRAM_PORTA_WE;
   wire das_processing_accumulator_clipped;
   wire das_processing_adc_ready;
   wire das_processing_alignment_error;
@@ -404,6 +411,7 @@ module xdma_pcie
   wire top_layer_0_adc_fifo_aresetn;
   wire top_layer_0_adc_overflow;
   wire top_layer_0_adc_spi_csb;
+  wire [63:0]top_layer_0_adc_spi_readback;
   wire top_layer_0_adc_sync;
   wire top_layer_0_adc_test_active;
   wire [31:0]top_layer_0_adc_test_checked_count;
@@ -503,6 +511,25 @@ module xdma_pcie
   wire xdma_0_M_AXI_BREADY;
   wire [1:0]xdma_0_M_AXI_BRESP;
   wire xdma_0_M_AXI_BVALID;
+  wire [31:0]xdma_0_M_AXI_LITE_ARADDR;
+  wire [2:0]xdma_0_M_AXI_LITE_ARPROT;
+  wire xdma_0_M_AXI_LITE_ARREADY;
+  wire xdma_0_M_AXI_LITE_ARVALID;
+  wire [31:0]xdma_0_M_AXI_LITE_AWADDR;
+  wire [2:0]xdma_0_M_AXI_LITE_AWPROT;
+  wire xdma_0_M_AXI_LITE_AWREADY;
+  wire xdma_0_M_AXI_LITE_AWVALID;
+  wire xdma_0_M_AXI_LITE_BREADY;
+  wire [1:0]xdma_0_M_AXI_LITE_BRESP;
+  wire xdma_0_M_AXI_LITE_BVALID;
+  wire [31:0]xdma_0_M_AXI_LITE_RDATA;
+  wire xdma_0_M_AXI_LITE_RREADY;
+  wire [1:0]xdma_0_M_AXI_LITE_RRESP;
+  wire xdma_0_M_AXI_LITE_RVALID;
+  wire [31:0]xdma_0_M_AXI_LITE_WDATA;
+  wire xdma_0_M_AXI_LITE_WREADY;
+  wire [3:0]xdma_0_M_AXI_LITE_WSTRB;
+  wire xdma_0_M_AXI_LITE_WVALID;
   wire [255:0]xdma_0_M_AXI_RDATA;
   wire [3:0]xdma_0_M_AXI_RID;
   wire xdma_0_M_AXI_RLAST;
@@ -722,6 +749,43 @@ module xdma_pcie
         .s_axis_tready(axis_data_fifo_0_s_axis_tready),
         .s_axis_tuser(top_layer_0_stream_user),
         .s_axis_tvalid(AXI_data_out_0_0_valid));
+  xdma_pcie_compat_bram_0 compat_bram
+       (.addra({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,compat_bram_ctrl_BRAM_PORTA_ADDR}),
+        .clka(compat_bram_ctrl_BRAM_PORTA_CLK),
+        .dina(compat_bram_ctrl_BRAM_PORTA_DIN),
+        .douta(compat_bram_ctrl_BRAM_PORTA_DOUT),
+        .ena(compat_bram_ctrl_BRAM_PORTA_EN),
+        .rsta(compat_bram_ctrl_BRAM_PORTA_RST),
+        .wea(compat_bram_ctrl_BRAM_PORTA_WE));
+  xdma_pcie_compat_bram_ctrl_0 compat_bram_ctrl
+       (.bram_addr_a(compat_bram_ctrl_BRAM_PORTA_ADDR),
+        .bram_clk_a(compat_bram_ctrl_BRAM_PORTA_CLK),
+        .bram_en_a(compat_bram_ctrl_BRAM_PORTA_EN),
+        .bram_rddata_a(compat_bram_ctrl_BRAM_PORTA_DOUT),
+        .bram_rst_a(compat_bram_ctrl_BRAM_PORTA_RST),
+        .bram_we_a(compat_bram_ctrl_BRAM_PORTA_WE),
+        .bram_wrdata_a(compat_bram_ctrl_BRAM_PORTA_DIN),
+        .s_axi_aclk(xdma_0_axi_aclk),
+        .s_axi_araddr(xdma_0_M_AXI_LITE_ARADDR[14:0]),
+        .s_axi_aresetn(xdma_0_axi_aresetn),
+        .s_axi_arprot(xdma_0_M_AXI_LITE_ARPROT),
+        .s_axi_arready(xdma_0_M_AXI_LITE_ARREADY),
+        .s_axi_arvalid(xdma_0_M_AXI_LITE_ARVALID),
+        .s_axi_awaddr(xdma_0_M_AXI_LITE_AWADDR[14:0]),
+        .s_axi_awprot(xdma_0_M_AXI_LITE_AWPROT),
+        .s_axi_awready(xdma_0_M_AXI_LITE_AWREADY),
+        .s_axi_awvalid(xdma_0_M_AXI_LITE_AWVALID),
+        .s_axi_bready(xdma_0_M_AXI_LITE_BREADY),
+        .s_axi_bresp(xdma_0_M_AXI_LITE_BRESP),
+        .s_axi_bvalid(xdma_0_M_AXI_LITE_BVALID),
+        .s_axi_rdata(xdma_0_M_AXI_LITE_RDATA),
+        .s_axi_rready(xdma_0_M_AXI_LITE_RREADY),
+        .s_axi_rresp(xdma_0_M_AXI_LITE_RRESP),
+        .s_axi_rvalid(xdma_0_M_AXI_LITE_RVALID),
+        .s_axi_wdata(xdma_0_M_AXI_LITE_WDATA),
+        .s_axi_wready(xdma_0_M_AXI_LITE_WREADY),
+        .s_axi_wstrb(xdma_0_M_AXI_LITE_WSTRB),
+        .s_axi_wvalid(xdma_0_M_AXI_LITE_WVALID));
   das_processing_imp_JUZY4P das_processing
        (.accumulator_clipped(das_processing_accumulator_clipped),
         .adc_data(acquisition_router_0_das_adc_data),
@@ -888,6 +952,7 @@ module xdma_pcie
         .adc_fifo_aresetn(top_layer_0_adc_fifo_aresetn),
         .adc_overflow(top_layer_0_adc_overflow),
         .adc_spi_csb(top_layer_0_adc_spi_csb),
+        .adc_spi_readback(top_layer_0_adc_spi_readback),
         .adc_sync(top_layer_0_adc_sync),
         .adc_test_active(top_layer_0_adc_test_active),
         .adc_test_checked_count(top_layer_0_adc_test_checked_count),
@@ -949,6 +1014,7 @@ module xdma_pcie
         .probe_in22(top_layer_0_tx_fault),
         .probe_in23(top_layer_0_tx_status),
         .probe_in24(acquisition_router_0_mode_locked),
+        .probe_in25(top_layer_0_adc_spi_readback),
         .probe_in3(top_layer_0_acquisition_active),
         .probe_in4(top_layer_0_adc_overflow),
         .probe_in5(das_processing_alignment_error),
@@ -1063,6 +1129,25 @@ module xdma_pcie
         .m_axi_wready(xdma_0_M_AXI_WREADY),
         .m_axi_wstrb(xdma_0_M_AXI_WSTRB),
         .m_axi_wvalid(xdma_0_M_AXI_WVALID),
+        .m_axil_araddr(xdma_0_M_AXI_LITE_ARADDR),
+        .m_axil_arprot(xdma_0_M_AXI_LITE_ARPROT),
+        .m_axil_arready(xdma_0_M_AXI_LITE_ARREADY),
+        .m_axil_arvalid(xdma_0_M_AXI_LITE_ARVALID),
+        .m_axil_awaddr(xdma_0_M_AXI_LITE_AWADDR),
+        .m_axil_awprot(xdma_0_M_AXI_LITE_AWPROT),
+        .m_axil_awready(xdma_0_M_AXI_LITE_AWREADY),
+        .m_axil_awvalid(xdma_0_M_AXI_LITE_AWVALID),
+        .m_axil_bready(xdma_0_M_AXI_LITE_BREADY),
+        .m_axil_bresp(xdma_0_M_AXI_LITE_BRESP),
+        .m_axil_bvalid(xdma_0_M_AXI_LITE_BVALID),
+        .m_axil_rdata(xdma_0_M_AXI_LITE_RDATA),
+        .m_axil_rready(xdma_0_M_AXI_LITE_RREADY),
+        .m_axil_rresp(xdma_0_M_AXI_LITE_RRESP),
+        .m_axil_rvalid(xdma_0_M_AXI_LITE_RVALID),
+        .m_axil_wdata(xdma_0_M_AXI_LITE_WDATA),
+        .m_axil_wready(xdma_0_M_AXI_LITE_WREADY),
+        .m_axil_wstrb(xdma_0_M_AXI_LITE_WSTRB),
+        .m_axil_wvalid(xdma_0_M_AXI_LITE_WVALID),
         .pci_exp_rxn(xdma_0_pcie_mgt_rxn),
         .pci_exp_rxp(xdma_0_pcie_mgt_rxp),
         .pci_exp_txn(xdma_0_pcie_mgt_txn),

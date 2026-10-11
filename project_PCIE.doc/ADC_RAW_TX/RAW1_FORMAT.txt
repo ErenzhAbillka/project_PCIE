@@ -23,7 +23,8 @@ word  字段                    本版含义
 6     sample_rate_hz          125000000，配置值，不是实测时钟频率
 7     trace_period_samples    31250
 8     capture_stride          1
-9     test_mode               实际稳定锁存的AD9643寄存器0x0D设定：0正常/15 ramp
+9     test_mode               锁存test_active所对应的配置值：0正常/6 PN9；15保留用于历史ramp文件
+                              不是SPI实读值；实际寄存器另外核对VIO in25
 10    error_flags             必须0；有ADC/格式/写入故障时禁止发布RAW帧
 11    config_flags            0x6：bit0=0 two's-complement；bit1=1 14bit符号扩展；
                               bit2=1 A低16/B高16；其他bit必须0
@@ -66,10 +67,16 @@ XOR不是CRC/强校验；成对位翻转可以抵消。帧结构和相同epoch�
 epoch默认为0时，应显式改成未复用标识；用户需记录VIO状态与文件属于同一不间断run。
 本版单次完成后不覆写，因此DMA可在done=1后稳定读取slot0，不依赖400ms环覆盖期限。
 
-Ramp：本板当前0x14=0x05输出配置下，0x0D=0x0f每通道每拍14位modulo递减1。
-默认direction=-1；signed14正负边界和0/16383码边界均按模16384检查。
-支持显式+1仅用于不同已确认配置。相同ramp不能证明A/B身份或模拟输入正确。
-硬件时序/眼图/通道身份仍需差异化测试pattern、已知输入和实板扫delay验证。
+PN9：当前默认数字自检为0x0D=06，输出格式0x14=05。
+每通道独立固定XOR 0x3FFF归一化，按x^9+x^5+1每样本推进15bit、低14bit可见。
+首样本必须满足PN9递推约束且低9位非零；之后由预测状态推进并逐拍比较全部14位。
+--pn9不推断任意bit映射、掩码或采样抽取，不在错误后重新锁定。
+相同PN9不能单独证明通道身份；本轮另以逐拍互补toggle核验两个DDR输出点。
+
+历史Ramp：--ramp仍要求每拍modulo16384递减1（或显式direction=+1）。
+本板0D=0F实测每码两拍，严格检查失败；原始证据保留，不作为新PN9固件通过证据。
+PN9正确不等于已确认ramp内部实现、ADC模拟性能或采样眼图裕量。
+头error_flags不包含独立adc_test_error；必须同时保存VIO零错误和计数增长证据。
 
 工具/复现：scripts/decode_raw.py，scripts/test_decode_raw.py。
 不访问设备、不读写CSR；无CSR自动采集功能不虚构寄存器。

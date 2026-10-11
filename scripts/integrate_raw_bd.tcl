@@ -46,11 +46,11 @@ if {![llength [get_bd_cells -quiet acquisition_router_0]]} {
     update_module_reference [get_ips *acquisition_router*]
 }
 set_property -dict [list CONFIG.TRACE_POINTS {16320} CONFIG.FRAME_WORDS {16384} CONFIG.SAMPLE_RATE {125000000} CONFIG.TRACE_PERIOD {31250}] [get_bd_cells acquisition_router_0]
-set vio_parameters [list CONFIG.C_NUM_PROBE_OUT {9} CONFIG.C_NUM_PROBE_IN {25}]
+set vio_parameters [list CONFIG.C_NUM_PROBE_OUT {9} CONFIG.C_NUM_PROBE_IN {26}]
 foreach {index width} {3 1 4 1 5 32 6 32 7 1 8 1} {
     lappend vio_parameters CONFIG.C_PROBE_OUT${index}_WIDTH $width CONFIG.C_PROBE_OUT${index}_INIT_VAL {0x0}
 }
-foreach {index width} {11 1 12 1 13 32 14 32 15 1 16 1 17 1 18 1 19 1 20 1 21 1 22 1 23 32 24 1} {
+foreach {index width} {11 1 12 1 13 32 14 32 15 1 16 1 17 1 18 1 19 1 20 1 21 1 22 1 23 32 24 1 25 64} {
     lappend vio_parameters CONFIG.C_PROBE_IN${index}_WIDTH $width
 }
 set_property -dict $vio_parameters [get_bd_cells vio_readback]
@@ -101,6 +101,7 @@ foreach {index pin} {
     19 acquisition_router_0/configuration_error
     20 acquisition_router_0/raw_mode_active
     24 acquisition_router_0/mode_locked
+    25 top_layer_0/adc_spi_readback
 } {
     detach vio_readback/probe_in$index
     wireup $pin vio_readback/probe_in$index

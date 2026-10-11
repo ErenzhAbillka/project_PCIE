@@ -14,10 +14,10 @@ out0  保留wr_addr诊断读触发，RAW/DAS抓取时保持0
 out1  start，一次锁存本次采集配置；置1后须系统复位才能重新采集
 out2  原DAS phase_start，RAW模式不使用
 out3  raw_mode：0默认DAS，1单次原始ADC
-out4  adc_test_enable：0正常ADC，1持续AD9643 ramp
+out4  adc_test_enable：0正常ADC，1持续AD9643 PN9（0x0D=06）
 out5  epoch[31:0]，每次新采集设置未复用的run标识
 out6  config_id[31:0]，记录实验配置；TX启用时固定改为0x54583031(TX01)
-out7  tx_enable，默认0；只允许RAW+正常ADC，不能配ramp或DAS
+out7  tx_enable，默认0；只允许RAW+正常ADC，不能配PN9或DAS
 out8  tx_abort，默认0；停止TX并锁存故障，不能用于重新arm RAW
 
 in0 DDR校准完成；in1 writer错误；in2 ADC init_done；in3 acquisition_active；
@@ -29,31 +29,35 @@ in18 raw_frame_sent；in19 configuration_error；in20 raw_mode_active；
 in21 TX init_done；in22 TX fault；in23 TX status32。
 TX status bit0=init_ready，bit1=shot_done，bit2=shot_started，bit3=busy；
 bits7:4=错误码，bits15:8=FIFO level，bits23:16=DAC revision，bits31:24=0。
+in25 ADC SPI读回64位：低到高字节为01/05/0B/0D/14/16/17；
+bit56=本次读事务完成，bit57=配置目标为测试模式。完成位不代表内容校验通过。
+正常模式期望0x0100000500000382，PN9期望0x0300000506000382。
 in24 router mode_locked：首次start立即置1，采集模式/epoch/config/TX/测试请求已锁定。
 in15是ADC实际开始run后的test_config_locked；等待DAC初始化时in15可能仍0，
 不能据此修改router配置。首次start后只有系统复位才能解锁。
 
-AD9643持续ramp单次抓取：
-1. 系统复位，out0/out1/out7/out8保持0。设out3=1、out4=1；设out5为新epoch，
-   out6为本次配置标识。例epoch=0x20261010，config_id=0x52414d50。
-2. 释放复位并先确认in0 DDR校准完成=1，再等待ADC初始化与测试模式切换/settle完成：in2=1、in11=1、
-   in13持续增长、in12/in14=0、in4=0。切模式期间init_done=0是正常过程。
-   start前配置可修改；start后测试模式锁定，运行中切out4不重新配置SPI。
-3. out1置1，立即观察in24=1；实际run后in15=1、in20=1、in19=0。完整窗口最多16320个A/B样本。
-   等in16=1、in18=1，最终in8从0变1。只看到capture_complete/frame_sent不算DDR提交。
-4. 保存采集配置与VIO状态，检查in1/in4/in12/in17/in19=0、in14=0、in10=0。
-   记录DMA前in8=1。用已实测的XDMA AXI Memory-Mapped C2H工具，
-   从卡地址0x00100000读取65536字节到raw.bin。不要套用AXI Stream接收参数。
-   记录DMA后in8仍=1、错误状态仍0；全程不得系统复位/换bit。
-   当前RAW完成后继续排空ADC样本但不写第二帧，不存在DAS环的400ms覆写期限。
-5. 运行：
-   python scripts/decode_raw.py raw.bin --completed 1 --completed-after 1 --expected-epoch 0x20261010 --expected-config-id 0x52414d50 --ramp --output raw_decoded
-   产生samples.csv与summary.json；exit0、publication_verified=true，且ramp[0].ramp_check_pass=true才通过本项数字检查。
-   本板0x14=0x05下ramp每拍14bit modulo递减1，默认--ramp-direction -1。
-   两通道相同ramp不能证明A/B身份；需差异化pattern/已知输入进一步验证。
+AD9643持续PN9单次抓取：
+1. 使用本轮完整构建的bit/LTX，系统复位，out0/out1/out7/out8保持0。
+   设out3=1、out4=1；out5设置未复用epoch，out6=0x504E3039（PN09）。
+2. 等in0=1、in2=1、in11=1，in13增长，in12/in14/in4=0；检查in25读回。
+   切模式期间init_done=0正常；首次start后禁止改配置，下一次采集须系统复位。
+3. out1置1，确认in24/in15/in20=1，in19=0。等in16/in18=1及in8从0变1。
+   capture_complete/frame_sent单独为1不能作为DDR发布证明。
+4. 保存VIO/epoch/config，确认全部writer/ADC/RAW/router/TX错误为0，in14=0。
+   DMA前in8=1，从DDR地址0x00100000只读65536字节；后in8仍1且全部错误仍0。
+   全程不得复位、换bit或改变配置。本版完成后不写第二帧。
+5. 离线验证（epoch须换成本轮实际值）：
+   python scripts/decode_raw.py raw.bin --completed 1 --completed-after 1 --expected-epoch 0x20261011 --expected-config-id 0x504E3039 --pn9 --output raw_decoded
+   要求exit0、publication_verified=true、pn9[0].pn9_check_pass=true。
+   PN9按AD9643专用每样本15bit推进、14bit可见位验证，固定对应0x14=05格式；
+   首样本检查PN9自洽并seed，之后完全使用预测状态，错误不重锁、不跳样。
+
+历史ramp文件仍可用--ramp检查，默认要求每拍modulo递减1；本板实测0D=0F时
+每码两拍，严格ramp检查失败。PN9和toggle实测逐拍正确，因此当前默认自检改PN9。
+不声称已确认ADC内部ramp的具体实现，不修改采样时序、样本率或丢弃重复样本。
 
 正常模拟信号RAW：
-同上，out4=0且确认in11=0。decode去掉--ramp；每个样本输出A/B signed16及14bit码值。
+同上，out4=0且确认in11=0。decode去掉--pn9；每个样本输出A/B signed16及14bit码值。
 码值不是电压，需前端增益、偏置和满量程校准。
 
 TX01电测：
@@ -75,7 +79,7 @@ TX01按plan读取实际4096项signed16正弦ROM并核对SHA256，参考含相同
 没有本轮前后计数或epoch证据时，默认工具exit2，拒绝称为稳定新采集。
 可显式--allow-unverified解析格式；summary.publication_verified=false。
 这不能补做硬件VIO观测，也不能从header推断文件来自本轮。
-exit2=格式/发布证据/配置或文件错误；exit3=已解码但ramp检查失败；exit0=请求的检查通过。
+exit2=格式/发布证据/配置或文件错误；exit3=已解码但PN9/ramp检查失败；exit0=请求的检查通过。
 XOR32能发现许多意外payload损坏，成对位翻转可抵消，不能替代CRC或状态一致性。
 
 离线测试：
@@ -93,6 +97,11 @@ python scripts/raw_c2h_probe.py --run-raw    单次读取 DDR 0x100000 的65536�
 工具支持唯一的 8028 或 8038 接口，不向 DDR 写入，也不自动重试或复位。
 5秒观察超时后请求取消，保留缓冲区等待最终完成；不能强杀仍有请求的进程。
 读取完成不等于 RAW 数据验证通过，仍须记录前后 VIO 并运行 decode_raw.py。
-RAW头error_flags不包含独立adc_test_error；不能用头为0代替VIO/逐样本ramp检查。
+RAW头error_flags不包含独立adc_test_error；不能用头为0代替VIO/逐样本PN9检查。
 2026-10-11本机首次实测64KiB读取成功，但ADC ramp每码两拍重复，验收未通过；
-下一步先排查采样相位/时钟，详见同目录20261011_XDMA兼容与上板记录.txt。
+该历史记录保留在20261011_XDMA兼容与上板记录.txt；后续PN9调试和完整验收见20261011_ADC_PN9调试记录.txt。
+
+本机交付重下载后可能无法仅通过正常PCI扫描恢复端点；2026-10-11已验证
+用户正常重启Windows且保持FPGA配置后恢复8028、SPI及PN9。ADCinit=0可能是
+PCIe复位链保持复位，先看link/axi_aresetn，不要直接断言ADC故障。
+恢复后的最终状态及资源见20261011_ADC_PN9调试记录.txt。

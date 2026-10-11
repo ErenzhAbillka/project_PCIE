@@ -19,12 +19,12 @@ if {![file exists $helper]} {error "SmartConnect nested source is missing"}
 make_wrapper -files $bd -top
 update_compile_order -fileset sources_1
 synth_design -rtl -top xdma_pcie_wrapper -part [get_property PART [current_project]] -name acquisition_rtl
-foreach reference {adc_capture_monitor adc_ramp_checker adc_test_snapshot acquisition_router raw_trace_capture wr_addr tgd_tx_frontend ad9122_lvds_tx} {
+foreach reference {adc_capture_monitor adc_pn9_checker adc_test_snapshot acquisition_router raw_trace_capture wr_addr tgd_tx_frontend ad9122_lvds_tx} {
     if {[llength [get_cells -hier -filter "REF_NAME == $reference"]] != 1} {error "Expected one $reference instance"}
 }
 foreach {pattern expected} {
     {.*capture_monitor_inst/(heartbeat_sync_reg|sample_valid_sync_reg)\[0\]/D} 2
-    {.*(ramp_checker_inst/enable_sync_reg|test_snapshot_inst/request_sync_reg|test_snapshot_inst/ack_sync_reg)\[0\]/D} 3
+    {.*(test_checker_inst/enable_sync_reg|test_snapshot_inst/request_sync_reg|test_snapshot_inst/ack_sync_reg)\[0\]/D} 3
     {.*test_snapshot_inst/snapshot_data_reg\[[0-9]+\]/C} 65
     {.*test_snapshot_inst/(error_reg|error_count_reg\[[0-9]+\]|checked_count_reg\[[0-9]+\])/D} 65
     {.*(tx_adc_valid_sync_reg|tx_arm_sync_reg|tx_kill_sync_reg|tx_ready_ctrl_sync_reg|tx_started_ctrl_sync_reg|tx_done_ctrl_sync_reg)\[0\]/D} 6

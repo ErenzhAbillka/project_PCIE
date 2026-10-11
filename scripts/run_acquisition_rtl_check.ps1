@@ -23,16 +23,19 @@ $txFiles = @('ad9122_init_rom.v', 'ad9122_config.v', 'ad9122_spi_master.v', 'ad9
     ForEach-Object { Join-Path $txRoot $_ }
 $top = Join-Path $sources 'old_prj_src\top_layer.v'
 $driver = Join-Path $sources 'old_prj_src\adc_driver.v'
+$adcModel = Join-Path $tests 'tb_ad9643_spi_model.sv'
+$pn9Reference = Join-Path $tests 'adi_pn9_reference.sv'
 $glbl = Join-Path (Split-Path $VivadoBin -Parent) 'data\verilog\src\glbl.v'
 $cases = @(
     @{ Name='tb_writer_fail_stop'; Phase='Writer'; Marker='WRITER_FAIL_STOP_TEST_PASS';
        Sources=@((Join-Path $sources 'wr_addr.v'), (Join-Path $sources 'das_processing\das_iq_control.v')) },
     @{ Name='tb_raw_capture'; Phase='Raw'; Marker='RAW_CAPTURE_TEST_PASS';
-       Sources=@((Join-Path $sources 'das_processing\raw_trace_capture.v'), (Join-Path $sources 'das_processing\das_iq_control.v')) },
-    @{ Name='tb_adc_ramp_checker'; Phase='Adc'; Marker='ADC_RAMP_CHECKER_TEST_PASS'; Sources=@($top) },
-    @{ Name='tb_adc_test_control'; Phase='Adc'; Marker='ADC_TEST_CONTROL_TEST_PASS'; Sources=@($top)+$txFiles; Primitives=$true },
-    @{ Name='tb_adc_driver_primitives'; Phase='Adc'; Marker='ADC_DRIVER_PRIMITIVES_TEST_PASS'; Sources=@($driver); Primitives=$true },
-    @{ Name='tb_top_shared_spi_tx'; Phase='Adc'; Marker='TOP_SHARED_SPI_TX_TEST_PASS'; Sources=@($top,$driver)+$txFiles; Primitives=$true },
+       Sources=@($pn9Reference, (Join-Path $sources 'das_processing\raw_trace_capture.v'), (Join-Path $sources 'das_processing\das_iq_control.v')) },
+    @{ Name='tb_adc_ramp_checker'; Phase='Adc'; Marker='ADC_RAMP_CHECKER_TEST_PASS'; Sources=@($pn9Reference,$top) },
+    @{ Name='tb_adc_test_control'; Phase='Adc'; Marker='ADC_TEST_CONTROL_TEST_PASS'; Sources=@($pn9Reference,$top,$adcModel)+$txFiles; Primitives=$true },
+    @{ Name='tb_adc_driver_primitives'; Phase='Adc'; Marker='ADC_DRIVER_PRIMITIVES_TEST_PASS'; Sources=@($pn9Reference,$driver,$top); Primitives=$true },
+    @{ Name='tb_adc_spi_readback'; Phase='Adc'; Marker='ADC_SPI_READBACK_TEST_PASS'; Sources=@($pn9Reference,$top,$driver,$adcModel)+$txFiles; Primitives=$true },
+    @{ Name='tb_top_shared_spi_tx'; Phase='Adc'; Marker='TOP_SHARED_SPI_TX_TEST_PASS'; Sources=@($pn9Reference,$top,$driver,$adcModel)+$txFiles; Primitives=$true },
     @{ Name='tb_adc_capture_monitor'; Phase='Adc'; Marker='ADC_CAPTURE_MONITOR_TEST_PASS'; Sources=@($top) },
     @{ Name='tb_ad9122_config'; Phase='Dac'; Marker='AD9122_CONFIG_TEST_PASS'; Sources=$txFiles; Primitives=$true },
     @{ Name='tb_ad9122_spi_master'; Phase='Dac'; Marker='AD9122_SPI_TEST_PASS'; Sources=$txFiles; Primitives=$true },

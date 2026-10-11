@@ -1,4 +1,4 @@
-"""Offline RAW1 contract, corruption, publication, ramp and TGD tests."""
+"""Offline RAW1 contract, corruption, publication, PN9, historical ramp and TGD tests."""
 import importlib.util
 import json
 from pathlib import Path
@@ -36,11 +36,114 @@ def packed(words):
     return struct.pack('<16384I', *words)
 
 
+
+# ADI hdl_2016_r1 axi_ad9643_pnmon.v, parallel 30-bit PN9 reference.
+ADI_TAPS = (
+    (8,4),(7,3),(6,2),(5,1),(4,0),(3,8,4),(2,7,3),(1,6,2),(0,5,1),(8,0),
+    (7,8,4),(6,7,3),(5,6,2),(4,5,1),(3,4,0),(2,3,8,4),(1,2,7,3),(0,1,6,2),
+    (8,0,4,5,1),(7,8,3,0),(6,7,2,8,4),(5,6,1,7,3),(4,5,0,6,2),(3,8,5,1),
+    (2,4,7,0),(1,3,6,8,4),(0,2,5,7,3),(8,1,6,2),(7,0,5,1),(6,8,0))
+
+
+def pn9_reference(count, seed=0x1ff, xor_mask=0x3fff):
+    values = []
+    while len(values) < count:
+        out = 0
+        for taps in ADI_TAPS:
+            bit = 0
+            for tap in taps:
+                bit ^= (seed >> tap) & 1
+            out = (out << 1) | bit
+        for word in ((out >> 15) & 0x3fff, out & 0x3fff):
+            word ^= xor_mask
+            values.append(word - 16384 if word & 8192 else word)
+        seed = out & 0x1ff
+    return values[:count]
+
+
 class RawContractTests(unittest.TestCase):
     def decode(self, words=None, **kwargs):
         return raw.decode_bytes(packed(fixture() if words is None else words),
                                 completed=1, completed_after=1,
                                 expected_epoch=77, **kwargs)
+
+    def pn9_frame(self, a=None, b=None, count=16320, **kwargs):
+        return self.decode(fixture(a=pn9_reference(count) if a is None else a,
+                                  b=pn9_reference(count, 0x163) if b is None else b,
+                                  test_mode=6, config_id=0x504e3039, **kwargs))[0][0]
+
+    def test_pn9_full_payload_and_independent_long_reference(self):
+        frame = self.pn9_frame()
+        result = raw.pn9_analysis(frame)
+        self.assertTrue(result['pn9_check_pass'], result)
+        self.assertEqual(result['A']['checked_samples'], 16320)
+        self.assertEqual(len(set(frame.channel_a[:511])), 511)
+        self.assertEqual(frame.channel_a[:511], frame.channel_a[511:1022])
+        # The algorithm is also checked beyond the RAW payload limit, without
+        # pretending this synthetic frame is a valid on-wire RAW1 slot.
+        values = tuple(pn9_reference(17500))
+        long_frame = raw.RawFrame(0, frame.header, values, values, 0)
+        self.assertTrue(raw.pn9_analysis(long_frame)['pn9_check_pass'])
+
+    def test_pn9_rejects_frozen_prediction_faults(self):
+        good = pn9_reference(16320)
+        changes = {
+            'repeat2': [good[i // 2] for i in range(len(good))],
+            'skip': good[:100] + good[101:] + [good[0]],
+            'single_bit': good[:100] + [good[100] ^ 1] + good[101:],
+            'constant': [good[0]] * len(good),
+            'wrong_format': pn9_reference(len(good), xor_mask=0x1fff),
+            'zero_seed': [-1] * len(good),
+        }
+        for name, values in changes.items():
+            with self.subTest(fault=name):
+                result = raw.pn9_analysis(self.pn9_frame(a=values))
+                self.assertFalse(result['pn9_check_pass'], result)
+                self.assertGreater(result['A']['bad_samples'], 0)
+                self.assertEqual(result['B']['bad_samples'], 0)
+                if name == 'single_bit':
+                    self.assertEqual(result['A']['bad_samples'], 1)
+                    self.assertEqual(result['A']['first_bad_indices'], [100])
+                if name == 'zero_seed':
+                    self.assertFalse(result['A']['seed_valid'])
+
+    def test_pn9_seed_all_phases_and_single_bit_errors(self):
+        good = pn9_reference(512)
+        base = self.pn9_frame(count=2)
+        for index in range(511):
+            values = tuple(good[index:index + 2])
+            frame = raw.RawFrame(0, base.header, values, values, 0)
+            self.assertTrue(raw.pn9_analysis(frame)['pn9_check_pass'], index)
+            for bit in range(14):
+                corrupt = ((values[0] & 0x3fff) ^ (1 << bit))
+                corrupt = corrupt - 16384 if corrupt & 8192 else corrupt
+                frame = raw.RawFrame(0, base.header, (corrupt, values[1]), values, 0)
+                result = raw.pn9_analysis(frame)
+                self.assertFalse(result['A']['seed_valid'], (index, bit))
+                self.assertFalse(result['pn9_check_pass'])
+        ramp_frame = self.decode()[0][0]
+        self.assertFalse(raw.pn9_analysis(ramp_frame)['pn9_check_pass'])
+
+    def test_pn9_cli_exit_status_and_summary(self):
+        with tempfile.TemporaryDirectory() as directory:
+            directory = Path(directory)
+            path = directory / 'pn9.bin'
+            values = pn9_reference(16320)
+            command = [sys.executable, str(ROOT / 'scripts/decode_raw.py'), str(path),
+                       '--completed', '1', '--completed-after', '1', '--expected-epoch', '77',
+                       '--expected-config-id', '0x504e3039', '--pn9', '--output', str(directory / 'out')]
+            for bad in (False, True):
+                samples = values.copy()
+                if bad:
+                    samples[100] ^= 1
+                path.write_bytes(packed(fixture(a=samples, b=values, test_mode=6, config_id=0x504e3039)))
+                result = subprocess.run(command, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 3 if bad else 0, result.stdout + result.stderr)
+                report = json.loads((directory / 'out/summary.json').read_text())
+                self.assertTrue(report['publication_verified'])
+                self.assertEqual(report['pn9'][0]['pn9_check_pass'], not bad)
+            conflict = subprocess.run(command + ['--ramp'], capture_output=True, text=True)
+            self.assertEqual(conflict.returncode, 2)
 
     def test_signed_packing_and_ramp_wrap(self):
         frames, report = self.decode(expected_config_id=19)

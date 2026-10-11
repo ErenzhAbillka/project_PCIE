@@ -76,7 +76,7 @@ def _decode_slot(words, slot, expected_epoch=None, expected_config_id=None):
         raise ValueError('not_current_single_shot_contract')
     if slot != h.frame_seq % 16:
         raise ValueError('physical_ring_slot')
-    if h.test_mode not in (0, 15):
+    if h.test_mode not in (0, 6, 15):
         raise ValueError('unsupported_ADC_test_mode')
     if h.error_flags:
         raise ValueError('frame_error_flags')
@@ -181,6 +181,48 @@ def ramp_analysis(frame, direction=-1):
     return result
 
 
+def pn9_analysis(frame):
+    """AD9643 0x0D=06, 0x14=05: fixed XOR 3FFF, 15 PN bits/sample.
+
+    Validate the first word before seeding each independent 9-bit predictor.
+    After that, advance only the predicted state, including after a mismatch.
+    No phase search, format inference, observed-word reseeding or row filtering.
+    """
+    result = {'adc_test_mode_is_pn9': frame.header.test_mode == 6,
+              'reference_output_mode': '0x05', 'xor_mask': '0x3fff',
+              'polynomial': 'x^9+x^5+1', 'bits_per_sample': 15}
+    for name, samples in (('A', frame.channel_a), ('B', frame.channel_b)):
+        bad = []
+        seed_valid = False
+        state = 0
+        for index, sample in enumerate(samples):
+            word = (sample & 0x3FFF) ^ 0x3FFF
+            if index == 0:
+                state = word & 0x1FF
+                seed_bits = sum((((word >> (13 - k)) ^ (word >> (9 - k))) & 1)
+                                << (4 - k) for k in range(5))
+                seed_valid = state != 0 and (word & 0x1F) == seed_bits
+                if not seed_valid:
+                    bad.append(0)
+            else:
+                expected = 0
+                for _ in range(15):
+                    bit = ((state >> 8) ^ (state >> 4)) & 1
+                    state = ((state << 1) | bit) & 0x1FF
+                    expected = (expected << 1) | bit
+                if word != (expected & 0x3FFF):
+                    bad.append(index)
+        result[name] = {'samples': len(samples), 'seed_valid': seed_valid,
+                        'checked_samples': len(samples), 'bad_samples': len(bad),
+                        'first_bad_indices': bad[:16]}
+    result['pn9_check_pass'] = (frame.header.test_mode == 6 and
+                               len(frame.channel_a) == len(frame.channel_b) >= 2 and
+                               all(result[ch]['seed_valid'] and not result[ch]['bad_samples']
+                                   for ch in ('A', 'B')))
+    result['limits'] = 'Fixed-format digital sequence validation only; does not prove analog behavior, A/B identity, eye margin or sample-clock frequency.'
+    return result
+
+
 def tgd_match(frame, plan, channel='A', plan_path=None):
     """Real ADC -> FFT analytic signal -> existing offline TGD matched filter.
 
@@ -270,7 +312,10 @@ def main():
     parser.add_argument('--first-slot', type=int, default=0)
     parser.add_argument('--allow-unverified', action='store_true',
                         help='Permit diagnostic decoding without fresh-publication evidence')
-    parser.add_argument('--ramp', action='store_true')
+    test = parser.add_mutually_exclusive_group()
+    test.add_argument('--ramp', action='store_true')
+    test.add_argument('--pn9', action='store_true',
+                      help='Strict AD9643 PN9 (0x0D=06, output mode 0x14=05)')
     parser.add_argument('--ramp-direction', type=int, choices=(-1, 1), default=-1)
     parser.add_argument('--tgd-plan', type=Path)
     parser.add_argument('--channel', choices=('A', 'B'), default='A')
@@ -294,6 +339,8 @@ def main():
                                  for i, (a, b) in enumerate(zip(frame.channel_a, frame.channel_b)))
         if args.ramp:
             summary['ramp'] = [ramp_analysis(frame, args.ramp_direction) for frame in frames]
+        if args.pn9:
+            summary['pn9'] = [pn9_analysis(frame) for frame in frames]
         if args.tgd_plan:
             plan = json.loads(args.tgd_plan.read_text(encoding='utf-8-sig'))
             summary['tgd'] = []
@@ -308,6 +355,8 @@ def main():
         (args.output / 'summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
         print(json.dumps(summary, indent=2))
         if args.ramp and not all(r['ramp_check_pass'] for r in summary['ramp']):
+            return 3
+        if args.pn9 and not all(r['pn9_check_pass'] for r in summary['pn9']):
             return 3
         return 0
     except (ValueError, KeyError, OSError, ImportError) as error:

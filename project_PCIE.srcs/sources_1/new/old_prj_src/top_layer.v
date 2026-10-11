@@ -29,6 +29,9 @@ module top_layer #(
     output wire [31:0] adc_test_checked_count,
     output wire [31:0] adc_test_error_count,
     output wire        adc_test_config_locked,
+    // Low-to-high bytes: ADC registers 01/05/0b/0d/14/16/17. Bit 56 is
+    // transaction-complete valid; bit 57 records the configured test target.
+    output wire [63:0] adc_spi_readback,
     // Electrical TX01 profile only: RAW + normal ADC, one chirp per reset.
     input  wire        tx_enable,
     input  wire        tx_abort,
@@ -81,7 +84,7 @@ module top_layer #(
     end
     wire ctrl_rst_n = ctrl_reset_sync[1];
     reg sample_capture_enable = 0;
-    reg ramp_check_enable = 0;
+    reg test_check_enable = 0;
     reg test_mode_target = 0;
 
     wire dac_forward_clk;
@@ -112,7 +115,7 @@ module top_layer #(
                  adc_test_enable == test_mode_target &&
                  (!tx_enable || tx_init_done)) run_latched <= 1;
     end
-    assign adc_test_active = ramp_check_enable;
+    assign adc_test_active = test_check_enable;
     assign adc_test_config_locked = run_latched;
     wire stable_acquisition_enable = run_latched && init_done;
     wire waveform_run;
@@ -147,40 +150,43 @@ module top_layer #(
 
     // Digital tests run before normal acquisition and can remain enabled for
     // board bring-up. Counts cross domains as one held request/ack snapshot.
-    wire checker_reset_n, ramp_error;
-    wire [31:0] ramp_checked_count, ramp_error_count;
+    wire checker_reset_n, test_error;
+    wire [31:0] test_checked_count, test_error_count;
     (* ASYNC_REG = "TRUE" *) reg [1:0] checker_reset_sync = 0;
     always @(posedge sys_clk or negedge ctrl_rst_n) begin
         if (!ctrl_rst_n) checker_reset_sync <= 0;
         else checker_reset_sync <= {checker_reset_sync[0],1'b1};
     end
     assign checker_reset_n = checker_reset_sync[1];
-    adc_ramp_checker ramp_checker_inst (
+    adc_pn9_checker test_checker_inst (
         .sample_clk(sys_clk), .reset_n(checker_reset_n),
-        .enable_async(ramp_check_enable), .sample_valid(adc_data_valid),
+        .enable_async(test_check_enable), .sample_valid(adc_data_valid),
         .ch_a(adc_data_ch1), .ch_b(adc_data_ch2),
-        .error(ramp_error), .checked_count(ramp_checked_count), .error_count(ramp_error_count)
+        .error(test_error), .checked_count(test_checked_count), .error_count(test_error_count)
     );
     adc_test_snapshot test_snapshot_inst (
         .ctrl_clk(ctrl_clk), .ctrl_reset_n(ctrl_rst_n),
         .sample_clk(sys_clk), .sample_reset_n(checker_reset_n),
-        .source_error(ramp_error), .source_checked_count(ramp_checked_count),
-        .source_error_count(ramp_error_count), .error(adc_test_error),
+        .source_error(test_error), .source_checked_count(test_checked_count),
+        .source_error_count(test_error_count), .error(adc_test_error),
         .checked_count(adc_test_checked_count), .error_count(adc_test_error_count)
     );
 
-    // ADC/AD9516 use 16-bit instruction + 8-bit data writes. The AD9122 has
+    // ADC/AD9516 use 16-bit instruction + 8-bit data. The AD9122 has
     // its own 8+8-bit read/write engine. Grant it only after ADC mode is stable;
     // hold ownership through command gaps so SDIO never has two drivers.
     assign adc_sync = 1'b0;
     reg [23:0] spi_shift;
+    reg [7:0] spi_rx;
+    reg spi_read;
     reg adc_device_sclk;
     wire spi_sdi, dac_bus_owned, dac_sclk, dac_sdo, dac_oe, dac_cs_n;
+    wire spi_read_data_phase;
     assign device_spi_sclk = dac_bus_owned ? dac_sclk : adc_device_sclk;
     assign dac_spi_csb = dac_bus_owned ? dac_cs_n : 1'b1;
     IOBUF spi_sdio_buffer (
         .I(dac_bus_owned ? dac_sdo : spi_shift[23]),
-        .T(dac_bus_owned ? !dac_oe : (adk_spi_csb && adc_spi_csb)),
+        .T(dac_bus_owned ? !dac_oe : ((adk_spi_csb && adc_spi_csb) || spi_read_data_phase)),
         .O(spi_sdi), .IO(device_spi_sda)
     );
 
@@ -260,18 +266,25 @@ module top_layer #(
         (CTRL_CLK_HZ + 2 * SPI_CLK_HZ - 1) / (2 * SPI_CLK_HZ);
     localparam [3:0] WAIT_DELAY = 0, START_WORD = 1, SPI_RISE = 2,
                      SPI_FALL = 3, CS_HOLD = 4, CS_GAP = 5, DONE = 6,
-                     TEST_WINDOW = 7, MODE_READY = 8;
-    localparam [1:0] CLOCK_CONFIG = 0, ADC_TEST_CONFIG = 1, ADC_NORMAL_CONFIG = 2;
+                     TEST_WINDOW = 7, MODE_READY = 8, READ_BEGIN = 9;
+    localparam [1:0] CLOCK_CONFIG = 0, ADC_TEST_CONFIG = 1,
+                     ADC_NORMAL_CONFIG = 2, ADC_READBACK = 3;
     reg [3:0] state;
     reg [3:0] resume_state;
+    reg [3:0] readback_resume_state;
     reg [1:0] phase;
     reg [6:0] word_index;
     reg [4:0] bit_index;
     reg [31:0] wait_count;
     reg [31:0] spi_count;
+    reg [55:0] adc_readback_bytes;
+    reg adc_readback_valid, adc_readback_target;
+    assign spi_read_data_phase = spi_read && bit_index < 8;
+    assign adc_spi_readback = {6'b0, adc_readback_target,
+                               adc_readback_valid, adc_readback_bytes};
 
-    // Completion means the writes and settling delays finished, NOT that PLL
-    // lock was read back. init_done is in ctrl_clk; adc_data_valid is in sys_clk.
+    // Completion includes ADC readback, but does not validate the returned
+    // values or read AD9516 PLL lock. init_done is in ctrl_clk.
     assign init_done = (state == DONE);
 
     // Register values from Hongney's ad9516_spi_wr_config.v, 10 MHz reference
@@ -373,7 +386,7 @@ module top_layer #(
                 3:  adc_word = 24'h000503; // Both channels.
                 4:  adc_word = 24'h000800; // Power up.
                 5:  adc_word = 24'h001000; // Zero offset adjustment.
-                6:  adc_word = 24'h000d0f; // Ramp test pattern.
+                6:  adc_word = 24'h000d06; // PN9 short test pattern.
                 7:  adc_word = 24'h001405; // Normal polarity, TWO'S COMPLEMENT.
                 8:  adc_word = 24'h001600; // Interleaved A/B; DCO not inverted.
                 9:  adc_word = 24'h001700; // Disable extra DCO delay.
@@ -391,21 +404,42 @@ module top_layer #(
         end
     endfunction
 
+    function [7:0] adc_read_address;
+        input [6:0] index;
+        begin
+            case (index)
+                0: adc_read_address = 8'h01;
+                1: adc_read_address = 8'h05;
+                2: adc_read_address = 8'h0b;
+                3: adc_read_address = 8'h0d;
+                4: adc_read_address = 8'h14;
+                5: adc_read_address = 8'h16;
+                default: adc_read_address = 8'h17;
+            endcase
+        end
+    endfunction
+
     always @(posedge ctrl_clk or negedge ctrl_rst_n) begin
         if (!ctrl_rst_n) begin
             state <= WAIT_DELAY;
             resume_state <= START_WORD;
+            readback_resume_state <= TEST_WINDOW;
             phase <= CLOCK_CONFIG;
             word_index <= 0;
             bit_index <= 0;
             wait_count <= POWERUP_DELAY_CYCLES;
             spi_count <= 0;
             spi_shift <= 0;
+            spi_rx <= 0;
+            spi_read <= 0;
+            adc_readback_bytes <= 0;
+            adc_readback_valid <= 0;
+            adc_readback_target <= 0;
             adc_device_sclk <= 1'b0;
             adk_spi_csb <= 1'b1;
             adc_spi_csb <= 1'b1;
             sample_capture_enable <= 0;
-            ramp_check_enable <= 0;
+            test_check_enable <= 0;
             test_mode_target <= 0;
         end else begin
             case (state)
@@ -416,18 +450,26 @@ module top_layer #(
                         wait_count <= wait_count - 1'b1;
                 end
                 START_WORD: begin
+                    spi_read <= (phase == ADC_READBACK);
+                    spi_rx <= 0;
                     if (phase == CLOCK_CONFIG)
                         spi_shift <= clock_word(word_index);
                     else if (phase == ADC_TEST_CONFIG)
                         spi_shift <= adc_word(word_index);
+                    else if (phase == ADC_READBACK)
+                        spi_shift <= {8'h80, adc_read_address(word_index), 8'h00};
                     else begin
                         if (word_index == 0) begin
-                            sample_capture_enable <= 0;
-                            ramp_check_enable <= 0;
+                            test_check_enable <= 0;
+                            adc_readback_valid <= 0;
                         end
+                        // valid falls asynchronously with capture_enable. Let
+                        // the checker synchronize its disable during the full
+                        // channel-select SPI frame before closing capture.
+                        if (word_index == 1) sample_capture_enable <= 0;
                         case (word_index)
                             0: spi_shift <= 24'h000503;
-                            1: spi_shift <= test_mode_target ? 24'h000d0f : 24'h000d00;
+                            1: spi_shift <= test_mode_target ? 24'h000d06 : 24'h000d00;
                             default: spi_shift <= 24'h00ff01;
                         endcase
                     end
@@ -441,6 +483,8 @@ module top_layer #(
                 SPI_RISE: begin
                     if (spi_count == 0) begin
                         adc_device_sclk <= 1'b1;
+                        if (spi_read_data_phase)
+                            spi_rx <= {spi_rx[6:0], spi_sdi};
                         spi_count <= SPI_HALF_CYCLES - 1;
                         state <= SPI_FALL;
                     end else
@@ -454,6 +498,8 @@ module top_layer #(
                             state <= CS_HOLD;
                         else begin
                             spi_shift <= {spi_shift[22:0], 1'b0};
+                            // 8 -> 7 releases SDIO at the last instruction
+                            // falling edge, before the first returned data bit.
                             bit_index <= bit_index - 1'b1;
                             state <= SPI_RISE;
                         end
@@ -464,6 +510,8 @@ module top_layer #(
                     if (spi_count == 0) begin
                         adk_spi_csb <= 1'b1;
                         adc_spi_csb <= 1'b1;
+                        if (phase == ADC_READBACK)
+                            adc_readback_bytes[word_index * 8 +: 8] <= spi_rx;
                         spi_count <= SPI_HALF_CYCLES - 1;
                         state <= CS_GAP;
                     end else
@@ -476,7 +524,10 @@ module top_layer #(
                         word_index <= word_index + 1'b1;
                         state <= START_WORD;
                         resume_state <= START_WORD;
-                        if (phase == CLOCK_CONFIG && word_index == 71) begin
+                        if (phase == ADC_READBACK && word_index == 6) begin
+                            adc_readback_valid <= 1;
+                            state <= readback_resume_state;
+                        end else if (phase == CLOCK_CONFIG && word_index == 71) begin
                             // Let VCO calibration finish before software SYNC.
                             wait_count <= CLOCK_SETTLE_CYCLES;
                             state <= WAIT_DELAY;
@@ -491,12 +542,14 @@ module top_layer #(
                         end else if (phase == ADC_TEST_CONFIG && word_index == 19) begin
                             sample_capture_enable <= 1;
                             wait_count <= ADC_SETTLE_CYCLES;
-                            resume_state <= TEST_WINDOW;
+                            resume_state <= READ_BEGIN;
+                            readback_resume_state <= TEST_WINDOW;
                             state <= WAIT_DELAY;
                         end else if (phase == ADC_NORMAL_CONFIG && word_index == 2) begin
                             sample_capture_enable <= 1;
                             wait_count <= ADC_SETTLE_CYCLES;
-                            resume_state <= MODE_READY;
+                            resume_state <= READ_BEGIN;
+                            readback_resume_state <= MODE_READY;
                             state <= WAIT_DELAY;
                         end
                     end
@@ -511,13 +564,13 @@ module top_layer #(
                         test_mode_target <= adc_test_enable;
                         phase <= ADC_NORMAL_CONFIG;
                         word_index <= 0;
-                        sample_capture_enable <= 0;
-                        ramp_check_enable <= 0;
+                        test_check_enable <= 0;
+                        adc_readback_valid <= 0;
                         state <= START_WORD;
                     end
                 end
                 TEST_WINDOW: begin
-                    ramp_check_enable <= 1;
+                    test_check_enable <= 1;
                     phase <= ADC_NORMAL_CONFIG;
                     word_index <= 0;
                     test_mode_target <= !run_latched && adc_test_enable;
@@ -526,8 +579,16 @@ module top_layer #(
                     state <= WAIT_DELAY;
                 end
                 MODE_READY: begin
-                    ramp_check_enable <= test_mode_target;
+                    test_check_enable <= test_mode_target;
                     state <= DONE;
+                end
+                READ_BEGIN: begin
+                    phase <= ADC_READBACK;
+                    word_index <= 0;
+                    adc_readback_bytes <= 0;
+                    adc_readback_valid <= 0;
+                    adc_readback_target <= (readback_resume_state == TEST_WINDOW) || test_mode_target;
+                    state <= START_WORD;
                 end
                 default: begin
                     state <= WAIT_DELAY;
@@ -539,8 +600,10 @@ module top_layer #(
                     adk_spi_csb <= 1'b1;
                     adc_spi_csb <= 1'b1;
                     sample_capture_enable <= 0;
-                    ramp_check_enable <= 0;
+                    test_check_enable <= 0;
                     test_mode_target <= 0;
+                    spi_read <= 0;
+                    adc_readback_valid <= 0;
                 end
             endcase
         end
@@ -650,11 +713,12 @@ module adc_capture_monitor #(
 `endif
 endmodule
 
-// AD9643 0x0d=0x0f selects a 14-bit modulo ramp on each channel. With
-// 0x14=0x05, bit 2 inverts DIGITAL test patterns: consecutive codes decrement.
-// See ADI engineer's AD9643 test-modes clarification and register table 15.
-// Seed A/B independently: the common ramp cannot establish absolute A/B identity.
-module adc_ramp_checker #(
+// AD9643 PN9 (0x0d=0x06), with the fixed 0x14=0x05 output format. ADI's
+// axi_ad9643_pnmon advances 30 PN bits per two samples, hiding one bit in each
+// 15-bit word. A/B seed independently; thereafter only predictions update state.
+// Raw XOR 0x3fff normalization matches the actual register readback and strict
+// 32-training/992-prediction ILA check. This cannot establish absolute A/B identity.
+module adc_pn9_checker #(
     parameter integer SETTLE_SAMPLES = 32,
     parameter integer COUNT_WIDTH = 32
 )(
@@ -667,9 +731,39 @@ module adc_ramp_checker #(
     localparam integer WARMUP_WIDTH = SETTLE_SAMPLES < 2 ? 1 : $clog2(SETTLE_SAMPLES+1);
     reg [WARMUP_WIDTH-1:0] warmup;
     reg seeded;
-    reg [13:0] previous_a, previous_b;
-    wire pair_error = ch_a != (previous_a - 14'd1) ||
-                      ch_b != (previous_b - 14'd1);
+    reg [8:0] state_a, state_b;
+    wire [13:0] normalized_a = ch_a ^ 14'h3fff;
+    wire [13:0] normalized_b = ch_b ^ 14'h3fff;
+    function [14:0] pn9_next;
+        input [8:0] state;
+        reg [8:0] next_state;
+        reg [14:0] word;
+        reg next_bit;
+        integer i;
+        begin
+            next_state = state;
+            word = 0;
+            for (i = 0; i < 15; i = i + 1) begin
+                next_bit = next_state[8] ^ next_state[4];
+                next_state = {next_state[7:0], next_bit};
+                word = {word[13:0], next_bit};
+            end
+            pn9_next = word;
+        end
+    endfunction
+    function pn9_seed_valid;
+        input [13:0] word;
+        begin
+            pn9_seed_valid = word[8:0] != 0 && word[4:0] == {
+                word[13] ^ word[9], word[12] ^ word[8], word[11] ^ word[7],
+                word[10] ^ word[6], word[9] ^ word[5]};
+        end
+    endfunction
+    wire [14:0] predicted_a = pn9_next(state_a);
+    wire [14:0] predicted_b = pn9_next(state_b);
+    wire seed_error = !pn9_seed_valid(normalized_a) || !pn9_seed_valid(normalized_b);
+    wire pair_error = normalized_a != predicted_a[13:0] ||
+                      normalized_b != predicted_b[13:0];
     always @(posedge sample_clk or negedge reset_n) begin
         if (!reset_n) enable_sync <= 0;
         else enable_sync <= {enable_sync[0], enable_async};
@@ -678,36 +772,51 @@ module adc_ramp_checker #(
         if (!reset_n) begin
             warmup <= 0;
             seeded <= 0;
-            previous_a <= 0;
-            previous_b <= 0;
+            state_a <= 0;
+            state_b <= 0;
             error <= 0;
             checked_count <= 0;
             error_count <= 0;
-        end else if (!enable_sync[1] || !sample_valid) begin
-            // Mode changes/invalid input restart the seed, not diagnostic history.
+        end else if (!enable_sync[1]) begin
+            // Only disabling the test or resetting permits a fresh seed.
+            // Mode changes retain sticky diagnostic history and counters.
             warmup <= 0;
             seeded <= 0;
-        end else if (warmup != SETTLE_SAMPLES) begin
-            warmup <= warmup + 1'b1;
-            seeded <= 0;
-        end else begin
-            previous_a <= ch_a;
-            previous_b <= ch_b;
-            if (!seeded) seeded <= 1;
-            else begin
-                if (!(&checked_count)) checked_count <= checked_count + 1'b1;
-                if (pair_error) begin
-                    error <= 1;
-                    // Count one error per A/B sample pair, even if both fail.
-                    if (!(&error_count)) error_count <= error_count + 1'b1;
+            state_a <= 0;
+            state_b <= 0;
+        end else if (!seeded) begin
+            if (sample_valid) begin
+                if (warmup != SETTLE_SAMPLES) warmup <= warmup + 1'b1;
+                else begin
+                    state_a <= normalized_a[8:0];
+                    state_b <= normalized_b[8:0];
+                    seeded <= 1;
+                    // Seeding is not a prediction and does not add checked_count.
+                    // A malformed or zero seed still adds one pair error.
+                    if (seed_error) begin
+                        error <= 1;
+                        if (!(&error_count)) error_count <= error_count + 1'b1;
+                    end
                 end
+            end
+        end else begin
+            if (!(&checked_count)) checked_count <= checked_count + 1'b1;
+            if (sample_valid) begin
+                state_a <= predicted_a[8:0];
+                state_b <= predicted_b[8:0];
+            end
+            // Invalid samples cannot silently re-seed or advance the predictor.
+            if (!sample_valid || pair_error) begin
+                error <= 1;
+                // Count one error per A/B sample pair, even if both fail.
+                if (!(&error_count)) error_count <= error_count + 1'b1;
             end
         end
     end
 `ifndef SYNTHESIS
     initial begin
         if (SETTLE_SAMPLES < 0 || COUNT_WIDTH < 1)
-            $fatal(1, "Invalid adc_ramp_checker parameters");
+            $fatal(1, "Invalid adc_pn9_checker parameters");
     end
 `endif
 endmodule

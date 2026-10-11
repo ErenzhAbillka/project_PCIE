@@ -2,10 +2,10 @@
 <Root MajorVersion="0" MinorVersion="36">
   <CompositeFile CompositeFileTopName="xdma_pcie" CanBeSetAsTop="true" CanDisplayChildGraph="true">
     <Description>Composite Fileset</Description>
-    <Generation Name="SYNTHESIS" State="GENERATED" Timestamp="1791641394"/>
-    <Generation Name="IMPLEMENTATION" State="GENERATED" Timestamp="1791641394"/>
-    <Generation Name="SIMULATION" State="GENERATED" Timestamp="1791641394"/>
-    <Generation Name="HW_HANDOFF" State="GENERATED" Timestamp="1791641394"/>
+    <Generation Name="SYNTHESIS" State="GENERATED" Timestamp="1791704497"/>
+    <Generation Name="IMPLEMENTATION" State="GENERATED" Timestamp="1791704497"/>
+    <Generation Name="SIMULATION" State="GENERATED" Timestamp="1791704497"/>
+    <Generation Name="HW_HANDOFF" State="GENERATED" Timestamp="1791704497"/>
     <FileCollection Name="SOURCES" Type="SOURCES">
       <File Name="ip\xdma_pcie_ddr4_0_2\xdma_pcie_ddr4_0_2.xci" Type="IP">
         <Instance HierarchyPath="ddr4_0"/>
@@ -233,6 +233,22 @@
       </File>
       <File Name="ip\xdma_pcie_acquisition_router_0_0\xdma_pcie_acquisition_router_0_0.xci" Type="IP">
         <Instance HierarchyPath="acquisition_router_0"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_compat_bram_ctrl_0\xdma_pcie_compat_bram_ctrl_0.xci" Type="IP">
+        <Instance HierarchyPath="compat_bram_ctrl"/>
+        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SYNTHESIS"/>
+        <UsedIn Val="IMPLEMENTATION"/>
+        <UsedIn Val="SIMULATION"/>
+      </File>
+      <File Name="ip\xdma_pcie_compat_bram_0\xdma_pcie_compat_bram_0.xci" Type="IP">
+        <Instance HierarchyPath="compat_bram"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
         <Library Name="xil_defaultlib"/>
         <UsedIn Val="SYNTHESIS"/>

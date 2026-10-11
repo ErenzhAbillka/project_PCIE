@@ -2,32 +2,41 @@
 // Actual production top, ADC primitives, DAC frontend/SPI/PHY, LFM and ROM.
 // Behavioral AD9643/AD9122 devices provide ideal pins and real shared tri SDIO.
 module tb_top_shared_spi_tx;
+    import adi_pn9_reference::*;
     reg ctrl_clk=0,dco=0,rst_n=0,acquire=0,tx_enable=0,tx_abort=0;
     always #2.5 ctrl_clk=~ctrl_clk;
     always #4 dco=~dco;
-    reg [13:0] adc_pins=0,pattern_a=14'd10,pattern_b=14'd3011;
-    reg pending_ramp=0,committed_ramp=0;
+    reg [13:0] adc_pins=0,pattern_a=0,pattern_b=0;
+    reg previous_test_a=0,previous_test_b=0;
+    wire committed_ramp;
     always @(negedge dco) begin
-        #3.3; adc_pins=pattern_a;
-        pattern_a=committed_ramp ? pattern_a-14'd1 : pattern_a+14'd3;
+        #3.3;
+        if(committed_ramp && !previous_test_a) pattern_a=pn9_first(9'h1ff);
+        adc_pins=pattern_a;
+        pattern_a=committed_ramp ? pn9_next(pattern_a) : pattern_a+14'd3;
+        previous_test_a=committed_ramp;
     end
     always @(posedge dco) begin
-        #3.3; adc_pins=pattern_b;
-        pattern_b=committed_ramp ? pattern_b-14'd1 : pattern_b+14'd7;
+        #3.3;
+        if(committed_ramp && !previous_test_b) pattern_b=pn9_first(9'h163);
+        adc_pins=pattern_b;
+        pattern_b=committed_ramp ? pn9_next(pattern_b) : pattern_b+14'd7;
+        previous_test_b=committed_ramp;
     end
     tri sdio;
     wire sclk,adc_cs,clock_cs,dac_cs,adc_ready,adc_valid,tx_ready,tx_fault,locked;
     wire [31:0] status,stream_data;
     wire [1:0] stream_user;
-    wire stream_valid,sample_clk;
+    wire stream_valid,sample_clk,test_error;
     wire [15:0] dp,dn;
     wire dcp,dcn,fp,fn;
     top_layer #(.SPI_CLK_HZ(50000000),.POWERUP_DELAY_CYCLES(4),
         .CLOCK_SETTLE_CYCLES(4),.ADC_TEST_CYCLES(300),.ADC_SETTLE_CYCLES(24),
         .TX_SINE_MEM("sine_4096.mem")) dut(
         .ctrl_clk(ctrl_clk),.rst_n(rst_n),.acquisition_enable(acquire),
-        .adc_test_enable(1'b0),.adc_test_active(),.adc_test_error(),
+        .adc_test_enable(1'b0),.adc_test_active(),.adc_test_error(test_error),
         .adc_test_checked_count(),.adc_test_error_count(),.adc_test_config_locked(locked),
+        .adc_spi_readback(),
         .tx_enable(tx_enable),.tx_abort(tx_abort),.tx_init_done(tx_ready),
         .tx_fault(tx_fault),.tx_status(status),.dac_data_p(dp),.dac_data_n(dn),
         .dac_dci_p(dcp),.dac_dci_n(dcn),.dac_frame_p(fp),.dac_frame_n(fn),
@@ -42,16 +51,14 @@ module tb_top_shared_spi_tx;
     defparam dut.tx_frontend_inst.RESET_HOLD_CYCLES=4;
 
     reg [23:0] adc_packet=0;
-    integer adc_bits=0,adc_words=0,clock_words=0;
-    always @(negedge adc_cs or negedge clock_cs) begin adc_packet=0;adc_bits=0;end
-    always @(posedge sclk) if(!adc_cs || !clock_cs) begin
+    integer adc_bits=0,clock_words=0;
+    wire [31:0] adc_words,adc_reads;
+    tb_ad9643_spi_model adc_model(.reset_n(rst_n),.sclk(sclk),.cs_n(adc_cs),
+        .master_t(dut.spi_sdio_buffer.T),.master_sdi(dut.spi_sdi),.sdio(sdio),
+        .committed_ramp(committed_ramp),.write_count(adc_words),.read_count(adc_reads));
+    always @(negedge clock_cs) begin adc_packet=0;adc_bits=0;end
+    always @(posedge sclk) if(!clock_cs) begin
         adc_packet={adc_packet[22:0],sdio};adc_bits=adc_bits+1;
-    end
-    always @(posedge adc_cs) if(rst_n && adc_bits!=0) begin
-        if(adc_bits!=24) $fatal(1,"ADC shared SPI length wrong");
-        adc_words=adc_words+1;
-        if(adc_packet[23:8]==16'h000d) pending_ramp=adc_packet[7:0]==8'h0f;
-        if(adc_packet==24'h00ff01) committed_ramp=pending_ramp;
     end
     always @(posedge clock_cs) if(rst_n && adc_bits!=0) begin
         if(adc_bits!=24) $fatal(1,"Clock shared SPI length wrong");
@@ -134,10 +141,10 @@ module tb_top_shared_spi_tx;
     task reset_system;
         begin
             @(negedge ctrl_clk);rst_n=0;acquire=0;tx_enable=0;tx_abort=0;
-            pending_ramp=0;committed_ramp=0;
             repeat(45) @(negedge ctrl_clk);
             rst_n=1;
-            wait(adc_ready);repeat(20) @(negedge ctrl_clk);
+            wait(adc_ready);repeat(100) @(negedge ctrl_clk);
+            if(test_error) $fatal(1,"Real PN9 DDR startup or PN9/normal transition failed");
         end
     endtask
     integer first_dac_words,first_adc_words,first_clock_words,first_nonzero;

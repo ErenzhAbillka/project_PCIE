@@ -15,7 +15,8 @@ update_module_reference [get_ips *top_layer*]
 set_property CONFIG.TX_SINE_MEM [file normalize [file join $txdir sine_4096.mem]] [get_bd_cells top_layer_0]
 validate_bd_design -force
 save_bd_design
-# Global synthesis avoids the Windows Script Host run launcher.
+# Global top-level synthesis avoids the main Windows Script Host run launcher.
+# opt_design can still launch dbg_hub via WSH; see manual_debug_hub.tcl if it fails.
 set_property generate_synth_checkpoint false [get_files */xdma_pcie.bd]
 # Vivado 2018.3 may invalidate nested SmartConnect products during validation.
 # Reset generated targets only if the known nested HDL helper is absent.
@@ -31,6 +32,7 @@ write_checkpoint -force $out/synth.dcp
 # Debug cores can be black boxes here and are linked during opt_design.
 # Implementation DRC (including INBB-3) remains the final black-box check.
 opt_design
+write_checkpoint -force $out/opt.dcp
 place_design
 phys_opt_design
 route_design
