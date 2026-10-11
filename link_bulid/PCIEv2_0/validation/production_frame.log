@@ -1,0 +1,20 @@
+#-----------------------------------------------------------
+# xsim v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Sun Oct  4 21:32:34 2026
+# Process ID: 32032
+# Current directory: E:/Documents/ChatGPT/project_PCIE/das_template_integration/production_sim
+# Command line: xsim.exe -mode tcl -source {xsim.dir/production_test/xsim_script.tcl}
+# Log file: E:/Documents/ChatGPT/project_PCIE/das_template_integration/production_sim/xsim.log
+# Journal file: E:/Documents/ChatGPT/project_PCIE/das_template_integration/production_sim\xsim.jou
+#-----------------------------------------------------------
+source xsim.dir/production_test/xsim_script.tcl
+# xsim {production_test} -autoloadwcfg -runall
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+run -all
+DAS_PRODUCTION_FRAME_PASS: 100 x 16320 samples, ROI at 16000, all 16384 frame words checked
+$finish called at time : 8435657500 ps : File "E:/Documents/ChatGPT/project_PCIE/das_template_integration/sim/tb_production_frame.sv" Line 52
+exit
+INFO: [Common 17-206] Exiting xsim at Sun Oct  4 21:32:41 2026...

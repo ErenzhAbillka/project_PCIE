@@ -17,7 +17,8 @@ module adc_driver #(
     output wire [13:0] adc_data_out_ch1,
     output wire [13:0] adc_data_out_ch2,
     output wire        adc_data_clk_bufg,
-    output wire        adc_data_valid
+    output wire        adc_data_valid,
+    output wire        dac_forward_clk
 );
     wire adc_dco;
     wire [13:0] data_buffered;
@@ -27,21 +28,25 @@ module adc_driver #(
     IBUFDS #(.IBUF_LOW_PWR("FALSE")) dco_ibuf (
         .I(adc_data_clk_p), .IB(adc_data_clk_n), .O(adc_dco)
     );
-    wire adc_clk_raw, adc_fb_raw, adc_fb, adc_clk_locked;
+    wire adc_clk_raw, dac_clk_raw, adc_fb_raw, adc_fb, adc_clk_locked;
     MMCME3_ADV #(
         .CLKIN1_PERIOD(8.000), .DIVCLK_DIVIDE(1),
         .CLKFBOUT_MULT_F(8.000), .COMPENSATION("AUTO"),
-        .CLKOUT0_DIVIDE_F(8.000), .CLKOUT0_PHASE(SAMPLE_PHASE_DEG)
+        .CLKOUT0_DIVIDE_F(8.000), .CLKOUT0_PHASE(SAMPLE_PHASE_DEG),
+        .CLKOUT1_DIVIDE(8), .CLKOUT1_PHASE(SAMPLE_PHASE_DEG + 90.000)
     ) adc_clock_mmcm (
         .CLKIN1(adc_dco), .CLKIN2(1'b0), .CLKINSEL(1'b1),
         .CLKFBIN(adc_fb), .CLKFBOUT(adc_fb_raw),
-        .CLKOUT0(adc_clk_raw), .LOCKED(adc_clk_locked),
+        .CLKOUT0(adc_clk_raw), .CLKOUT1(dac_clk_raw), .LOCKED(adc_clk_locked),
         .RST(rst), .PWRDWN(1'b0),
         .DADDR(7'b0), .DCLK(1'b0), .DEN(1'b0), .DI(16'b0), .DWE(1'b0),
         .PSCLK(1'b0), .PSEN(1'b0), .PSINCDEC(1'b0), .CDDCREQ(1'b0)
     );
     BUFG adc_feedback_buf (.I(adc_fb_raw), .O(adc_fb));
     BUFG dco_bufg (.I(adc_clk_raw), .O(adc_data_clk_bufg));
+    // Quarter-cycle shifted clock for the DAC's source-synchronous DDR pins.
+    // CLKOUT0 and the ADC capture phase remain unchanged.
+    BUFG dac_forward_bufg (.I(dac_clk_raw), .O(dac_forward_clk));
     wire clock_reset = rst | ~adc_clk_locked;
 
     // Asynchronous assertion also works when DCO has not started yet.
@@ -53,8 +58,9 @@ module adc_driver #(
             reset_sync <= {reset_sync[0], 1'b0};
     end
 
-    // Wait for both synchronization and the DDR pipeline to fill. Test-pattern
-    // data remains visible on the outputs, but is not marked as normal data.
+    // Wait for synchronization and the DDR pipeline to fill. This qualifies
+    // captured words in either ADC test or normal mode; top_layer keeps test
+    // words out of normal acquisition and checks them in the sample domain.
     wire valid_reset = clock_reset | reset_sync[1] | ~capture_enable;
     (* ASYNC_REG = "TRUE" *) reg [3:0] valid_sync = 4'b0000;
     always @(posedge adc_data_clk_bufg or posedge valid_reset) begin

@@ -1,8 +1,8 @@
 //Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-//Date        : Sun Oct  4 21:20:46 2026
-//Host        : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
+//Date        : Sat Oct 10 22:09:33 2026
+//Host        : SuKi_no_Com running 64-bit major release  (build 9200)
 //Command     : generate_target xdma_pcie_wrapper.bd
 //Design      : xdma_pcie_wrapper
 //Purpose     : IP block netlist
@@ -31,6 +31,12 @@ module xdma_pcie_wrapper
     adc_spi_csb,
     adc_sync,
     adk_spi_csb,
+    dac_data_n,
+    dac_data_p,
+    dac_dci_n,
+    dac_dci_p,
+    dac_frame_n,
+    dac_frame_p,
     dac_spi_csb,
     data_pin_n_0,
     data_pin_p_0,
@@ -64,6 +70,12 @@ module xdma_pcie_wrapper
   output adc_spi_csb;
   output adc_sync;
   output adk_spi_csb;
+  output [15:0]dac_data_n;
+  output [15:0]dac_data_p;
+  output dac_dci_n;
+  output dac_dci_p;
+  output dac_frame_n;
+  output dac_frame_p;
   output dac_spi_csb;
   input [13:0]data_pin_n_0;
   input [13:0]data_pin_p_0;
@@ -98,6 +110,12 @@ module xdma_pcie_wrapper
   wire adc_spi_csb;
   wire adc_sync;
   wire adk_spi_csb;
+  wire [15:0]dac_data_n;
+  wire [15:0]dac_data_p;
+  wire dac_dci_n;
+  wire dac_dci_p;
+  wire dac_frame_n;
+  wire dac_frame_p;
   wire dac_spi_csb;
   wire [13:0]data_pin_n_0;
   wire [13:0]data_pin_p_0;
@@ -133,6 +151,12 @@ module xdma_pcie_wrapper
         .adc_spi_csb(adc_spi_csb),
         .adc_sync(adc_sync),
         .adk_spi_csb(adk_spi_csb),
+        .dac_data_n(dac_data_n),
+        .dac_data_p(dac_data_p),
+        .dac_dci_n(dac_dci_n),
+        .dac_dci_p(dac_dci_p),
+        .dac_frame_n(dac_frame_n),
+        .dac_frame_p(dac_frame_p),
         .dac_spi_csb(dac_spi_csb),
         .data_pin_n_0(data_pin_n_0),
         .data_pin_p_0(data_pin_p_0),

@@ -48,10 +48,16 @@
 `timescale 1ns / 1ps
 module xdma_pcie_vio_readback_0 (
 clk,
-probe_in0,probe_in1,probe_in2,probe_in3,probe_in4,probe_in5,probe_in6,probe_in7,probe_in8,probe_in9,probe_in10,
+probe_in0,probe_in1,probe_in2,probe_in3,probe_in4,probe_in5,probe_in6,probe_in7,probe_in8,probe_in9,probe_in10,probe_in11,probe_in12,probe_in13,probe_in14,probe_in15,probe_in16,probe_in17,probe_in18,probe_in19,probe_in20,probe_in21,probe_in22,probe_in23,probe_in24,
 probe_out0,
 probe_out1,
-probe_out2
+probe_out2,
+probe_out3,
+probe_out4,
+probe_out5,
+probe_out6,
+probe_out7,
+probe_out8
 );
 
 input clk;
@@ -66,10 +72,30 @@ input [31 : 0] probe_in7;
 input [31 : 0] probe_in8;
 input [0 : 0] probe_in9;
 input [0 : 0] probe_in10;
+input [0 : 0] probe_in11;
+input [0 : 0] probe_in12;
+input [31 : 0] probe_in13;
+input [31 : 0] probe_in14;
+input [0 : 0] probe_in15;
+input [0 : 0] probe_in16;
+input [0 : 0] probe_in17;
+input [0 : 0] probe_in18;
+input [0 : 0] probe_in19;
+input [0 : 0] probe_in20;
+input [0 : 0] probe_in21;
+input [0 : 0] probe_in22;
+input [31 : 0] probe_in23;
+input [0 : 0] probe_in24;
 
 output reg [0 : 0] probe_out0 = 'h0 ;
 output reg [0 : 0] probe_out1 = 'h0 ;
 output reg [15 : 0] probe_out2 = 'h0000 ;
+output reg [0 : 0] probe_out3 = 'h0 ;
+output reg [0 : 0] probe_out4 = 'h0 ;
+output reg [31 : 0] probe_out5 = 'h00000000 ;
+output reg [31 : 0] probe_out6 = 'h00000000 ;
+output reg [0 : 0] probe_out7 = 'h0 ;
+output reg [0 : 0] probe_out8 = 'h0 ;
 
 
 endmodule

@@ -13,6 +13,7 @@ proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "SPI_CLK_HZ" -parent ${Page_0}
   ipgui::add_param $IPINST -name "TRACE_PERIOD" -parent ${Page_0}
   ipgui::add_param $IPINST -name "TRACE_POINTS" -parent ${Page_0}
+  ipgui::add_param $IPINST -name "TX_SINE_MEM" -parent ${Page_0}
 
 
 }
@@ -107,6 +108,15 @@ proc validate_PARAM_VALUE.TRACE_POINTS { PARAM_VALUE.TRACE_POINTS } {
 	return true
 }
 
+proc update_PARAM_VALUE.TX_SINE_MEM { PARAM_VALUE.TX_SINE_MEM } {
+	# Procedure called to update TX_SINE_MEM when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.TX_SINE_MEM { PARAM_VALUE.TX_SINE_MEM } {
+	# Procedure called to validate TX_SINE_MEM
+	return true
+}
+
 
 proc update_MODELPARAM_VALUE.CTRL_CLK_HZ { MODELPARAM_VALUE.CTRL_CLK_HZ PARAM_VALUE.CTRL_CLK_HZ } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
@@ -156,5 +166,10 @@ proc update_MODELPARAM_VALUE.TRACE_POINTS { MODELPARAM_VALUE.TRACE_POINTS PARAM_
 proc update_MODELPARAM_VALUE.AOM_WIDTH { MODELPARAM_VALUE.AOM_WIDTH PARAM_VALUE.AOM_WIDTH } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.AOM_WIDTH}] ${MODELPARAM_VALUE.AOM_WIDTH}
+}
+
+proc update_MODELPARAM_VALUE.TX_SINE_MEM { MODELPARAM_VALUE.TX_SINE_MEM PARAM_VALUE.TX_SINE_MEM } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.TX_SINE_MEM}] ${MODELPARAM_VALUE.TX_SINE_MEM}
 }
 

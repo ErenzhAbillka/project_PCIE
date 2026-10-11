@@ -17,6 +17,7 @@ def frames_from(data, completed=None, completed_after=None):
         if w[15]!=(~seq&0xffffffff) or w[-4:]!=(0x434f4d54,seq,~seq&0xffffffff,0x454e4421): continue
         if completed is not None and not oldest<=seq<completed: continue
         points,rows,start,width,total=w[3:8]
+        if not points or not rows or not width or not w[8] or not w[13]: continue
         if rows*width!=total or start+width>points or max(points,total)>16364 or w[11]!=13 or w[14]!=1: continue
         if len(data)>=16*FRAME_BYTES and offset//FRAME_BYTES!=seq%16: continue
         payload=w[16:16+max(points,total)]

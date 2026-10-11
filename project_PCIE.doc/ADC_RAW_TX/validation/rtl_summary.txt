@@ -1,0 +1,17 @@
+ACQUISITION_RTL_CHECK_PASS: 12 cases (All)
+ProjectRoot: E:/Documents/ChatGPT/project_PCIE/merge_20261011/stage
+VivadoBin: D:/Xilinxx/Vivado/2018.3/bin
+tb_ad9122_config: AD9122_CONFIG_TEST_PASS: sequence/readback/R1/R2/adjust/ack/clear/timeout/errors
+tb_ad9122_lvds_tx: AD9122_PHY_TEST_PASS: real UltraScale primitives/I-high/Q-low/DCI+90/zero gate
+tb_ad9122_spi_master: AD9122_SPI_TEST_PASS: 16 clocks/MSB/mode0/3-wire direction/readback
+tb_adc_capture_monitor: ADC_CAPTURE_MONITOR_TEST_PASS: startup, valid drop, halted clock, sticky fault, reset, normal run
+tb_adc_driver_primitives: ADC_DRIVER_PRIMITIVES_TEST_PASS
+tb_adc_ramp_checker: ADC_RAMP_CHECKER_TEST_PASS
+tb_adc_test_control: ADC_TEST_CONTROL_TEST_PASS
+tb_raw_capture: RAW_CAPTURE_TEST_PASS: full 64KiB frame, independent payload, stalls, delayed commit, malformed windows, fault and router lock
+tb_tgd_tx_frontend: AD9122_FRONTEND_TEST_PASS: full SPI/readbacks/FIFO/CDC/kill/sticky clock fault (31 transactions)
+tb_tgd_tx_sample_path: AD9122_SAMPLE_TEST_PASS: full 2500 samples/last IQ/single shot/kill/reset
+tb_top_shared_spi_tx: TOP_SHARED_SPI_TX_TEST_PASS
+tb_writer_fail_stop: WRITER_FAIL_STOP_TEST_PASS: success, SLVERR, DECERR, bad TLAST and reset recovery
+Script SHA256: 2CD0699A0009F5B4F595BC5E1612AC2360349BCAC6304E8A854F9B7AC9DB1586
+Scope: existing behavioral and UltraScale-primitive RTL tests; not synthesis, implementation, or board validation.

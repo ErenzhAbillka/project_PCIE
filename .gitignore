@@ -5,3 +5,16 @@ build/
 *.tmp
 *.cache/
 .vivado/
+
+# Local Vivado/simulator work and duplicate distribution packages
+.Xil/
+__pycache__/
+*.pyc
+*.wdb
+*.dmp
+*.runs/
+*.sim/
+*.hw/
+link_bulid/**/packages/
+link_bulid/ADC_RAW_TX/
+acquisition_tx_build/

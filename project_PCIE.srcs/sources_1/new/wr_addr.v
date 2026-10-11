@@ -123,7 +123,9 @@ module wr_addr #
         end else begin
             write_done <= 0;
             case (state)
-                IDLE: if (i_valid) state <= ADDRESS;
+                // A failed write invalidates the sequential frame stream. Keep
+                // the writer stopped until reset rather than publish later data.
+                IDLE: if (i_valid && !write_error) state <= ADDRESS;
                 ADDRESS: if (aw_valid && aw_ready) begin
                     beat <= 0;
                     state <= DATA;
@@ -135,9 +137,13 @@ module wr_addr #
                     else beat <= beat + 1'b1;
                 end
                 RESPONSE: if (b_valid && b_ready) begin
-                    write_done <= 1;
                     if (b_resp != 2'b00) write_error <= 1;
-                    aw_addr <= (aw_addr >= WRITE_BASE_ADDR + WRITE_WINDOW_BYTES - 32'd16) ? WRITE_BASE_ADDR : aw_addr + 32'd16;
+                    // Finish every accepted AXI burst, including on a bad TLAST,
+                    // but publish completion only for a successful transaction.
+                    if (b_resp == 2'b00 && !write_error) begin
+                        write_done <= 1;
+                        aw_addr <= (aw_addr >= WRITE_BASE_ADDR + WRITE_WINDOW_BYTES - 32'd16) ? WRITE_BASE_ADDR : aw_addr + 32'd16;
+                    end
                     state <= IDLE;
                 end
                 default: state <= IDLE;

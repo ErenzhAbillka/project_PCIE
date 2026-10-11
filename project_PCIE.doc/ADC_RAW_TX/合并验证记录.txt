@@ -1,0 +1,29 @@
+ADC / RAW / DAS / AD9122 TX 合并验证（2026-10-11）
+
+目标：E:/FPGA_Doc/project_PCIE；来源：E:/FPGA_Doc/feature/FPGA_Doc/project_PCIE。
+保留第一个工程的整理目录与历史实现产物，将第二个工程的活动源码及接口生成定义合入。
+没有改动 DDR4/XDMA/SmartConnect 配置或 DAS 算法；新增可靠性、诊断、RAW 和 DAC 支路。
+本次另修正旧机器 ROM 路径、主机工具依赖和 DAS 零尺寸/零采样时序元数据校验。
+
+实际执行并通过：
+1. check_das_bd.py：DAS_BD_CHECK_PASS，写入第一个工程后再次通过。
+2. test_host.ps1：DAS 解码回归及 RAW 13/13 测试，写入第一个工程后再次通过。
+3. run_acquisition_rtl_check.ps1：12/12，全新 XSim 运行。
+   包括 writer SLVERR/DECERR/TLAST/复位、RAW 完整64 KiB及延迟发布、ADC连续性、
+   ramp/快照、配置控制、真实UltraScale接收原语、共享SPI、DAC配置/SPI/PHY和单次扫频。
+4. check_rtl_raw.py：对本次RTL导出的16320对A/B样本逐点及ramp校验通过。
+   明确来源是RTL仿真，不是板上DMA；publication_verified=false。
+5. validate_acquisition.tcl：在独立工程副本执行Vivado 2018.3，退出码0。
+   BD验证/产品再生、完整xdma_pcie_wrapper RTL展开、CDC对象数量及36个DAC管脚/
+   125MHz转发时钟对象检查通过。RTL展开阶段0 Error、0 Critical Warning；保留厂商警告。
+6. 所有Python/PowerShell/Tcl语法、XPR文件引用和当前本地ROM资源检查通过。
+
+证据位于本目录validation：rtl_summary.txt、raw_host_crosscheck.json、wrapper_rtl.log。
+source_hashes.json记录本次关键源码、BD、约束、脚本与新testbench的工作树SHA256。
+测试在独立scratch目录执行，原文件的备份保存在本机merge_20261011/premerge_backup。
+
+验证边界：本次没有执行真正综合、布局布线或生成新bit，也没有下载/实板采集。
+RTL展开仍将加密DDS/FIR/CORDIC内部作为黑盒；对象检查不代表CDC或DAC时序已收敛。
+原link_bulid/PCIEv2_0下bit/LTX属于旧版，只作历史回退；不得用于验证新增RAW/TX接口。
+下一步用scripts/build_das.tcl生成link_bulid/ADC_RAW_TX的新产物，检查时序、DRC、CDC
+及实板时钟和接口，再按HOST_CAPTURE_GUIDE进行ADC ramp、RAW和DAC电测。

@@ -1,0 +1,33 @@
+ADC_RAW_TX 合并版本：构建与交付入口（2026-10-11）
+
+当前主工程：project_PCIE.xpr；顶层：xdma_pcie_wrapper；器件：xcku060-ffva1156-2-i。
+本版本合入 ADC 连续性/诊断、单次 RAW 采集和 AD9122 TX，并保留原 DAS、DDR4/PCIe 后端。
+
+1. 构建
+   vivado -mode batch -source <工程目录>/scripts/build_das.tcl
+   使用 Vivado 2018.3 和有效 KU060 综合/实现许可证。
+   本轮输出位于 link_bulid/ADC_RAW_TX。脚本先从当前工程目录解析 sine_4096.mem，
+   更新 top_layer_0 的 ROM 参数，再验证/生成 BD 并综合实现。
+   DAC 管脚核验仅依赖正式文档目录中的 ku060_tx_pins.tsv。
+   检查本轮 timing_summary.rpt、bus_skew.rpt、drc.rpt、cdc.rpt 和物理 I/O 报告。
+   CDC 报告需要人工审查；脚本打印通过标记不表示 CDC 零告警或实板验收。
+
+2. 源码打包
+   python scripts/package_delivery.py
+   默认生成 link_bulid/ADC_RAW_TX/packages/project_PCIE_ADC_RAW_TX_source.zip。
+   重复打包须用 --name 指定新 ZIP 文件名；脚本不会覆盖现有包。
+   包只包含当前源码、IP 源文件、脚本、正式 ADC_RAW_TX 文档及静态核验用备份，
+   排除历史 bit/LTX/DCP、运行目录和缓存。source_package_manifest.json 记录当前文件 hash。
+   ZIP CRC/hash 校验仅证明归档完整性，不代表新源码已综合、时序收敛或上板通过。
+
+3. 搬迁检查
+   在解压出的独立副本中执行：
+   vivado -mode batch -source scripts/verify_delivery.tcl -tclargs <解压工程目录>
+   验证文件存在、BD、RAW/TX 顶层和 writer 地址窗口；不进行综合/实现验收。
+   Vivado 可能刷新生成文件，故应在交付副本中运行。
+
+4. 历史产物
+   link_bulid/PCIEv2_0 的 bit/LTX/报告继续保留，属于 2026-10-04 的旧 DAS 版本。
+   它们不包含本次新合入的 ADC/RAW/TX 功能，不能作为当前主工程的下载文件或验证证据。
+   只有本轮完整构建成功后，才发布 link_bulid/ADC_RAW_TX 中新生成的 bit/LTX。
+   仿真和 RTL 展开不能替代真正综合、布局布线、ADC/DAC 电气时序及上板采集验证。

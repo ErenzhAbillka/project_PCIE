@@ -1,4 +1,4 @@
-set root E:/FPGA_Doc/project_PCIE
+set root [file dirname [file dirname [file normalize [info script]]]]
 open_project $root/project_PCIE.xpr
 open_bd_design [get_files */xdma_pcie.bd]
 source $root/scripts/fix_ila.tcl

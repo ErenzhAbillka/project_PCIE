@@ -1,8 +1,8 @@
 //Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-//Date        : Sun Oct  4 21:20:46 2026
-//Host        : WIN-76HS90OBB7Q running 64-bit major release  (build 9200)
+//Date        : Sat Oct 10 22:09:33 2026
+//Host        : SuKi_no_Com running 64-bit major release  (build 9200)
 //Command     : generate_target xdma_pcie.bd
 //Design      : xdma_pcie
 //Purpose     : IP block netlist
@@ -217,7 +217,7 @@ module das_processing_imp_JUZY4P
         .reset_n(reset_n_1));
 endmodule
 
-(* CORE_GENERATION_INFO = "xdma_pcie,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=xdma_pcie,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=29,numReposBlks=28,numNonXlnxBlks=0,numHierBlks=1,maxHierDepth=1,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=7,numPkgbdBlks=0,bdsource=USER,da_board_cnt=3,da_xdma_cnt=1,synth_mode=Global}" *) (* HW_HANDOFF = "xdma_pcie.hwdef" *) 
+(* CORE_GENERATION_INFO = "xdma_pcie,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=xdma_pcie,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=30,numReposBlks=29,numNonXlnxBlks=0,numHierBlks=1,maxHierDepth=1,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=8,numPkgbdBlks=0,bdsource=USER,da_board_cnt=3,da_xdma_cnt=1,synth_mode=Global}" *) (* HW_HANDOFF = "xdma_pcie.hwdef" *) 
 module xdma_pcie
    (C0_DDR4_0_act_n,
     C0_DDR4_0_adr,
@@ -240,6 +240,12 @@ module xdma_pcie
     adc_spi_csb,
     adc_sync,
     adk_spi_csb,
+    dac_data_n,
+    dac_data_p,
+    dac_dci_n,
+    dac_dci_p,
+    dac_frame_n,
+    dac_frame_p,
     dac_spi_csb,
     data_pin_n_0,
     data_pin_p_0,
@@ -273,6 +279,12 @@ module xdma_pcie
   output adc_spi_csb;
   output adc_sync;
   output adk_spi_csb;
+  output [15:0]dac_data_n;
+  output [15:0]dac_data_p;
+  output dac_dci_n;
+  output dac_dci_p;
+  output dac_frame_n;
+  output dac_frame_p;
   output dac_spi_csb;
   input [13:0]data_pin_n_0;
   input [13:0]data_pin_p_0;
@@ -292,6 +304,23 @@ module xdma_pcie
   wire C0_SYS_CLK_0_1_CLK_P;
   wire [0:0]Net;
   wire Net1;
+  wire acquisition_router_0_adc_ready;
+  wire acquisition_router_0_adc_test_request;
+  wire acquisition_router_0_configuration_error;
+  wire [31:0]acquisition_router_0_das_adc_data;
+  wire [1:0]acquisition_router_0_das_adc_user;
+  wire acquisition_router_0_das_adc_valid;
+  wire acquisition_router_0_das_frame_ready;
+  wire [31:0]acquisition_router_0_frame_data;
+  wire acquisition_router_0_frame_last;
+  wire acquisition_router_0_frame_valid;
+  wire acquisition_router_0_frontend_enable;
+  wire acquisition_router_0_mode_locked;
+  wire acquisition_router_0_raw_capture_complete;
+  wire acquisition_router_0_raw_capture_error;
+  wire acquisition_router_0_raw_frame_sent;
+  wire acquisition_router_0_raw_mode_active;
+  wire acquisition_router_0_tx_enable_locked;
   wire adc_data_clk_n_0_1;
   wire adc_data_clk_p_0_1;
   wire [31:0]axi_smc_M00_AXI_ARADDR;
@@ -376,17 +405,37 @@ module xdma_pcie
   wire top_layer_0_adc_overflow;
   wire top_layer_0_adc_spi_csb;
   wire top_layer_0_adc_sync;
+  wire top_layer_0_adc_test_active;
+  wire [31:0]top_layer_0_adc_test_checked_count;
+  wire top_layer_0_adc_test_config_locked;
+  wire top_layer_0_adc_test_error;
+  wire [31:0]top_layer_0_adc_test_error_count;
   wire top_layer_0_adk_spi_csb;
+  wire [15:0]top_layer_0_dac_data_n;
+  wire [15:0]top_layer_0_dac_data_p;
+  wire top_layer_0_dac_dci_n;
+  wire top_layer_0_dac_dci_p;
+  wire top_layer_0_dac_frame_n;
+  wire top_layer_0_dac_frame_p;
   wire top_layer_0_dac_spi_csb;
   wire top_layer_0_device_spi_sclk;
   wire top_layer_0_init_done;
   wire [1:0]top_layer_0_stream_user;
   wire top_layer_0_sys_clk;
+  wire top_layer_0_tx_fault;
+  wire top_layer_0_tx_init_done;
+  wire [31:0]top_layer_0_tx_status;
   wire [0:0]util_ds_buf_IBUF_DS_ODIV2;
   wire [0:0]util_ds_buf_IBUF_OUT;
   wire [0:0]vio_readback_probe_out0;
   wire [0:0]vio_readback_probe_out1;
   wire [15:0]vio_readback_probe_out2;
+  wire [0:0]vio_readback_probe_out3;
+  wire [0:0]vio_readback_probe_out4;
+  wire [31:0]vio_readback_probe_out5;
+  wire [31:0]vio_readback_probe_out6;
+  wire [0:0]vio_readback_probe_out7;
+  wire [0:0]vio_readback_probe_out8;
   wire wr_addr_0_fifo_ready;
   wire [31:0]wr_addr_0_m00_axi_ARADDR;
   wire [1:0]wr_addr_0_m00_axi_ARBURST;
@@ -495,6 +544,12 @@ module xdma_pcie
   assign adc_spi_csb = top_layer_0_adc_spi_csb;
   assign adc_sync = top_layer_0_adc_sync;
   assign adk_spi_csb = top_layer_0_adk_spi_csb;
+  assign dac_data_n[15:0] = top_layer_0_dac_data_n;
+  assign dac_data_p[15:0] = top_layer_0_dac_data_p;
+  assign dac_dci_n = top_layer_0_dac_dci_n;
+  assign dac_dci_p = top_layer_0_dac_dci_p;
+  assign dac_frame_n = top_layer_0_dac_frame_n;
+  assign dac_frame_p = top_layer_0_dac_frame_p;
   assign dac_spi_csb = top_layer_0_dac_spi_csb;
   assign data_pin_n_0_1 = data_pin_n_0[13:0];
   assign data_pin_p_0_1 = data_pin_p_0[13:0];
@@ -506,6 +561,44 @@ module xdma_pcie
   assign reset_rtl_0_1 = reset_rtl_0;
   assign xdma_0_pcie_mgt_rxn = pcie_7x_mgt_rtl_0_rxn[7:0];
   assign xdma_0_pcie_mgt_rxp = pcie_7x_mgt_rtl_0_rxp[7:0];
+  xdma_pcie_acquisition_router_0_0 acquisition_router_0
+       (.adc_data(axis_data_fifo_0_m_axis_tdata),
+        .adc_ready(acquisition_router_0_adc_ready),
+        .adc_test_active(top_layer_0_adc_test_active),
+        .adc_test_request(acquisition_router_0_adc_test_request),
+        .adc_user(axis_data_fifo_0_m_axis_tuser),
+        .adc_valid(axis_data_fifo_0_m_axis_tvalid),
+        .clk(ddr4_0_c0_ddr4_ui_clk),
+        .config_id_cfg(vio_readback_probe_out6),
+        .configuration_error(acquisition_router_0_configuration_error),
+        .das_adc_data(acquisition_router_0_das_adc_data),
+        .das_adc_ready(das_processing_adc_ready),
+        .das_adc_user(acquisition_router_0_das_adc_user),
+        .das_adc_valid(acquisition_router_0_das_adc_valid),
+        .das_frame_data(das_processing_frame_data),
+        .das_frame_last(das_processing_frame_last),
+        .das_frame_ready(acquisition_router_0_das_frame_ready),
+        .das_frame_valid(das_processing_frame_valid),
+        .epoch_cfg(vio_readback_probe_out5),
+        .frame_data(acquisition_router_0_frame_data),
+        .frame_last(acquisition_router_0_frame_last),
+        .frame_ready(frame_ready_1),
+        .frame_valid(acquisition_router_0_frame_valid),
+        .frontend_enable(acquisition_router_0_frontend_enable),
+        .input_fault(top_layer_0_adc_overflow),
+        .mode_locked(acquisition_router_0_mode_locked),
+        .raw_capture_complete(acquisition_router_0_raw_capture_complete),
+        .raw_capture_error(acquisition_router_0_raw_capture_error),
+        .raw_frame_sent(acquisition_router_0_raw_frame_sent),
+        .raw_mode_active(acquisition_router_0_raw_mode_active),
+        .raw_mode_cfg(vio_readback_probe_out3),
+        .reset_n(Net),
+        .start(vio_readback_probe_out1),
+        .test_enable_cfg(vio_readback_probe_out4),
+        .tx_enable_cfg(vio_readback_probe_out7),
+        .tx_enable_locked(acquisition_router_0_tx_enable_locked),
+        .tx_fault(top_layer_0_tx_fault),
+        .tx_init_done(top_layer_0_tx_init_done));
   xdma_pcie_axi_smc_0 axi_smc
        (.M00_AXI_araddr(axi_smc_M00_AXI_ARADDR),
         .M00_AXI_arburst(axi_smc_M00_AXI_ARBURST),
@@ -620,7 +713,7 @@ module xdma_pcie
   xdma_pcie_axis_data_fifo_0_0 axis_data_fifo_0
        (.m_axis_aclk(ddr4_0_c0_ddr4_ui_clk),
         .m_axis_tdata(axis_data_fifo_0_m_axis_tdata),
-        .m_axis_tready(das_processing_adc_ready),
+        .m_axis_tready(acquisition_router_0_adc_ready),
         .m_axis_tuser(axis_data_fifo_0_m_axis_tuser),
         .m_axis_tvalid(axis_data_fifo_0_m_axis_tvalid),
         .s_axis_aclk(top_layer_0_sys_clk),
@@ -631,17 +724,17 @@ module xdma_pcie
         .s_axis_tvalid(AXI_data_out_0_0_valid));
   das_processing_imp_JUZY4P das_processing
        (.accumulator_clipped(das_processing_accumulator_clipped),
-        .adc_data(axis_data_fifo_0_m_axis_tdata),
+        .adc_data(acquisition_router_0_das_adc_data),
         .adc_ready(das_processing_adc_ready),
-        .adc_user(axis_data_fifo_0_m_axis_tuser),
-        .adc_valid(axis_data_fifo_0_m_axis_tvalid),
+        .adc_user(acquisition_router_0_das_adc_user),
+        .adc_valid(acquisition_router_0_das_adc_valid),
         .alignment_error(das_processing_alignment_error),
         .banks_full(das_processing_banks_full),
         .clk(ddr4_0_c0_ddr4_ui_clk),
         .format_error(das_processing_format_error),
         .frame_data(das_processing_frame_data),
         .frame_last(das_processing_frame_last),
-        .frame_ready(frame_ready_1),
+        .frame_ready(acquisition_router_0_das_frame_ready),
         .frame_valid(das_processing_frame_valid),
         .groups_completed(das_processing_groups_completed),
         .input_fault(top_layer_0_adc_overflow),
@@ -651,10 +744,10 @@ module xdma_pcie
        (.burst_done(wr_addr_0_m00_axi_txn_done),
         .clk(ddr4_0_c0_ddr4_ui_clk),
         .ddr_frames_done(das_writer_packet_0_ddr_frames_done),
-        .frame_data(das_processing_frame_data),
-        .frame_last(das_processing_frame_last),
+        .frame_data(acquisition_router_0_frame_data),
+        .frame_last(acquisition_router_0_frame_last),
         .frame_ready(frame_ready_1),
-        .frame_valid(das_processing_frame_valid),
+        .frame_valid(acquisition_router_0_frame_valid),
         .framing_error(das_writer_packet_0_framing_error),
         .reset_n(Net),
         .writer_data(das_writer_packet_0_writer_data),
@@ -720,8 +813,8 @@ module xdma_pcie
         .sys_rst(perst_invert_Res));
   xdma_pcie_ila_das_0 ila_das
        (.clk(ddr4_0_c0_ddr4_ui_clk),
-        .probe0(das_processing_frame_data),
-        .probe1({das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid,das_processing_frame_valid}),
+        .probe0(acquisition_router_0_frame_data),
+        .probe1({acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid,acquisition_router_0_frame_valid}),
         .probe10({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .probe11(1'b0),
         .probe12(1'b0),
@@ -743,7 +836,7 @@ module xdma_pcie
         .probe27({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .probe28({1'b0,1'b1,1'b0}),
         .probe29({1'b0,1'b1}),
-        .probe3(das_processing_frame_last),
+        .probe3(acquisition_router_0_frame_last),
         .probe30(1'b0),
         .probe31({1'b0,1'b0,1'b1,1'b1}),
         .probe32({1'b0,1'b0,1'b1,1'b1}),
@@ -788,7 +881,7 @@ module xdma_pcie
         .slowest_sync_clk(ddr4_0_c0_ddr4_ui_clk));
   xdma_pcie_top_layer_0_0 top_layer_0
        (.acquisition_active(top_layer_0_acquisition_active),
-        .acquisition_enable(vio_readback_probe_out1),
+        .acquisition_enable(acquisition_router_0_frontend_enable),
         .adc_data_ch1(top_layer_0_adc_data_ch1),
         .adc_data_clk_n(adc_data_clk_n_0_1),
         .adc_data_clk_p(adc_data_clk_p_0_1),
@@ -796,8 +889,20 @@ module xdma_pcie
         .adc_overflow(top_layer_0_adc_overflow),
         .adc_spi_csb(top_layer_0_adc_spi_csb),
         .adc_sync(top_layer_0_adc_sync),
+        .adc_test_active(top_layer_0_adc_test_active),
+        .adc_test_checked_count(top_layer_0_adc_test_checked_count),
+        .adc_test_config_locked(top_layer_0_adc_test_config_locked),
+        .adc_test_enable(acquisition_router_0_adc_test_request),
+        .adc_test_error(top_layer_0_adc_test_error),
+        .adc_test_error_count(top_layer_0_adc_test_error_count),
         .adk_spi_csb(top_layer_0_adk_spi_csb),
         .ctrl_clk(ddr4_0_c0_ddr4_ui_clk),
+        .dac_data_n(top_layer_0_dac_data_n),
+        .dac_data_p(top_layer_0_dac_data_p),
+        .dac_dci_n(top_layer_0_dac_dci_n),
+        .dac_dci_p(top_layer_0_dac_dci_p),
+        .dac_frame_n(top_layer_0_dac_frame_n),
+        .dac_frame_p(top_layer_0_dac_frame_p),
         .dac_spi_csb(top_layer_0_dac_spi_csb),
         .data_pin_n(data_pin_n_0_1),
         .data_pin_p(data_pin_p_0_1),
@@ -809,7 +914,12 @@ module xdma_pcie
         .stream_ready(axis_data_fifo_0_s_axis_tready),
         .stream_user(top_layer_0_stream_user),
         .stream_valid(AXI_data_out_0_0_valid),
-        .sys_clk(top_layer_0_sys_clk));
+        .sys_clk(top_layer_0_sys_clk),
+        .tx_abort(vio_readback_probe_out8),
+        .tx_enable(acquisition_router_0_tx_enable_locked),
+        .tx_fault(top_layer_0_tx_fault),
+        .tx_init_done(top_layer_0_tx_init_done),
+        .tx_status(top_layer_0_tx_status));
   xdma_pcie_util_ds_buf_0 util_ds_buf
        (.IBUF_DS_N(diff_clock_rtl_0_1_CLK_N),
         .IBUF_DS_ODIV2(util_ds_buf_IBUF_DS_ODIV2),
@@ -824,7 +934,21 @@ module xdma_pcie
         .probe_in0(ddr4_0_c0_init_calib_complete),
         .probe_in1(wr_addr_0_m00_axi_error),
         .probe_in10(das_writer_packet_0_framing_error),
+        .probe_in11(top_layer_0_adc_test_active),
+        .probe_in12(top_layer_0_adc_test_error),
+        .probe_in13(top_layer_0_adc_test_checked_count),
+        .probe_in14(top_layer_0_adc_test_error_count),
+        .probe_in15(top_layer_0_adc_test_config_locked),
+        .probe_in16(acquisition_router_0_raw_capture_complete),
+        .probe_in17(acquisition_router_0_raw_capture_error),
+        .probe_in18(acquisition_router_0_raw_frame_sent),
+        .probe_in19(acquisition_router_0_configuration_error),
         .probe_in2(top_layer_0_init_done),
+        .probe_in20(acquisition_router_0_raw_mode_active),
+        .probe_in21(top_layer_0_tx_init_done),
+        .probe_in22(top_layer_0_tx_fault),
+        .probe_in23(top_layer_0_tx_status),
+        .probe_in24(acquisition_router_0_mode_locked),
         .probe_in3(top_layer_0_acquisition_active),
         .probe_in4(top_layer_0_adc_overflow),
         .probe_in5(das_processing_alignment_error),
@@ -834,7 +958,13 @@ module xdma_pcie
         .probe_in9(das_processing_accumulator_clipped),
         .probe_out0(vio_readback_probe_out0),
         .probe_out1(vio_readback_probe_out1),
-        .probe_out2(vio_readback_probe_out2));
+        .probe_out2(vio_readback_probe_out2),
+        .probe_out3(vio_readback_probe_out3),
+        .probe_out4(vio_readback_probe_out4),
+        .probe_out5(vio_readback_probe_out5),
+        .probe_out6(vio_readback_probe_out6),
+        .probe_out7(vio_readback_probe_out7),
+        .probe_out8(vio_readback_probe_out8));
   xdma_pcie_wr_addr_0_0 wr_addr_0
        (.clk(ddr4_0_c0_ddr4_ui_clk),
         .fifo_ready(wr_addr_0_fifo_ready),

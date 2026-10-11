@@ -53,8 +53,19 @@ set_input_delay -clock adc_dco -clock_fall -max -add_delay -0.300 [get_ports {da
 # Only the first stages of our single-bit control/status synchronizers are cut.
 set adc_control_sync [get_pins -hier -regexp {.*(stream_source_inst/enable_sync_reg|overflow_sync_reg|active_sync_reg)\[0\]/D}]
 set_false_path -to $adc_control_sync
+# ADC continuity monitor: cut only the two independent single-bit CDC inputs.
+set adc_monitor_sync [get_pins -hier -regexp {.*capture_monitor_inst/(heartbeat_sync_reg|sample_valid_sync_reg)\[0\]/D}]
+set_false_path -to $adc_monitor_sync
+# ADC diagnostic controls/handshake: cut only the three first-stage D inputs.
+set adc_diagnostic_sync [get_pins -hier -regexp {.*(ramp_checker_inst/enable_sync_reg|test_snapshot_inst/request_sync_reg|test_snapshot_inst/ack_sync_reg)\[0\]/D}]
+set_false_path -to $adc_diagnostic_sync
+# Held snapshot bundle is stable through the synchronized acknowledgement.
+# Earliest destination capture is >=15 ns after source hold; budget 10 ns.
+set adc_snapshot_source [get_pins -hier -regexp {.*test_snapshot_inst/snapshot_data_reg\[[0-9]+\]/Q}]
+set adc_snapshot_target [get_pins -hier -regexp {.*test_snapshot_inst/(error_reg|error_count_reg\[[0-9]+\]|checked_count_reg\[[0-9]+\])/D}]
+set_max_delay -datapath_only 10.000 -from $adc_snapshot_source -to $adc_snapshot_target
 # Async assertion / synchronous release chains; keep local lane reset recovery timed.
-set adc_async_reset [get_pins -hier -regexp {.*(adc_driver_inst/(reset_sync_reg|valid_sync_reg)|fifo_reset_sync_reg)\[[0-9]+\]/(PRE|CLR)}]
+set adc_async_reset [get_pins -hier -regexp {.*(adc_driver_inst/(reset_sync_reg|valid_sync_reg)|fifo_reset_sync_reg|checker_reset_sync_reg)\[[0-9]+\]/(PRE|CLR)}]
 set_false_path -to $adc_async_reset
 # SPI outputs change on UI-clock edges, 500 ns away from SCLK sampling edges.
 # These are slow board-management GPIO, not DDR sample data.

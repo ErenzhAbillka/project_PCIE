@@ -1,0 +1,120 @@
+KU060 ADC／RAW／DAC 扫频开发说明
+更新日期：2026-10-10
+
+本轮修改直接进入 project_PCIE.xpr 主工程，活动 top 是 xdma_pcie_wrapper。
+old_prj_src/top_layer.v 和 adc_driver.v 虽然目录名含 old，仍是当前综合源。
+本说明描述合并后的新源码，当前验证范围见文末与同目录合并验证记录。
+历史 link_bulid/PCIEv2_0 中的 bit/LTX 不包含本轮功能，不能配合新的 VIO 映射使用。
+
+一、已经修改的内容
+
+1. ADC 接收可独立验证
+   在原 AD9643 接收链上增加持续 ramp 模式、双通道递减码校验、sticky 错误和
+   饱和计数。65 位计数／错误快照通过 request/ack 跨时钟域，不直接双拍多位计数。
+   上电原有 3 秒 ramp 现在也接受检查；正式开始采集前可以切换正常／ramp 模式。
+   首次 start 后配置锁定到系统复位，避免运行中 SPI 重配破坏数据连续性。
+   保留独立控制时钟域的 DCO／valid 连续性监控；失效后恢复时钟不会自动消除故障。
+
+2. 增加 RAW 单帧链路，便于先验收 ADC 和 PCIe
+   AD9643 A/B → 原异步 FIFO → acquisition_router → raw_trace_capture
+   → 原四拍 packetizer → 原 AXI writer → DDR → XDMA Memory-Mapped C2H → decode_raw.py。
+   每次系统复位最多抓一帧；16320 对 A/B 样本组成固定 64 KiB RAW1 帧，写 DDR
+   0x00100000。帧内包括 epoch、采样率、模式、配置 ID、payload XOR 和提交标记。
+   捕获后继续排空 ADC，但不覆写该帧。这样可先检查真实 ADC 数据，不依赖原 DAS 算法。
+   捕获过程中缺样、错误窗口或 input_fault 会阻止发布；完成后冻结的帧不会因后来的
+   TX 故障突然撤回 AXI VALID。读取时仍须检查并保存全部硬件错误状态。
+   capture_complete、frame_sent 都不等于 DDR 写完，只有完成最后一个成功 B 响应后
+   DDR frames-done 才增加。已保留 writer 的错误锁存及禁止错误发布修复。
+
+3. 扫频已接入实际 DAC 输出接口
+   新增 AD9122 的 16-clock 三线 SPI 读写、R1/R2 识别、关键寄存器读回、FIFO 对齐
+   request/ack 检查；复用现有 SDIO IOBUF，仲裁 ADC／AD9516／DAC 访问。
+   ADC 正常模式稳定后才初始化 DAC；DAC sample_ready 返回控制域后才启动共同采集。
+   48 位相位累加器和 4096 项正弦 ROM 生成 I/Q，ODDRE1／OBUFDS 送出旧子卡接口。
+   数据和 90° DCI 来自同一 ADC MMCM；36 个 DAC 物理引脚已按旧子卡和母板连接匹配。
+   ADC 与 TX 使用相同 waveform_run，避免两次独立异步 start。
+   TX 默认关闭。启用后每次复位仅一个完整 chirp，保持 start 不会反复输出；abort、
+   初始化故障或丢钟会锁存故障。恢复运行必须系统复位，不用局部 writer reset 拼接数据。
+
+4. 主工程、约束和主机工具已同步
+   BD 接入 ADC 诊断、RAW 路由、DAC 状态／引脚及扩展 VIO；原 XDMA／DDR 后端沿用。
+   新增 ADC 快照 CDC 与 DAC DDR 输出约束，未通过整组异步时钟 false_path 掩盖问题。
+   scripts/decode_raw.py 检查帧、epoch、前后完成计数、配置和 ramp，并导出双通道 CSV。
+   TX01 离线匹配使用与 FPGA 相同的定点相位、实际 LUT 和 SHA256，输出相关峰和相位。
+   build_das.tcl 会按当前工程位置刷新 ROM 路径，输出改为 link_bulid/ADC_RAW_TX，
+   保留历史 link_bulid/PCIEv2_0。合并前文件与提交可从 Git 历史和 archive/backups 追溯。
+   已处理 SmartConnect 缺少 bd_5f9e_one_0 的生成问题：Vivado 2018.3 的 BD 验证可能
+   重新使嵌套生成文件失效，构建流程必须在 validate 后重新生成父 BD，再展开／综合。
+   相关脚本会检查该文件和编译顺序，必要时只重置生成 targets，不重置用户 runs。
+
+二、扫频参数的适用范围
+
+当前 TX01 是电气验收配置：125 MSPS 输入、AD9122 设计时钟 500 MHz／4 倍插值，
+5 MHz → 15 MHz，2500 点／20 us；内部源周期 31250 点／250 us，但只发一次。
+配置 ID 固定为 0x54583031；准确参数、ROM 哈希见 project_PCIE.doc/ADC_RAW_TX/tx01_plan.json。
+原 40→60 MHz 研究示例没有用作本次 AD9122 4 倍插值的生产默认参数。
+
+FPGA 产生数字 I/Q，由 DAC 变成模拟信号，再经实际射频／光学链路驱动 AOM。
+当前尚不知道你的 AOM 型号、中心频率、可扫带宽、驱动器和光纤长度，因此不能把
+TX01 当成已匹配 AOM 的光学工作频段。独立 AOM gate 外部引脚也尚未指定。
+先做 DAC 电测与 ADC 回采；得到器件参数后再确定最终 RF 频段、带宽、门宽和周期。
+
+共同 run 接受到第一个物理 I 数据边沿有 2 个 125 MHz 样本时钟，再到 DCI 边沿约
+2 ns（设计值）。DAC FIFO／插值、模拟链路、ADC 和光路延迟仍需标定。
+离线相关结果仅为相对捕获起点的 lag 和未校准相位，不能直接宣称已得到光纤距离。
+本轮 FPGA 中尚未加入 TGD 匹配滤波／FFT 光学解调流水线；原 DAS 流水线仍可选。
+
+三、上板顺序
+
+先在有 KU060 综合许可的 Vivado 2018.3 环境重新构建：
+  vivado -mode batch -source scripts/build_das.tcl
+在 project_PCIE 目录执行。检查 link_bulid/ADC_RAW_TX 中本轮的 timing、CDC、DRC、
+IO 和 route 报告，再使用同次生成的 bit 与 LTX。源码修改后旧 bit 不能验证新功能。
+本机此前真实综合因 KU060 许可缺失停止，本轮没有生成或下载新 bit。
+
+第一步：确认实物时钟。旧版接线不唯一决定晶振频率；当前 AD9516 配置按 10 MHz
+参考设计。先核对晶振、跳线，测得 ADC DCO 125 MHz 和 DAC 设备时钟 500 MHz。
+若实物是 50 MHz 参考，须按实际硬件改 AD9516 配置，不能沿用本参数直接判断 ADC 坏。
+XPR 保留 xcku060-ffva1156-2-i；用户描述的 I/E 与“商业版”需按芯片丝印确认。
+
+第二步：保持 TX 关闭，完成 ADC ramp 和 RAW→DDR→PCIe 验证。
+第三步：RAW 正常模式输入已知电平／正弦，确认 A/B 身份、极性、幅度及频谱。
+第四步：RAW 正常模式启用 TX01，测 DAC 频谱／包络并回采，标定时延后再接入光路。
+完整逐步操作、VIO 输入输出编号和 decode 命令见 HOST_CAPTURE_GUIDE.txt。
+
+常用模式（vio_readback 输出）：
+  模式             out3 RAW    out4 ADC ramp    out7 TX
+  原 DAS               0             0              0
+  ADC 数字验收          1             1              0
+  ADC 模拟验收          1             0              0
+  TX01 电测             1             0              1
+out0 是原 writer 诊断读触发，采集时保持 0；out1 才是 start。
+out5 是每次采集的新 epoch；out6 是用户配置 ID（TX01 启用后自动用固定 ID）。
+out8 是锁存式 tx_abort，默认 0。非法 DAS+ramp 或 TX+ramp／DAS 组合会拒绝启动。
+触发 start 前先确认 in0 DDR 校准完成=1，并完成所选 ADC 模式的初始化与稳定检查。
+首次 start 立即锁定路由配置，in24=1；等待 DAC 时 in15 可能仍为 0，不能因此改配置。
+重新采集需要系统复位并更换 epoch，禁止用旧 DDR 内容冒充本次数据。
+
+单次 RAW 验收必须同时满足：
+  in1 writer_error、in4 ADC continuity/overflow、in10 framing_error、
+  in17 RAW error、in19 configuration_error 均为 0；TX 模式还须 in22=0。
+  ramp 模式 in12/in14 为 0，in13 在尚未饱和时持续增长。
+  in8 DDR frames-done=1，DMA 读取前后保持 1；读取期间不得复位或换 bit。
+  从卡地址 0x00100000 读 65536 字节，decode 的 epoch／config 与本次设置一致。
+  in16 capture_complete 或 in18 frame_sent 单独变为 1，不能据此开始读取。
+ramp 计数包含上电检查历史，约满速 34.36 秒后饱和；时钟停掉导致快照不再刷新
+不能算检查通过。同一 ramp 码型也不能单独证明 A/B 物理通道没有交换。
+
+四、合并后的验证入口与边界（2026-10-11）
+
+本说明中的功能来自第二个工程，已合入第一个工程。
+当前验证结果与构建入口见同目录 构建与交付说明.txt、合并验证记录.txt。
+主机回归：powershell -File scripts/test_host.ps1
+RTL回归：powershell -File scripts/run_acquisition_rtl_check.ps1
+完整wrapper与约束对象：vivado -mode batch -source scripts/validate_acquisition.tcl
+上述数字验证不能替代完整综合、布局布线、时序/CDC复核及实板验收。
+link_bulid/PCIEv2_0 下历史 bit/LTX 不包含本轮新功能，必须重新构建新 bit。
+
+ADC、DAC 模拟输出和整个光学链路尚未实测。
+DAC 输出约束的板级偏斜和裕量仍是设计预算，需实板校准。
+AD9516/AD9643 的 init_done 只说明配置等待流程结束，不能证明PLL或模拟链正常。

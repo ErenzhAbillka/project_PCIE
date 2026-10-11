@@ -52,13 +52,31 @@
 
 (* X_CORE_INFO = "top_layer,Vivado 2018.3" *)
 (* CHECK_LICENSE_TYPE = "xdma_pcie_top_layer_0_0,top_layer,{}" *)
-(* CORE_GENERATION_INFO = "xdma_pcie_top_layer_0_0,top_layer,{x_ipProduct=Vivado 2018.3,x_ipVendor=xilinx.com,x_ipLibrary=module_ref,x_ipName=top_layer,x_ipVersion=1.0,x_ipCoreRevision=1,x_ipLanguage=VERILOG,x_ipSimLanguage=MIXED,CTRL_CLK_HZ=200000000,SPI_CLK_HZ=1000000,POWERUP_DELAY_CYCLES=2000000,CLOCK_SETTLE_CYCLES=200000000,ADC_TEST_CYCLES=600000000,ADC_SETTLE_CYCLES=200000,INPUT_DELAY_TAPS=10,TRACE_PERIOD=31250,TRACE_POINTS=16320,AOM_WIDTH=12}" *)
+(* CORE_GENERATION_INFO = "xdma_pcie_top_layer_0_0,top_layer,{x_ipProduct=Vivado 2018.3,x_ipVendor=xilinx.com,x_ipLibrary=module_ref,x_ipName=top_layer,x_ipVersion=1.0,x_ipCoreRevision=1,x_ipLanguage=VERILOG,x_ipSimLanguage=MIXED,CTRL_CLK_HZ=200000000,SPI_CLK_HZ=1000000,POWERUP_DELAY_CYCLES=2000000,CLOCK_SETTLE_CYCLES=200000000,ADC_TEST_CYCLES=600000000,ADC_SETTLE_CYCLES=200000,INPUT_DELAY_TAPS=10,TRACE_PERIOD=31250,TRACE_POINTS=16320,AOM_WIDTH=12,TX_SINE_MEM=d_/Users/SuKi/Desktop/FPGA_Doc/project_PCIE/project_PCIE.srcs/s\
+ources_1/new/tgd_tx/sine_4096.mem}" *)
 (* IP_DEFINITION_SOURCE = "module_ref" *)
 (* DowngradeIPIdentifiedWarnings = "yes" *)
 module xdma_pcie_top_layer_0_0 (
   ctrl_clk,
   rst_n,
   acquisition_enable,
+  adc_test_enable,
+  adc_test_active,
+  adc_test_error,
+  adc_test_checked_count,
+  adc_test_error_count,
+  adc_test_config_locked,
+  tx_enable,
+  tx_abort,
+  tx_init_done,
+  tx_fault,
+  tx_status,
+  dac_data_p,
+  dac_data_n,
+  dac_dci_p,
+  dac_dci_n,
+  dac_frame_p,
+  dac_frame_n,
   stream_ready,
   stream_data,
   stream_valid,
@@ -91,6 +109,23 @@ input wire ctrl_clk;
 (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 rst_n RST" *)
 input wire rst_n;
 input wire acquisition_enable;
+input wire adc_test_enable;
+output wire adc_test_active;
+output wire adc_test_error;
+output wire [31 : 0] adc_test_checked_count;
+output wire [31 : 0] adc_test_error_count;
+output wire adc_test_config_locked;
+input wire tx_enable;
+input wire tx_abort;
+output wire tx_init_done;
+output wire tx_fault;
+output wire [31 : 0] tx_status;
+output wire [15 : 0] dac_data_p;
+output wire [15 : 0] dac_data_n;
+output wire dac_dci_p;
+output wire dac_dci_n;
+output wire dac_frame_p;
+output wire dac_frame_n;
 input wire stream_ready;
 output wire [31 : 0] stream_data;
 output wire stream_valid;
@@ -132,11 +167,29 @@ output wire adc_sync;
     .INPUT_DELAY_TAPS(10),
     .TRACE_PERIOD(31250),
     .TRACE_POINTS(16320),
-    .AOM_WIDTH(12)
+    .AOM_WIDTH(12),
+    .TX_SINE_MEM("sine_4096.mem")
   ) inst (
     .ctrl_clk(ctrl_clk),
     .rst_n(rst_n),
     .acquisition_enable(acquisition_enable),
+    .adc_test_enable(adc_test_enable),
+    .adc_test_active(adc_test_active),
+    .adc_test_error(adc_test_error),
+    .adc_test_checked_count(adc_test_checked_count),
+    .adc_test_error_count(adc_test_error_count),
+    .adc_test_config_locked(adc_test_config_locked),
+    .tx_enable(tx_enable),
+    .tx_abort(tx_abort),
+    .tx_init_done(tx_init_done),
+    .tx_fault(tx_fault),
+    .tx_status(tx_status),
+    .dac_data_p(dac_data_p),
+    .dac_data_n(dac_data_n),
+    .dac_dci_p(dac_dci_p),
+    .dac_dci_n(dac_dci_n),
+    .dac_frame_p(dac_frame_p),
+    .dac_frame_n(dac_frame_n),
     .stream_ready(stream_ready),
     .stream_data(stream_data),
     .stream_valid(stream_valid),

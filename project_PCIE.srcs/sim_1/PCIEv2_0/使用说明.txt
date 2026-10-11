@@ -1,0 +1,6 @@
+本目录收录 PCIEv2_0 验证 testbench 和 SPI 期望寄存器表，不自动加入工程默认仿真集。
+tb_adc.sv 的 ../sim/clock_expected.mem 是原验证工作目录写法，独立复跑时须指定其实际路径。
+原生 DDS/FIR/CORDIC/FIFO 和 ADC UNISIM 仿真需对应 Vivado IP 仿真模型，不能只编译 testbench。
+原仿真日志见 link_bulid/PCIEv2_0/validation；历史通过不等于已完成实物测试。
+可直接运行的默认规模 RTL 测试：scripts/test_production.ps1。
+主机解码回归：python scripts/test_decode_das.py。

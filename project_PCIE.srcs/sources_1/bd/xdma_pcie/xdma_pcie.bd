@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x3BEC3DA774FB37AA",
+      "boundary_crc": "0xC13D673BEA703E2A",
       "device": "xcku060-ffva1156-2-i",
       "name": "xdma_pcie",
       "synth_flow_mode": "None",
@@ -25,7 +25,6 @@
       "vio_readback": "",
       "ila_readback": "",
       "vio_pcie": "",
-      "top_layer_0": "",
       "wr_addr_0": "",
       "das_processing": {
         "phase_source_0": "",
@@ -38,7 +37,9 @@
         "dif_acc_phase_0": ""
       },
       "das_writer_packet_0": "",
-      "ila_das": ""
+      "ila_das": "",
+      "top_layer_0": "",
+      "acquisition_router_0": ""
     },
     "interface_ports": {
       "C0_DDR4_0": {
@@ -218,6 +219,28 @@
       },
       "device_spi_sda": {
         "direction": "IO"
+      },
+      "dac_data_p": {
+        "direction": "O",
+        "left": "15",
+        "right": "0"
+      },
+      "dac_data_n": {
+        "direction": "O",
+        "left": "15",
+        "right": "0"
+      },
+      "dac_dci_p": {
+        "direction": "O"
+      },
+      "dac_dci_n": {
+        "direction": "O"
+      },
+      "dac_frame_p": {
+        "direction": "O"
+      },
+      "dac_frame_n": {
+        "direction": "O"
       }
     },
     "components": {
@@ -483,10 +506,10 @@
         "xci_name": "xdma_pcie_vio_readback_0",
         "parameters": {
           "C_NUM_PROBE_IN": {
-            "value": "11"
+            "value": "25"
           },
           "C_NUM_PROBE_OUT": {
-            "value": "3"
+            "value": "9"
           },
           "C_PROBE_OUT0_INIT_VAL": {
             "value": "0x0"
@@ -499,6 +522,42 @@
           },
           "C_PROBE_OUT2_WIDTH": {
             "value": "16"
+          },
+          "C_PROBE_OUT3_INIT_VAL": {
+            "value": "0x0"
+          },
+          "C_PROBE_OUT3_WIDTH": {
+            "value": "1"
+          },
+          "C_PROBE_OUT4_INIT_VAL": {
+            "value": "0x0"
+          },
+          "C_PROBE_OUT4_WIDTH": {
+            "value": "1"
+          },
+          "C_PROBE_OUT5_INIT_VAL": {
+            "value": "0x0"
+          },
+          "C_PROBE_OUT5_WIDTH": {
+            "value": "32"
+          },
+          "C_PROBE_OUT6_INIT_VAL": {
+            "value": "0x0"
+          },
+          "C_PROBE_OUT6_WIDTH": {
+            "value": "32"
+          },
+          "C_PROBE_OUT7_INIT_VAL": {
+            "value": "0x0"
+          },
+          "C_PROBE_OUT7_WIDTH": {
+            "value": "1"
+          },
+          "C_PROBE_OUT8_INIT_VAL": {
+            "value": "0x0"
+          },
+          "C_PROBE_OUT8_WIDTH": {
+            "value": "1"
           }
         }
       },
@@ -550,167 +609,6 @@
           },
           "C_NUM_PROBE_OUT": {
             "value": "0"
-          }
-        }
-      },
-      "top_layer_0": {
-        "vlnv": "xilinx.com:module_ref:top_layer:1.0",
-        "xci_name": "xdma_pcie_top_layer_0_0",
-        "reference_info": {
-          "ref_type": "hdl",
-          "ref_name": "top_layer",
-          "boundary_crc": "0x0"
-        },
-        "interface_ports": {
-          "adc_dco": {
-            "mode": "Slave",
-            "vlnv": "xilinx.com:interface:diff_clock_rtl:1.0",
-            "parameters": {
-              "FREQ_HZ": {
-                "value": "125000000",
-                "value_src": "constant"
-              }
-            },
-            "port_maps": {
-              "CLK_P": {
-                "physical_name": "adc_data_clk_p",
-                "direction": "I"
-              },
-              "CLK_N": {
-                "physical_name": "adc_data_clk_n",
-                "direction": "I"
-              }
-            }
-          }
-        },
-        "ports": {
-          "ctrl_clk": {
-            "type": "clk",
-            "direction": "I",
-            "parameters": {
-              "ASSOCIATED_RESET": {
-                "value": "rst_n",
-                "value_src": "constant"
-              },
-              "CLK_DOMAIN": {
-                "value": "xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk",
-                "value_src": "default_prop"
-              },
-              "FREQ_HZ": {
-                "value": "200000000",
-                "value_src": "constant"
-              },
-              "PHASE": {
-                "value": "0.00",
-                "value_src": "const_prop"
-              }
-            }
-          },
-          "rst_n": {
-            "type": "rst",
-            "direction": "I",
-            "parameters": {
-              "POLARITY": {
-                "value": "ACTIVE_LOW",
-                "value_src": "constant"
-              }
-            }
-          },
-          "adc_fifo_aresetn": {
-            "type": "rst",
-            "direction": "O",
-            "parameters": {
-              "POLARITY": {
-                "value": "ACTIVE_LOW",
-                "value_src": "constant"
-              }
-            }
-          },
-          "sys_clk": {
-            "type": "clk",
-            "direction": "O",
-            "parameters": {
-              "ASSOCIATED_RESET": {
-                "value": "adc_fifo_aresetn",
-                "value_src": "constant"
-              },
-              "FREQ_HZ": {
-                "value": "125000000",
-                "value_src": "constant"
-              }
-            }
-          },
-          "acquisition_enable": {
-            "direction": "I"
-          },
-          "stream_ready": {
-            "direction": "I"
-          },
-          "stream_data": {
-            "direction": "O",
-            "left": "31",
-            "right": "0"
-          },
-          "stream_valid": {
-            "direction": "O"
-          },
-          "stream_user": {
-            "direction": "O",
-            "left": "1",
-            "right": "0"
-          },
-          "aom_pulse": {
-            "direction": "O"
-          },
-          "adc_overflow": {
-            "direction": "O"
-          },
-          "acquisition_active": {
-            "direction": "O"
-          },
-          "data_pin_p": {
-            "direction": "I",
-            "left": "13",
-            "right": "0"
-          },
-          "data_pin_n": {
-            "direction": "I",
-            "left": "13",
-            "right": "0"
-          },
-          "adc_data_ch1": {
-            "direction": "O",
-            "left": "13",
-            "right": "0"
-          },
-          "adc_data_ch2": {
-            "direction": "O",
-            "left": "13",
-            "right": "0"
-          },
-          "adc_data_valid": {
-            "direction": "O"
-          },
-          "init_done": {
-            "direction": "O"
-          },
-          "device_spi_sclk": {
-            "direction": "O"
-          },
-          "device_spi_sda": {
-            "direction": "IO"
-          },
-          "adk_spi_csb": {
-            "direction": "O"
-          },
-          "adc_spi_csb": {
-            "direction": "O"
-          },
-          "dac_spi_csb": {
-            "direction": "O"
-          },
-          "adc_sync": {
-            "direction": "O"
           }
         }
       },
@@ -2202,15 +2100,414 @@
             "value": "1"
           }
         }
+      },
+      "top_layer_0": {
+        "vlnv": "xilinx.com:module_ref:top_layer:1.0",
+        "xci_name": "xdma_pcie_top_layer_0_0",
+        "parameters": {
+          "TX_SINE_MEM": {
+            "value": "sine_4096.mem"
+          }
+        },
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "top_layer",
+          "boundary_crc": "0x0"
+        },
+        "interface_ports": {
+          "adc_dco": {
+            "mode": "Slave",
+            "vlnv": "xilinx.com:interface:diff_clock_rtl:1.0",
+            "parameters": {
+              "FREQ_HZ": {
+                "value": "125000000",
+                "value_src": "constant"
+              }
+            },
+            "port_maps": {
+              "CLK_P": {
+                "physical_name": "adc_data_clk_p",
+                "direction": "I"
+              },
+              "CLK_N": {
+                "physical_name": "adc_data_clk_n",
+                "direction": "I"
+              }
+            }
+          }
+        },
+        "ports": {
+          "ctrl_clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "rst_n",
+                "value_src": "constant"
+              },
+              "CLK_DOMAIN": {
+                "value": "xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk",
+                "value_src": "default_prop"
+              },
+              "FREQ_HZ": {
+                "value": "200000000",
+                "value_src": "constant"
+              },
+              "PHASE": {
+                "value": "0.00",
+                "value_src": "const_prop"
+              }
+            }
+          },
+          "rst_n": {
+            "type": "rst",
+            "direction": "I",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "constant"
+              }
+            }
+          },
+          "adc_fifo_aresetn": {
+            "type": "rst",
+            "direction": "O",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "constant"
+              }
+            }
+          },
+          "sys_clk": {
+            "type": "clk",
+            "direction": "O",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "adc_fifo_aresetn",
+                "value_src": "constant"
+              },
+              "FREQ_HZ": {
+                "value": "125000000",
+                "value_src": "constant"
+              }
+            }
+          },
+          "acquisition_enable": {
+            "direction": "I"
+          },
+          "adc_test_enable": {
+            "direction": "I"
+          },
+          "adc_test_active": {
+            "direction": "O"
+          },
+          "adc_test_error": {
+            "direction": "O"
+          },
+          "adc_test_checked_count": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "adc_test_error_count": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "adc_test_config_locked": {
+            "direction": "O"
+          },
+          "tx_enable": {
+            "direction": "I"
+          },
+          "tx_abort": {
+            "direction": "I"
+          },
+          "tx_init_done": {
+            "direction": "O"
+          },
+          "tx_fault": {
+            "direction": "O"
+          },
+          "tx_status": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "dac_data_p": {
+            "direction": "O",
+            "left": "15",
+            "right": "0"
+          },
+          "dac_data_n": {
+            "direction": "O",
+            "left": "15",
+            "right": "0"
+          },
+          "dac_dci_p": {
+            "direction": "O"
+          },
+          "dac_dci_n": {
+            "direction": "O"
+          },
+          "dac_frame_p": {
+            "direction": "O"
+          },
+          "dac_frame_n": {
+            "direction": "O"
+          },
+          "stream_ready": {
+            "direction": "I"
+          },
+          "stream_data": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "stream_valid": {
+            "direction": "O"
+          },
+          "stream_user": {
+            "direction": "O",
+            "left": "1",
+            "right": "0"
+          },
+          "aom_pulse": {
+            "direction": "O"
+          },
+          "adc_overflow": {
+            "direction": "O"
+          },
+          "acquisition_active": {
+            "direction": "O"
+          },
+          "data_pin_p": {
+            "direction": "I",
+            "left": "13",
+            "right": "0"
+          },
+          "data_pin_n": {
+            "direction": "I",
+            "left": "13",
+            "right": "0"
+          },
+          "adc_data_ch1": {
+            "direction": "O",
+            "left": "13",
+            "right": "0"
+          },
+          "adc_data_ch2": {
+            "direction": "O",
+            "left": "13",
+            "right": "0"
+          },
+          "adc_data_valid": {
+            "direction": "O"
+          },
+          "init_done": {
+            "direction": "O"
+          },
+          "device_spi_sclk": {
+            "direction": "O"
+          },
+          "device_spi_sda": {
+            "direction": "IO"
+          },
+          "adk_spi_csb": {
+            "direction": "O"
+          },
+          "adc_spi_csb": {
+            "direction": "O"
+          },
+          "dac_spi_csb": {
+            "direction": "O"
+          },
+          "adc_sync": {
+            "direction": "O"
+          }
+        }
+      },
+      "acquisition_router_0": {
+        "vlnv": "xilinx.com:module_ref:acquisition_router:1.0",
+        "xci_name": "xdma_pcie_acquisition_router_0_0",
+        "parameters": {
+          "FRAME_WORDS": {
+            "value": "16384"
+          },
+          "SAMPLE_RATE": {
+            "value": "125000000"
+          },
+          "TRACE_PERIOD": {
+            "value": "31250"
+          },
+          "TRACE_POINTS": {
+            "value": "16320"
+          }
+        },
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "acquisition_router",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "reset_n",
+                "value_src": "constant"
+              },
+              "CLK_DOMAIN": {
+                "value": "xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk",
+                "value_src": "default_prop"
+              },
+              "FREQ_HZ": {
+                "value": "200000000",
+                "value_src": "constant"
+              },
+              "PHASE": {
+                "value": "0.00",
+                "value_src": "const_prop"
+              }
+            }
+          },
+          "reset_n": {
+            "type": "rst",
+            "direction": "I",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "const_prop"
+              }
+            }
+          },
+          "start": {
+            "direction": "I"
+          },
+          "raw_mode_cfg": {
+            "direction": "I"
+          },
+          "test_enable_cfg": {
+            "direction": "I"
+          },
+          "tx_enable_cfg": {
+            "direction": "I"
+          },
+          "epoch_cfg": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "config_id_cfg": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "adc_test_active": {
+            "direction": "I"
+          },
+          "input_fault": {
+            "direction": "I"
+          },
+          "tx_init_done": {
+            "direction": "I"
+          },
+          "tx_fault": {
+            "direction": "I"
+          },
+          "frontend_enable": {
+            "direction": "O"
+          },
+          "adc_test_request": {
+            "direction": "O"
+          },
+          "tx_enable_locked": {
+            "direction": "O"
+          },
+          "mode_locked": {
+            "direction": "O"
+          },
+          "raw_mode_active": {
+            "direction": "O"
+          },
+          "configuration_error": {
+            "direction": "O"
+          },
+          "adc_data": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "adc_user": {
+            "direction": "I",
+            "left": "1",
+            "right": "0"
+          },
+          "adc_valid": {
+            "direction": "I"
+          },
+          "adc_ready": {
+            "direction": "O"
+          },
+          "das_adc_data": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "das_adc_user": {
+            "direction": "O",
+            "left": "1",
+            "right": "0"
+          },
+          "das_adc_valid": {
+            "direction": "O"
+          },
+          "das_adc_ready": {
+            "direction": "I"
+          },
+          "das_frame_data": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "das_frame_valid": {
+            "direction": "I"
+          },
+          "das_frame_last": {
+            "direction": "I"
+          },
+          "das_frame_ready": {
+            "direction": "O"
+          },
+          "frame_data": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "frame_valid": {
+            "direction": "O"
+          },
+          "frame_last": {
+            "direction": "O"
+          },
+          "frame_ready": {
+            "direction": "I"
+          },
+          "raw_capture_complete": {
+            "direction": "O"
+          },
+          "raw_capture_error": {
+            "direction": "O"
+          },
+          "raw_frame_sent": {
+            "direction": "O"
+          }
+        }
       }
     },
     "interface_nets": {
-      "axi_smc_M00_AXI": {
-        "interface_ports": [
-          "axi_smc/M00_AXI",
-          "ddr4_0/C0_DDR4_S_AXI"
-        ]
-      },
       "ddr4_0_C0_DDR4": {
         "interface_ports": [
           "C0_DDR4_0",
@@ -2223,16 +2520,10 @@
           "axi_smc/S00_AXI"
         ]
       },
-      "diff_clock_rtl_0_1": {
+      "C0_SYS_CLK_0_1": {
         "interface_ports": [
-          "diff_clock_rtl_0",
-          "util_ds_buf/CLK_IN_D"
-        ]
-      },
-      "xdma_0_pcie_mgt": {
-        "interface_ports": [
-          "pcie_7x_mgt_rtl_0",
-          "xdma_0/pcie_mgt"
+          "C0_SYS_CLK_0",
+          "ddr4_0/C0_SYS_CLK"
         ]
       },
       "wr_addr_0_m00_axi": {
@@ -2241,10 +2532,22 @@
           "axi_smc/S01_AXI"
         ]
       },
-      "C0_SYS_CLK_0_1": {
+      "diff_clock_rtl_0_1": {
         "interface_ports": [
-          "C0_SYS_CLK_0",
-          "ddr4_0/C0_SYS_CLK"
+          "diff_clock_rtl_0",
+          "util_ds_buf/CLK_IN_D"
+        ]
+      },
+      "axi_smc_M00_AXI": {
+        "interface_ports": [
+          "axi_smc/M00_AXI",
+          "ddr4_0/C0_DDR4_S_AXI"
+        ]
+      },
+      "xdma_0_pcie_mgt": {
+        "interface_ports": [
+          "pcie_7x_mgt_rtl_0",
+          "xdma_0/pcie_mgt"
         ]
       }
     },
@@ -2291,11 +2594,12 @@
           "rst_ddr/peripheral_aresetn",
           "ddr4_0/c0_ddr4_aresetn",
           "axi_smc/aresetn",
-          "top_layer_0/rst_n",
           "wr_addr_0/rst_n",
           "wr_addr_0/m00_axi_aresetn",
           "das_processing/reset_n",
-          "das_writer_packet_0/reset_n"
+          "das_writer_packet_0/reset_n",
+          "top_layer_0/rst_n",
+          "acquisition_router_0/reset_n"
         ]
       },
       "perst_invert_Res": {
@@ -2338,12 +2642,13 @@
           "vio_readback/clk",
           "ila_readback/clk",
           "axis_data_fifo_0/m_axis_aclk",
-          "top_layer_0/ctrl_clk",
           "wr_addr_0/clk",
           "wr_addr_0/m00_axi_aclk",
           "das_processing/clk",
           "das_writer_packet_0/clk",
-          "ila_das/clk"
+          "ila_das/clk",
+          "top_layer_0/ctrl_clk",
+          "acquisition_router_0/clk"
         ]
       },
       "xdma_0_axi_aclk": {
@@ -2357,14 +2662,14 @@
         "ports": [
           "axis_data_fifo_0/m_axis_tdata",
           "ila_readback/probe5",
-          "das_processing/adc_data"
+          "acquisition_router_0/adc_data"
         ]
       },
       "axis_data_fifo_0_m_axis_tvalid": {
         "ports": [
           "axis_data_fifo_0/m_axis_tvalid",
           "ila_readback/probe6",
-          "das_processing/adc_valid"
+          "acquisition_router_0/adc_valid"
         ]
       },
       "wr_addr_0_fifo_ready": {
@@ -2520,7 +2825,7 @@
       "vio_readback_probe_out1": {
         "ports": [
           "vio_readback/probe_out1",
-          "top_layer_0/acquisition_enable"
+          "acquisition_router_0/start"
         ]
       },
       "top_layer_0_init_done": {
@@ -2552,7 +2857,8 @@
           "top_layer_0/adc_overflow",
           "vio_readback/probe_in4",
           "ila_readback/probe7",
-          "das_processing/input_fault"
+          "das_processing/input_fault",
+          "acquisition_router_0/input_fault"
         ]
       },
       "top_layer_0_stream_user": {
@@ -2564,40 +2870,37 @@
       "axis_data_fifo_0_m_axis_tuser": {
         "ports": [
           "axis_data_fifo_0/m_axis_tuser",
-          "das_processing/adc_user"
+          "acquisition_router_0/adc_user"
         ]
       },
       "das_processing_adc_ready": {
         "ports": [
           "das_processing/adc_ready",
-          "axis_data_fifo_0/m_axis_tready"
+          "acquisition_router_0/das_adc_ready"
         ]
       },
       "das_processing_frame_data": {
         "ports": [
           "das_processing/frame_data",
-          "das_writer_packet_0/frame_data",
-          "ila_das/probe0"
+          "acquisition_router_0/das_frame_data"
         ]
       },
       "das_processing_frame_valid": {
         "ports": [
           "das_processing/frame_valid",
-          "das_writer_packet_0/frame_valid",
-          "ila_das/probe1"
+          "acquisition_router_0/das_frame_valid"
         ]
       },
       "das_processing_frame_last": {
         "ports": [
           "das_processing/frame_last",
-          "das_writer_packet_0/frame_last",
-          "ila_das/probe3"
+          "acquisition_router_0/das_frame_last"
         ]
       },
       "frame_ready_1": {
         "ports": [
           "das_writer_packet_0/frame_ready",
-          "das_processing/frame_ready",
+          "acquisition_router_0/frame_ready",
           "ila_das/probe2"
         ]
       },
@@ -2668,6 +2971,234 @@
         "ports": [
           "das_processing/banks_full",
           "ila_das/probe6"
+        ]
+      },
+      "acquisition_router_0_frontend_enable": {
+        "ports": [
+          "acquisition_router_0/frontend_enable",
+          "top_layer_0/acquisition_enable"
+        ]
+      },
+      "acquisition_router_0_adc_test_request": {
+        "ports": [
+          "acquisition_router_0/adc_test_request",
+          "top_layer_0/adc_test_enable"
+        ]
+      },
+      "vio_readback_probe_out3": {
+        "ports": [
+          "vio_readback/probe_out3",
+          "acquisition_router_0/raw_mode_cfg"
+        ]
+      },
+      "vio_readback_probe_out4": {
+        "ports": [
+          "vio_readback/probe_out4",
+          "acquisition_router_0/test_enable_cfg"
+        ]
+      },
+      "vio_readback_probe_out5": {
+        "ports": [
+          "vio_readback/probe_out5",
+          "acquisition_router_0/epoch_cfg"
+        ]
+      },
+      "vio_readback_probe_out6": {
+        "ports": [
+          "vio_readback/probe_out6",
+          "acquisition_router_0/config_id_cfg"
+        ]
+      },
+      "vio_readback_probe_out7": {
+        "ports": [
+          "vio_readback/probe_out7",
+          "acquisition_router_0/tx_enable_cfg"
+        ]
+      },
+      "top_layer_0_adc_test_active": {
+        "ports": [
+          "top_layer_0/adc_test_active",
+          "acquisition_router_0/adc_test_active",
+          "vio_readback/probe_in11"
+        ]
+      },
+      "acquisition_router_0_das_adc_data": {
+        "ports": [
+          "acquisition_router_0/das_adc_data",
+          "das_processing/adc_data"
+        ]
+      },
+      "acquisition_router_0_das_adc_user": {
+        "ports": [
+          "acquisition_router_0/das_adc_user",
+          "das_processing/adc_user"
+        ]
+      },
+      "acquisition_router_0_das_adc_valid": {
+        "ports": [
+          "acquisition_router_0/das_adc_valid",
+          "das_processing/adc_valid"
+        ]
+      },
+      "acquisition_router_0_adc_ready": {
+        "ports": [
+          "acquisition_router_0/adc_ready",
+          "axis_data_fifo_0/m_axis_tready"
+        ]
+      },
+      "acquisition_router_0_frame_data": {
+        "ports": [
+          "acquisition_router_0/frame_data",
+          "das_writer_packet_0/frame_data",
+          "ila_das/probe0"
+        ]
+      },
+      "acquisition_router_0_frame_valid": {
+        "ports": [
+          "acquisition_router_0/frame_valid",
+          "das_writer_packet_0/frame_valid",
+          "ila_das/probe1"
+        ]
+      },
+      "acquisition_router_0_frame_last": {
+        "ports": [
+          "acquisition_router_0/frame_last",
+          "das_writer_packet_0/frame_last",
+          "ila_das/probe3"
+        ]
+      },
+      "acquisition_router_0_das_frame_ready": {
+        "ports": [
+          "acquisition_router_0/das_frame_ready",
+          "das_processing/frame_ready"
+        ]
+      },
+      "top_layer_0_adc_test_error": {
+        "ports": [
+          "top_layer_0/adc_test_error",
+          "vio_readback/probe_in12"
+        ]
+      },
+      "top_layer_0_adc_test_checked_count": {
+        "ports": [
+          "top_layer_0/adc_test_checked_count",
+          "vio_readback/probe_in13"
+        ]
+      },
+      "top_layer_0_adc_test_error_count": {
+        "ports": [
+          "top_layer_0/adc_test_error_count",
+          "vio_readback/probe_in14"
+        ]
+      },
+      "top_layer_0_adc_test_config_locked": {
+        "ports": [
+          "top_layer_0/adc_test_config_locked",
+          "vio_readback/probe_in15"
+        ]
+      },
+      "acquisition_router_0_raw_capture_complete": {
+        "ports": [
+          "acquisition_router_0/raw_capture_complete",
+          "vio_readback/probe_in16"
+        ]
+      },
+      "acquisition_router_0_raw_capture_error": {
+        "ports": [
+          "acquisition_router_0/raw_capture_error",
+          "vio_readback/probe_in17"
+        ]
+      },
+      "acquisition_router_0_raw_frame_sent": {
+        "ports": [
+          "acquisition_router_0/raw_frame_sent",
+          "vio_readback/probe_in18"
+        ]
+      },
+      "acquisition_router_0_configuration_error": {
+        "ports": [
+          "acquisition_router_0/configuration_error",
+          "vio_readback/probe_in19"
+        ]
+      },
+      "acquisition_router_0_raw_mode_active": {
+        "ports": [
+          "acquisition_router_0/raw_mode_active",
+          "vio_readback/probe_in20"
+        ]
+      },
+      "top_layer_0_tx_init_done": {
+        "ports": [
+          "top_layer_0/tx_init_done",
+          "acquisition_router_0/tx_init_done",
+          "vio_readback/probe_in21"
+        ]
+      },
+      "top_layer_0_tx_fault": {
+        "ports": [
+          "top_layer_0/tx_fault",
+          "acquisition_router_0/tx_fault",
+          "vio_readback/probe_in22"
+        ]
+      },
+      "acquisition_router_0_tx_enable_locked": {
+        "ports": [
+          "acquisition_router_0/tx_enable_locked",
+          "top_layer_0/tx_enable"
+        ]
+      },
+      "vio_readback_probe_out8": {
+        "ports": [
+          "vio_readback/probe_out8",
+          "top_layer_0/tx_abort"
+        ]
+      },
+      "top_layer_0_tx_status": {
+        "ports": [
+          "top_layer_0/tx_status",
+          "vio_readback/probe_in23"
+        ]
+      },
+      "top_layer_0_dac_data_p": {
+        "ports": [
+          "top_layer_0/dac_data_p",
+          "dac_data_p"
+        ]
+      },
+      "top_layer_0_dac_data_n": {
+        "ports": [
+          "top_layer_0/dac_data_n",
+          "dac_data_n"
+        ]
+      },
+      "top_layer_0_dac_dci_p": {
+        "ports": [
+          "top_layer_0/dac_dci_p",
+          "dac_dci_p"
+        ]
+      },
+      "top_layer_0_dac_dci_n": {
+        "ports": [
+          "top_layer_0/dac_dci_n",
+          "dac_dci_n"
+        ]
+      },
+      "top_layer_0_dac_frame_p": {
+        "ports": [
+          "top_layer_0/dac_frame_p",
+          "dac_frame_p"
+        ]
+      },
+      "top_layer_0_dac_frame_n": {
+        "ports": [
+          "top_layer_0/dac_frame_n",
+          "dac_frame_n"
+        ]
+      },
+      "acquisition_router_0_mode_locked": {
+        "ports": [
+          "acquisition_router_0/mode_locked",
+          "vio_readback/probe_in24"
         ]
       }
     },

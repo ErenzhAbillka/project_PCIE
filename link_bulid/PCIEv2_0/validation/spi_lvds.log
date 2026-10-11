@@ -1,0 +1,20 @@
+#-----------------------------------------------------------
+# xsim v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Sun Oct  4 21:30:18 2026
+# Process ID: 29592
+# Current directory: E:/Documents/ChatGPT/project_PCIE/das_template_integration/sim_output
+# Command line: xsim.exe -mode tcl -source {xsim.dir/adc_front_test/xsim_script.tcl}
+# Log file: E:/Documents/ChatGPT/project_PCIE/das_template_integration/sim_output/xsim.log
+# Journal file: E:/Documents/ChatGPT/project_PCIE/das_template_integration/sim_output\xsim.jou
+#-----------------------------------------------------------
+source xsim.dir/adc_front_test/xsim_script.tcl
+# xsim {adc_front_test} -autoloadwcfg -runall
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+run -all
+PASS: 76 clock + 23 ADC writes, startup without DCO, SPI timing, reset restart, 120 DDR pairs
+$finish called at time : 500405 ns : File "E:/Documents/ChatGPT/project_PCIE/das_template_integration/sim/tb_adc.sv" Line 181
+exit
+INFO: [Common 17-206] Exiting xsim at Sun Oct  4 21:30:23 2026...

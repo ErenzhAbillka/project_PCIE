@@ -1,0 +1,83 @@
+RAW1 离线抓取与验证 (2026-10-10)
+
+本工具不打开PCIe设备、不配置ADC/DAC、不读写虚构CSR。
+需要后续在有许可环境完成综合/实现、通过新时序与引脚检查并下载新bit/LTX。
+旧10月4日bit不支持本轮RAW1/ADC诊断/TX接口，不能混用新的VIO说明。
+格式准确word表：project_PCIE.doc/ADC_RAW_TX/RAW1_FORMAT.txt。
+
+实际VIO编号（vio_readback；先前out0=start的口述已纠正）：
+out0  保留wr_addr诊断读触发，RAW/DAS抓取时保持0
+out1  start，一次锁存本次采集配置；置1后须系统复位才能重新采集
+out2  原DAS phase_start，RAW模式不使用
+out3  raw_mode：0默认DAS，1单次原始ADC
+out4  adc_test_enable：0正常ADC，1持续AD9643 ramp
+out5  epoch[31:0]，每次新采集设置未复用的run标识
+out6  config_id[31:0]，记录实验配置；TX启用时固定改为0x54583031(TX01)
+out7  tx_enable，默认0；只允许RAW+正常ADC，不能配ramp或DAS
+out8  tx_abort，默认0；停止TX并锁存故障，不能用于重新arm RAW
+
+in0 DDR校准完成；in1 writer错误；in2 ADC init_done；in3 acquisition_active；
+in4 ADC overflow/连续性fault；in5 DAS alignment_error；in6 DAS format_error；
+in7 DAS groups_completed；in8 DDR frames-done；in9 accumulator_clipped；in10 framing_error。
+in11 ADC test_active；in12 test_error；in13 checked_count32；in14 test_error_count32；
+in15 test_config_locked；in16 raw_capture_complete；in17 raw_capture_error；
+in18 raw_frame_sent；in19 configuration_error；in20 raw_mode_active；
+in21 TX init_done；in22 TX fault；in23 TX status32。
+TX status bit0=init_ready，bit1=shot_done，bit2=shot_started，bit3=busy；
+bits7:4=错误码，bits15:8=FIFO level，bits23:16=DAC revision，bits31:24=0。
+in24 router mode_locked：首次start立即置1，采集模式/epoch/config/TX/测试请求已锁定。
+in15是ADC实际开始run后的test_config_locked；等待DAC初始化时in15可能仍0，
+不能据此修改router配置。首次start后只有系统复位才能解锁。
+
+AD9643持续ramp单次抓取：
+1. 系统复位，out0/out1/out7/out8保持0。设out3=1、out4=1；设out5为新epoch，
+   out6为本次配置标识。例epoch=0x20261010，config_id=0x52414d50。
+2. 释放复位并先确认in0 DDR校准完成=1，再等待ADC初始化与测试模式切换/settle完成：in2=1、in11=1、
+   in13持续增长、in12/in14=0、in4=0。切模式期间init_done=0是正常过程。
+   start前配置可修改；start后测试模式锁定，运行中切out4不重新配置SPI。
+3. out1置1，立即观察in24=1；实际run后in15=1、in20=1、in19=0。完整窗口最多16320个A/B样本。
+   等in16=1、in18=1，最终in8从0变1。只看到capture_complete/frame_sent不算DDR提交。
+4. 保存采集配置与VIO状态，检查in1/in4/in12/in17/in19=0、in14=0、in10=0。
+   记录DMA前in8=1。用已实测的XDMA AXI Memory-Mapped C2H工具，
+   从卡地址0x00100000读取65536字节到raw.bin。不要套用AXI Stream接收参数。
+   记录DMA后in8仍=1、错误状态仍0；全程不得系统复位/换bit。
+   当前RAW完成后继续排空ADC样本但不写第二帧，不存在DAS环的400ms覆写期限。
+5. 运行：
+   python scripts/decode_raw.py raw.bin --completed 1 --completed-after 1 --expected-epoch 0x20261010 --expected-config-id 0x52414d50 --ramp --output raw_decoded
+   产生samples.csv与summary.json；exit0且ramp_check_pass=true才通过本项数字检查。
+   本板0x14=0x05下ramp每拍14bit modulo递减1，默认--ramp-direction -1。
+   两通道相同ramp不能证明A/B身份；需差异化pattern/已知输入进一步验证。
+
+正常模拟信号RAW：
+同上，out4=0且确认in11=0。decode去掉--ramp；每个样本输出A/B signed16及14bit码值。
+码值不是电压，需前端增益、偏置和满量程校准。
+
+TX01电测：
+先按TX文档连接并确认DAC电气/时序和模拟链路；复位时start=0，设RAW=1、ADCtest=0、
+TXenable=1、abort=0并设置新epoch。释放复位，确认DDR校准in0=1、ADC init_done=1/test_active=0，再start=1。
+router会等TX init_done且无fault后启动ADC流；TX组合不合法会configuration_error。
+首次start已经锁定router配置(in24=1)，即使TX初始化尚未完成、in15=0也不能改配置。
+config_id自动为0x54583031(TX01)。这是固定5→15MHz、20us电测chirp配置标识，
+不是AOM扫频设置或论文RF参数，不能由它断言光学系统已工作。
+使用DAC生成工具导出的相同profile plan.json做离线匹配，不能用默认40→60MHz研究plan：
+   python scripts/decode_raw.py raw.bin --completed 1 --completed-after 1 --expected-epoch <本轮epoch> --expected-config-id 0x54583031 --tgd-plan project_PCIE.doc/ADC_RAW_TX/tx01_plan.json --channel A --output tx01_decoded
+TGD入口对单个实ADC通道做去DC与FFT analytic转换，再调用现有tgd_reference匹配滤波。
+TX01按plan读取实际4096项signed16正弦ROM并核对SHA256，参考含相同相位地址截断与LUT量化。
+不擅自假设A+jB是IQ；返回相对捕获起点的lag与未校准phase，不宣称校准光纤距离。
+完整参考脉冲必须落在采集窗口内，Fs/频带需匹配；DAC LUT/定点、模拟滤波、
+发射/接收触发偏置和时钟关系仍需单独验证。
+
+离线旧文件诊断：
+没有本轮前后计数或epoch证据时，默认工具exit2，拒绝称为稳定新采集。
+可显式--allow-unverified解析格式；summary.publication_verified=false。
+这不能补做硬件VIO观测，也不能从header推断文件来自本轮。
+exit2=格式/发布证据/配置或文件错误；exit3=已解码但ramp检查失败；exit0=请求的检查通过。
+XOR32能发现许多意外payload损坏，成对位翻转可抵消，不能替代CRC或状态一致性。
+
+离线测试：
+python scripts/test_decode_raw.py
+python scripts/check_rtl_raw.py <RTL回归输出目录>/tb_raw_capture/raw_frame.hex --output link_bulid/ADC_RAW_TX/validation/raw_host_crosscheck.json
+后者逐点检查真实RTL仿真导出的16320双通道样本，不是实板DMA测试。
+
+RTL回归默认输出到系统临时目录，实际目录由 run_acquisition_rtl_check.ps1 打印。
+可用 -OutputDir 指定工程目录之外的验证目录，再将其 raw_frame.hex 交给上述主机检查。

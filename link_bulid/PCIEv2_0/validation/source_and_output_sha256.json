@@ -28,11 +28,11 @@
     "SHA256": "2DB3E0A2C82056F13F9017557BED01460FD1732F912585F88F1EC4DE6EBC0681"
   },
   {
-    "Path": "das_processing_build\\xdma_pcie_wrapper.bit",
+    "Path": "link_bulid\\PCIEv2_0\\xdma_pcie_wrapper.bit",
     "SHA256": "FE2DA34BD7F774B7AF5081A3DE600B0F97B3A60815B8C12A96D189073B61F3CA"
   },
   {
-    "Path": "das_processing_build\\xdma_pcie_wrapper.ltx",
+    "Path": "link_bulid\\PCIEv2_0\\xdma_pcie_wrapper.ltx",
     "SHA256": "12D074BFEA076EFA4AF632B48D7606322F0F3E036C3CE4D10C8379279E3E2934"
   }
 ]

@@ -1,5 +1,5 @@
 # Run in batch after copying the checked RTL/XDC and backing up the original.
-set root E:/FPGA_Doc/project_PCIE
+set root [file dirname [file dirname [file normalize [info script]]]]
 open_project $root/project_PCIE.xpr
 open_bd_design [get_files */xdma_pcie.bd]
 update_module_reference [get_ips *wr_addr*]

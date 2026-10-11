@@ -1,4 +1,4 @@
-set root E:/FPGA_Doc/project_PCIE
+set root [file dirname [file dirname [file normalize [info script]]]]
 set dsp $root/project_PCIE.srcs/sources_1/new/das_processing
 open_project $root/project_PCIE.xpr
 add_files -norecurse [list $dsp/das_iq_control.v $dsp/das_trace_process.v]

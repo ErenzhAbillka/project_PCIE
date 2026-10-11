@@ -1,19 +1,30 @@
 # ADC -> DDS/IQ/FIR/CORDIC -> difference + phase ROI -> four-beat writer.
-# vivado -mode batch -source E:/FPGA_Doc/project_PCIE/scripts/build_adc.tcl
-set scripts E:/FPGA_Doc/project_PCIE/scripts
+# vivado -mode batch -source scripts/build_das.tcl
+set scripts [file dirname [file normalize [info script]]]
 set root [file dirname $scripts]
-set out [file join $root das_processing_build]
+set out [file join $root link_bulid ADC_RAW_TX]
 file mkdir $out
+cd $out
 open_project [file join $root project_PCIE.xpr]
 open_bd_design [get_files */xdma_pcie.bd]
+# Resolve the TX ROM from this checkout whenever the project moves disks.
+set txdir [file join $root project_PCIE.srcs sources_1 new tgd_tx]
+update_module_reference [get_ips *top_layer*]
+set_property CONFIG.TX_SINE_MEM [file normalize [file join $txdir sine_4096.mem]] [get_bd_cells top_layer_0]
 validate_bd_design -force
 save_bd_design
 # Global synthesis avoids the Windows Script Host run launcher.
 set_property generate_synth_checkpoint false [get_files */xdma_pcie.bd]
-generate_target all [get_files */xdma_pcie.bd]
+# Vivado 2018.3 may invalidate nested SmartConnect products during validation.
+# Reset generated targets only if the known nested HDL helper is absent.
+set sc_clock_helper [file join $root project_PCIE.srcs sources_1 bd xdma_pcie ip xdma_pcie_axi_smc_0 bd_0 ip ip_0 synth bd_5f9e_one_0.v]
+if {![file exists $sc_clock_helper]} {reset_target all [get_files */xdma_pcie.bd]}
+generate_target all -force [get_files */xdma_pcie.bd]
+if {![file exists $sc_clock_helper]} {error "SmartConnect nested HDL missing after parent BD regeneration"}
 make_wrapper -files [get_files */xdma_pcie.bd] -top
 update_compile_order -fileset sources_1
 synth_design -top xdma_pcie_wrapper -part [get_property PART [current_project]]
+source $scripts/verify_dac_constraints.tcl
 write_checkpoint -force $out/synth.dcp
 # Debug cores can be black boxes here and are linked during opt_design.
 # Implementation DRC (including INBB-3) remains the final black-box check.
@@ -41,6 +52,5 @@ foreach kind {max min} {
 }
 write_debug_probes -force $out/xdma_pcie_wrapper.ltx
 write_bitstream -force $out/xdma_pcie_wrapper.bit
-puts "DAS_PROCESSING_BITSTREAM_BUILD_PASS"
+puts "ADC_RAW_TX_BITSTREAM_BUILD_PASS"
 exit
-

@@ -1,0 +1,106 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Thu Oct  8 14:04:51 2026
+# Process ID: 28424
+# Current directory: E:/Documents/ChatGPT/project_PCIE/tmp
+# Command line: vivado.exe -mode batch -nojournal -log E:/FPGA_Doc/project_PCIE/link_bulid/PCIEv2_0/validation/delivery_relocation.log -source E:/FPGA_Doc/project_PCIE/scripts/verify_delivery.tcl -tclargs E:/Documents/ChatGPT/project_PCIE/tmp/PCIEv2_0_delivery_check_20261008/project_PCIE
+# Log file: E:/FPGA_Doc/project_PCIE/link_bulid/PCIEv2_0/validation/delivery_relocation.log
+# Journal file: 
+#-----------------------------------------------------------
+source E:/FPGA_Doc/project_PCIE/scripts/verify_delivery.tcl
+# if {$argc != 1} {error "Pass the extracted project directory"}
+# set root [file normalize [lindex $argv 0]]
+# open_project [file join $root project_PCIE.xpr]
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'E:/Documents/ChatGPT/project_PCIE/tmp/PCIEv2_0_delivery_check_20261008/project_PCIE'
+INFO: [Project 1-313] Project file moved from 'E:/FPGA_Doc/project_PCIE' since last save.
+Scanning sources...
+Finished scanning sources
+WARNING: [Project 1-509] GeneratedRun file for 'synth_1' not found
+WARNING: [Project 1-509] GeneratedRun file for 'impl_1' not found
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Xilinxx/Vivado/2018.3/data/ip'.
+open_project: Time (s): cpu = 00:00:05 ; elapsed = 00:00:09 . Memory (MB): peak = 416.742 ; gain = 150.328
+# set missing {}
+# foreach f [get_files -all] {
+#  if {![file exists $f]} {lappend missing $f}
+# }
+# if {[llength $missing]} {error "Missing files: $missing"}
+# open_bd_design [get_files */xdma_pcie.bd]
+Adding cell -- xilinx.com:ip:ddr4:2.2 - ddr4_0
+Adding cell -- xilinx.com:ip:xdma:4.1 - xdma_0
+Adding cell -- xilinx.com:ip:util_ds_buf:2.1 - util_ds_buf
+Adding cell -- xilinx.com:ip:axis_data_fifo:2.0 - axis_data_fifo_0
+Adding cell -- xilinx.com:ip:smartconnect:1.0 - axi_smc
+Adding cell -- xilinx.com:ip:util_vector_logic:2.0 - perst_invert
+Adding cell -- xilinx.com:ip:util_vector_logic:2.0 - xdma_reset_invert
+Adding cell -- xilinx.com:ip:proc_sys_reset:5.0 - rst_ddr
+Adding cell -- xilinx.com:ip:xlconstant:1.1 - zero_1
+Adding cell -- xilinx.com:ip:xlconstant:1.1 - zero_4
+Adding cell -- xilinx.com:ip:xlconstant:1.1 - zero_19
+Adding cell -- xilinx.com:ip:xlconstant:1.1 - zero_32
+Adding cell -- xilinx.com:ip:xlconstant:1.1 - one
+Adding cell -- xilinx.com:ip:vio:3.0 - vio_readback
+Adding cell -- xilinx.com:ip:ila:6.2 - ila_readback
+INFO: [xilinx.com:ip:ila:6.2-6] /ila_readback: Xilinx recommends using the System ILA IP in IP Integrator. The System ILA IP is functionally equivalent to an ILA and offers additional benefits in debugging interfaces both within IP Integrator and the Hardware Manager. Consult the Programming and Debug User Guide UG908 for further details.
+Adding cell -- xilinx.com:ip:vio:3.0 - vio_pcie
+Adding cell -- xilinx.com:module_ref:top_layer:1.0 - top_layer_0
+Adding cell -- xilinx.com:module_ref:wr_addr:1.0 - wr_addr_0
+Adding cell -- xilinx.com:module_ref:das_phase_source:1.0 - phase_source_0
+Adding cell -- xilinx.com:ip:dds_compiler:6.0 - dds_compiler_0
+Adding cell -- xilinx.com:module_ref:das_iq_mixer:1.0 - mult_iq_0
+Adding cell -- xilinx.com:ip:fir_compiler:7.2 - fir_compiler_i
+Adding cell -- xilinx.com:ip:fir_compiler:7.2 - fir_compiler_q
+Adding cell -- xilinx.com:module_ref:das_iq_join:1.0 - iq_align_0
+Adding cell -- xilinx.com:ip:cordic:6.0 - cordic_amp_phase_0
+Adding cell -- xilinx.com:module_ref:das_trace_process:1.0 - dif_acc_phase_0
+Adding cell -- xilinx.com:module_ref:das_writer_packet:1.0 - das_writer_packet_0
+Adding cell -- xilinx.com:ip:ila:6.2 - ila_das
+INFO: [xilinx.com:ip:ila:6.2-6] /ila_das: Xilinx recommends using the System ILA IP in IP Integrator. The System ILA IP is functionally equivalent to an ILA and offers additional benefits in debugging interfaces both within IP Integrator and the Hardware Manager. Consult the Programming and Debug User Guide UG908 for further details.
+WARNING: [BD 41-1731] Type mismatch between connected pins: /xdma_0/axi_aresetn(rst) and /vio_pcie/probe_in1(undef)
+Successfully read diagram <xdma_pcie> from BD file <E:/Documents/ChatGPT/project_PCIE/tmp/PCIEv2_0_delivery_check_20261008/project_PCIE/project_PCIE.srcs/sources_1/bd/xdma_pcie/xdma_pcie.bd>
+# validate_bd_design -force
+INFO: [Device 21-403] Loading part xcku060-ffva1156-2-i
+INFO: [xilinx.com:ip:fir_compiler:7.2-913] /das_processing/fir_compiler_i Data_Width has been set to manual on the GUI. It will not be updated during validation with a propagated value.
+INFO: [xilinx.com:ip:fir_compiler:7.2-913] /das_processing/fir_compiler_i DATA_TUSER_Width has been set to manual on the GUI. It will not be updated during validation with a propagated value.
+INFO: [xilinx.com:ip:cordic:6.0-7] /das_processing/cordic_amp_phase_0 Setting Input Width to 16. S_AXIS_CARTESIAN_TDATA real input width: 16. S_AXIS_CARTESIAN_TDATA imag input width: 16.
+INFO: [xilinx.com:ip:cordic:6.0-913] /das_processing/cordic_amp_phase_0 Input_Width has been set to manual on the GUI. It will not be updated during validation with a propagated value.
+INFO: [xilinx.com:ip:cordic:6.0-913] /das_processing/cordic_amp_phase_0 cartesian_tuser_width has been set to manual on the GUI. It will not be updated during validation with a propagated value.
+INFO: [xilinx.com:ip:fir_compiler:7.2-913] /das_processing/fir_compiler_q Data_Width has been set to manual on the GUI. It will not be updated during validation with a propagated value.
+INFO: [xilinx.com:ip:fir_compiler:7.2-913] /das_processing/fir_compiler_q DATA_TUSER_Width has been set to manual on the GUI. It will not be updated during validation with a propagated value.
+WARNING: [BD 41-927] Following properties on pin /top_layer_0/ctrl_clk have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk 
+WARNING: [BD 41-927] Following properties on pin /top_layer_0/sys_clk have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=xdma_pcie_top_layer_0_0_sys_clk 
+WARNING: [BD 41-927] Following properties on pin /wr_addr_0/clk have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk 
+WARNING: [BD 41-927] Following properties on pin /wr_addr_0/m00_axi_aclk have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk 
+WARNING: [BD 41-927] Following properties on pin /das_writer_packet_0/clk have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk 
+WARNING: [BD 41-927] Following properties on pin /das_processing/phase_source_0/clk have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk 
+WARNING: [BD 41-927] Following properties on pin /das_processing/mult_iq_0/clk have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk 
+WARNING: [BD 41-927] Following properties on pin /das_processing/iq_align_0/clk have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk 
+WARNING: [BD 41-927] Following properties on pin /das_processing/dif_acc_phase_0/clk have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk 
+validate_bd_design: Time (s): cpu = 00:00:06 ; elapsed = 00:00:07 . Memory (MB): peak = 1088.652 ; gain = 640.133
+# foreach name {fir_compiler_i fir_compiler_q} {
+#  set cell [get_bd_cells das_processing/$name]
+#  set coe [get_property CONFIG.Coefficient_File $cell]
+#  puts "FIR_COE_REFERENCE $name $coe"
+# }
+FIR_COE_REFERENCE fir_compiler_i ../../../../new/das_processing/coefficients/das_125m.coe
+FIR_COE_REFERENCE fir_compiler_q ../../../../new/das_processing/coefficients/das_125m.coe
+# if {[llength [get_bd_cells das_processing/*]] != 8} {error "Unexpected DAS hierarchy"}
+# if {[get_property CONFIG.WRITE_BASE_ADDR [get_bd_cells wr_addr_0]] != 0x00100000} {error "Wrong writer base"}
+# puts "DELIVERY_RELOCATION_PASS: project opens, files present, BD valid, DAS hierarchy and writer address retained"
+DELIVERY_RELOCATION_PASS: project opens, files present, BD valid, DAS hierarchy and writer address retained
+# close_project
+# exit
+INFO: [Common 17-206] Exiting Vivado at Thu Oct  8 14:05:12 2026...

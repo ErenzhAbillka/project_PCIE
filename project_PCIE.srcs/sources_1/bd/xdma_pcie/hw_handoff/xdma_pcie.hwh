@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Oct  4 21:20:50 2026" VIVADOVERSION="2018.3">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sat Oct 10 22:09:54 2026" VIVADOVERSION="2018.3">
 
   <SYSTEMINFO ARCH="kintexu" DEVICE="xcku060" NAME="xdma_pcie" PACKAGE="ffva1156" SPEEDGRADE="-2"/>
 
@@ -60,14 +60,34 @@
         <CONNECTION INSTANCE="top_layer_0" PORT="device_spi_sda"/>
       </CONNECTIONS>
     </PORT>
-    <PORT CLKFREQUENCY="100000000" DIR="I" LEFT="0" NAME="diff_clock_rtl_0_clk_p" RIGHT="0" SIGIS="clk" SIGNAME="util_ds_buf_IBUF_DS_P">
+    <PORT DIR="O" LEFT="15" NAME="dac_data_p" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_dac_data_p">
       <CONNECTIONS>
-        <CONNECTION INSTANCE="util_ds_buf" PORT="IBUF_DS_P"/>
+        <CONNECTION INSTANCE="top_layer_0" PORT="dac_data_p"/>
       </CONNECTIONS>
     </PORT>
-    <PORT CLKFREQUENCY="100000000" DIR="I" LEFT="0" NAME="diff_clock_rtl_0_clk_n" RIGHT="0" SIGIS="clk" SIGNAME="util_ds_buf_IBUF_DS_N">
+    <PORT DIR="O" LEFT="15" NAME="dac_data_n" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_dac_data_n">
       <CONNECTIONS>
-        <CONNECTION INSTANCE="util_ds_buf" PORT="IBUF_DS_N"/>
+        <CONNECTION INSTANCE="top_layer_0" PORT="dac_data_n"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="O" NAME="dac_dci_p" SIGIS="undef" SIGNAME="top_layer_0_dac_dci_p">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="top_layer_0" PORT="dac_dci_p"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="O" NAME="dac_dci_n" SIGIS="undef" SIGNAME="top_layer_0_dac_dci_n">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="top_layer_0" PORT="dac_dci_n"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="O" NAME="dac_frame_p" SIGIS="undef" SIGNAME="top_layer_0_dac_frame_p">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="top_layer_0" PORT="dac_frame_p"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="O" NAME="dac_frame_n" SIGIS="undef" SIGNAME="top_layer_0_dac_frame_n">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="top_layer_0" PORT="dac_frame_n"/>
       </CONNECTIONS>
     </PORT>
     <PORT DIR="O" NAME="C0_DDR4_0_act_n" SIGIS="undef" SIGNAME="ddr4_0_c0_ddr4_act_n">
@@ -140,6 +160,26 @@
         <CONNECTION INSTANCE="ddr4_0" PORT="c0_ddr4_reset_n"/>
       </CONNECTIONS>
     </PORT>
+    <PORT CLKFREQUENCY="100000000" DIR="I" LEFT="0" NAME="diff_clock_rtl_0_clk_p" RIGHT="0" SIGIS="clk" SIGNAME="util_ds_buf_IBUF_DS_P">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="util_ds_buf" PORT="IBUF_DS_P"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT CLKFREQUENCY="100000000" DIR="I" LEFT="0" NAME="diff_clock_rtl_0_clk_n" RIGHT="0" SIGIS="clk" SIGNAME="util_ds_buf_IBUF_DS_N">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="util_ds_buf" PORT="IBUF_DS_N"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT CLKFREQUENCY="100000000" DIR="I" NAME="C0_SYS_CLK_0_clk_n" SIGIS="clk" SIGNAME="ddr4_0_c0_sys_clk_n">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="ddr4_0" PORT="c0_sys_clk_n"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT CLKFREQUENCY="100000000" DIR="I" NAME="C0_SYS_CLK_0_clk_p" SIGIS="clk" SIGNAME="ddr4_0_c0_sys_clk_p">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="ddr4_0" PORT="c0_sys_clk_p"/>
+      </CONNECTIONS>
+    </PORT>
     <PORT DIR="I" LEFT="7" NAME="pcie_7x_mgt_rtl_0_rxn" RIGHT="0" SIGIS="undef" SIGNAME="xdma_0_pci_exp_rxn">
       <CONNECTIONS>
         <CONNECTION INSTANCE="xdma_0" PORT="pci_exp_rxn"/>
@@ -158,16 +198,6 @@
     <PORT DIR="O" LEFT="7" NAME="pcie_7x_mgt_rtl_0_txp" RIGHT="0" SIGIS="undef" SIGNAME="xdma_0_pci_exp_txp">
       <CONNECTIONS>
         <CONNECTION INSTANCE="xdma_0" PORT="pci_exp_txp"/>
-      </CONNECTIONS>
-    </PORT>
-    <PORT CLKFREQUENCY="100000000" DIR="I" NAME="C0_SYS_CLK_0_clk_n" SIGIS="clk" SIGNAME="ddr4_0_c0_sys_clk_n">
-      <CONNECTIONS>
-        <CONNECTION INSTANCE="ddr4_0" PORT="c0_sys_clk_n"/>
-      </CONNECTIONS>
-    </PORT>
-    <PORT CLKFREQUENCY="100000000" DIR="I" NAME="C0_SYS_CLK_0_clk_p" SIGIS="clk" SIGNAME="ddr4_0_c0_sys_clk_p">
-      <CONNECTIONS>
-        <CONNECTION INSTANCE="ddr4_0" PORT="c0_sys_clk_p"/>
       </CONNECTIONS>
     </PORT>
   </EXTERNALPORTS>
@@ -232,6 +262,208 @@
   </EXTERNALINTERFACES>
 
   <MODULES>
+    <MODULE COREREVISION="1" FULLNAME="/acquisition_router_0" HWVERSION="1.0" INSTANCE="acquisition_router_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="acquisition_router" VLNV="xilinx.com:module_ref:acquisition_router:1.0">
+      <DOCUMENTS/>
+      <PARAMETERS>
+        <PARAMETER NAME="TRACE_POINTS" VALUE="16320"/>
+        <PARAMETER NAME="FRAME_WORDS" VALUE="16384"/>
+        <PARAMETER NAME="SAMPLE_RATE" VALUE="125000000"/>
+        <PARAMETER NAME="TRACE_PERIOD" VALUE="31250"/>
+        <PARAMETER NAME="Component_Name" VALUE="xdma_pcie_acquisition_router_0_0"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT CLKFREQUENCY="200000000" DIR="I" NAME="clk" SIGIS="clk" SIGNAME="ddr4_0_c0_ddr4_ui_clk">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="ddr4_0" PORT="c0_ddr4_ui_clk"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="reset_n" SIGIS="rst" SIGNAME="rst_ddr_peripheral_aresetn">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="rst_ddr" PORT="peripheral_aresetn"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="start" SIGIS="undef" SIGNAME="vio_readback_probe_out1">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_out1"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="raw_mode_cfg" SIGIS="undef" SIGNAME="vio_readback_probe_out3">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_out3"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="test_enable_cfg" SIGIS="undef" SIGNAME="vio_readback_probe_out4">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_out4"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="tx_enable_cfg" SIGIS="undef" SIGNAME="vio_readback_probe_out7">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_out7"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="epoch_cfg" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out5">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_out5"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="config_id_cfg" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out6">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_out6"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="adc_test_active" SIGIS="undef" SIGNAME="top_layer_0_adc_test_active">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="adc_test_active"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="input_fault" SIGIS="undef" SIGNAME="top_layer_0_adc_overflow">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="adc_overflow"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="tx_init_done" SIGIS="undef" SIGNAME="top_layer_0_tx_init_done">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="tx_init_done"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="tx_fault" SIGIS="undef" SIGNAME="top_layer_0_tx_fault">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="tx_fault"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="frontend_enable" SIGIS="undef" SIGNAME="acquisition_router_0_frontend_enable">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="acquisition_enable"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="adc_test_request" SIGIS="undef" SIGNAME="acquisition_router_0_adc_test_request">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="adc_test_enable"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="tx_enable_locked" SIGIS="undef" SIGNAME="acquisition_router_0_tx_enable_locked">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="tx_enable"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="mode_locked" SIGIS="undef" SIGNAME="acquisition_router_0_mode_locked">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in24"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="raw_mode_active" SIGIS="undef" SIGNAME="acquisition_router_0_raw_mode_active">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in20"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="configuration_error" SIGIS="undef" SIGNAME="acquisition_router_0_configuration_error">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in19"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="adc_data" RIGHT="0" SIGIS="undef" SIGNAME="axis_data_fifo_0_m_axis_tdata">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="axis_data_fifo_0" PORT="m_axis_tdata"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="1" NAME="adc_user" RIGHT="0" SIGIS="undef" SIGNAME="axis_data_fifo_0_m_axis_tuser">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="axis_data_fifo_0" PORT="m_axis_tuser"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="adc_valid" SIGIS="undef" SIGNAME="axis_data_fifo_0_m_axis_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="axis_data_fifo_0" PORT="m_axis_tvalid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="adc_ready" SIGIS="undef" SIGNAME="acquisition_router_0_adc_ready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="axis_data_fifo_0" PORT="m_axis_tready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="das_adc_data" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_das_adc_data">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="adc_data"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="1" NAME="das_adc_user" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_das_adc_user">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="adc_user"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="das_adc_valid" SIGIS="undef" SIGNAME="acquisition_router_0_das_adc_valid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="adc_valid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="das_adc_ready" SIGIS="undef" SIGNAME="das_processing_phase_source_0_adc_ready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="adc_ready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="das_frame_data" RIGHT="0" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_data">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_data"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="das_frame_valid" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_valid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_valid"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="das_frame_last" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_last">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_last"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="das_frame_ready" SIGIS="undef" SIGNAME="acquisition_router_0_das_frame_ready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_ready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="frame_data" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_frame_data">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_writer_packet_0" PORT="frame_data"/>
+            <CONNECTION INSTANCE="ila_das" PORT="probe0"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="frame_valid" SIGIS="undef" SIGNAME="acquisition_router_0_frame_valid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_writer_packet_0" PORT="frame_valid"/>
+            <CONNECTION INSTANCE="ila_das" PORT="probe1"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="frame_last" SIGIS="undef" SIGNAME="acquisition_router_0_frame_last">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_writer_packet_0" PORT="frame_last"/>
+            <CONNECTION INSTANCE="ila_das" PORT="probe3"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="frame_ready" SIGIS="undef" SIGNAME="das_writer_packet_0_frame_ready">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="das_writer_packet_0" PORT="frame_ready"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="raw_capture_complete" SIGIS="undef" SIGNAME="acquisition_router_0_raw_capture_complete">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in16"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="raw_capture_error" SIGIS="undef" SIGNAME="acquisition_router_0_raw_capture_error">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in17"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="raw_frame_sent" SIGIS="undef" SIGNAME="acquisition_router_0_raw_frame_sent">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in18"/>
+          </CONNECTIONS>
+        </PORT>
+      </PORTS>
+      <BUSINTERFACES/>
+    </MODULE>
     <MODULE BD="xdma_pcie_axi_smc_0" BDTYPE="SBD" COREREVISION="10" DRIVERMODE="CORE" FULLNAME="/axi_smc" HWVERSION="1.0" INSTANCE="axi_smc" IPTYPE="BUS" IS_ENABLE="1" MODCLASS="BUS" MODTYPE="smartconnect" SIM_BD="xdma_pcie_axi_smc_0" VLNV="xilinx.com:ip:smartconnect:1.0">
       <DOCUMENTS>
         <DOCUMENT SOURCE="http://www.xilinx.com/cgi-bin/docs/ipdoc?c=smartconnect;v=v1_0;d=pg247-smartconnect.pdf"/>
@@ -1091,23 +1323,23 @@
         <PORT DIR="O" NAME="m_axis_tvalid" SIGIS="undef" SIGNAME="axis_data_fifo_0_m_axis_tvalid">
           <CONNECTIONS>
             <CONNECTION INSTANCE="ila_readback" PORT="probe6"/>
-            <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="adc_valid"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="adc_valid"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="m_axis_tready" SIGIS="undef" SIGNAME="das_processing_phase_source_0_adc_ready">
+        <PORT DIR="I" NAME="m_axis_tready" SIGIS="undef" SIGNAME="acquisition_router_0_adc_ready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="adc_ready"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="adc_ready"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="31" NAME="m_axis_tdata" RIGHT="0" SIGIS="undef" SIGNAME="axis_data_fifo_0_m_axis_tdata">
           <CONNECTIONS>
             <CONNECTION INSTANCE="ila_readback" PORT="probe5"/>
-            <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="adc_data"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="adc_data"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="1" NAME="m_axis_tuser" RIGHT="0" SIGIS="undef" SIGNAME="axis_data_fifo_0_m_axis_tuser">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="adc_user"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="adc_user"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
@@ -1626,25 +1858,22 @@
         </PORT>
         <PORT DIR="O" LEFT="31" NAME="frame_data" RIGHT="0" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_data">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_writer_packet_0" PORT="frame_data"/>
-            <CONNECTION INSTANCE="ila_das" PORT="probe0"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="das_frame_data"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="frame_valid" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_valid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_writer_packet_0" PORT="frame_valid"/>
-            <CONNECTION INSTANCE="ila_das" PORT="probe1"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="das_frame_valid"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="frame_last" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_last">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_writer_packet_0" PORT="frame_last"/>
-            <CONNECTION INSTANCE="ila_das" PORT="probe3"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="das_frame_last"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="frame_ready" SIGIS="undef" SIGNAME="das_writer_packet_0_frame_ready">
+        <PORT DIR="I" NAME="frame_ready" SIGIS="undef" SIGNAME="acquisition_router_0_das_frame_ready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_writer_packet_0" PORT="frame_ready"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="das_frame_ready"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="format_error" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_format_error">
@@ -2339,24 +2568,24 @@
             <CONNECTION INSTANCE="rst_ddr" PORT="peripheral_aresetn"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="31" NAME="adc_data" RIGHT="0" SIGIS="undef" SIGNAME="axis_data_fifo_0_m_axis_tdata">
+        <PORT DIR="I" LEFT="31" NAME="adc_data" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_das_adc_data">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="axis_data_fifo_0" PORT="m_axis_tdata"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="das_adc_data"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="1" NAME="adc_user" RIGHT="0" SIGIS="undef" SIGNAME="axis_data_fifo_0_m_axis_tuser">
+        <PORT DIR="I" LEFT="1" NAME="adc_user" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_das_adc_user">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="axis_data_fifo_0" PORT="m_axis_tuser"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="das_adc_user"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="adc_valid" SIGIS="undef" SIGNAME="axis_data_fifo_0_m_axis_tvalid">
+        <PORT DIR="I" NAME="adc_valid" SIGIS="undef" SIGNAME="acquisition_router_0_das_adc_valid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="axis_data_fifo_0" PORT="m_axis_tvalid"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="das_adc_valid"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="adc_ready" SIGIS="undef" SIGNAME="das_processing_phase_source_0_adc_ready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="axis_data_fifo_0" PORT="m_axis_tready"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="das_adc_ready"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="15" NAME="phase_data" RIGHT="0" SIGIS="undef" SIGNAME="das_processing_phase_source_0_phase_data">
@@ -2399,24 +2628,24 @@
             <CONNECTION INSTANCE="rst_ddr" PORT="peripheral_aresetn"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="31" NAME="frame_data" RIGHT="0" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_data">
+        <PORT DIR="I" LEFT="31" NAME="frame_data" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_frame_data">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_data"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="frame_data"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="frame_valid" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_valid">
+        <PORT DIR="I" NAME="frame_valid" SIGIS="undef" SIGNAME="acquisition_router_0_frame_valid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_valid"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="frame_valid"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="frame_last" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_last">
+        <PORT DIR="I" NAME="frame_last" SIGIS="undef" SIGNAME="acquisition_router_0_frame_last">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_last"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="frame_last"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="frame_ready" SIGIS="undef" SIGNAME="das_writer_packet_0_frame_ready">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_ready"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="frame_ready"/>
             <CONNECTION INSTANCE="ila_das" PORT="probe2"/>
           </CONNECTIONS>
         </PORT>
@@ -2825,7 +3054,6 @@
             <CONNECTION INSTANCE="vio_readback" PORT="clk"/>
             <CONNECTION INSTANCE="ila_readback" PORT="clk"/>
             <CONNECTION INSTANCE="axis_data_fifo_0" PORT="m_axis_aclk"/>
-            <CONNECTION INSTANCE="top_layer_0" PORT="ctrl_clk"/>
             <CONNECTION INSTANCE="wr_addr_0" PORT="clk"/>
             <CONNECTION INSTANCE="wr_addr_0" PORT="m00_axi_aclk"/>
             <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="clk"/>
@@ -2838,6 +3066,8 @@
             <CONNECTION INSTANCE="das_processing_cordic_amp_phase_0" PORT="aclk"/>
             <CONNECTION INSTANCE="das_writer_packet_0" PORT="clk"/>
             <CONNECTION INSTANCE="ila_das" PORT="clk"/>
+            <CONNECTION INSTANCE="top_layer_0" PORT="ctrl_clk"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="clk"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="c0_ddr4_ui_clk_sync_rst" SIGIS="rst" SIGNAME="ddr4_0_c0_ddr4_ui_clk_sync_rst">
@@ -6286,14 +6516,14 @@
             <CONNECTION INSTANCE="ddr4_0" PORT="c0_ddr4_ui_clk"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="31" NAME="probe0" RIGHT="0" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_data">
+        <PORT DIR="I" LEFT="31" NAME="probe0" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_frame_data">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_data"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="frame_data"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="31" NAME="probe1" RIGHT="0" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_valid">
+        <PORT DIR="I" LEFT="31" NAME="probe1" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_frame_valid">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_valid"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="frame_valid"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="1" NAME="probe2" RIGHT="0" SIGIS="undef" SIGNAME="das_writer_packet_0_frame_ready">
@@ -6301,9 +6531,9 @@
             <CONNECTION INSTANCE="das_writer_packet_0" PORT="frame_ready"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="0" NAME="probe3" RIGHT="0" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_frame_last">
+        <PORT DIR="I" LEFT="0" NAME="probe3" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_frame_last">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="frame_last"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="frame_last"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" LEFT="31" NAME="probe4" RIGHT="0" SIGIS="undef" SIGNAME="das_processing_dif_acc_phase_0_groups_completed">
@@ -9726,7 +9956,6 @@
           <CONNECTIONS>
             <CONNECTION INSTANCE="ddr4_0" PORT="c0_ddr4_aresetn"/>
             <CONNECTION INSTANCE="axi_smc" PORT="aresetn"/>
-            <CONNECTION INSTANCE="top_layer_0" PORT="rst_n"/>
             <CONNECTION INSTANCE="wr_addr_0" PORT="rst_n"/>
             <CONNECTION INSTANCE="wr_addr_0" PORT="m00_axi_aresetn"/>
             <CONNECTION INSTANCE="das_processing_phase_source_0" PORT="reset_n"/>
@@ -9738,6 +9967,8 @@
             <CONNECTION INSTANCE="das_processing_fir_compiler_q" PORT="aresetn"/>
             <CONNECTION INSTANCE="das_processing_cordic_amp_phase_0" PORT="aresetn"/>
             <CONNECTION INSTANCE="das_writer_packet_0" PORT="reset_n"/>
+            <CONNECTION INSTANCE="top_layer_0" PORT="rst_n"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="reset_n"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>
@@ -9756,6 +9987,7 @@
         <PARAMETER NAME="TRACE_PERIOD" VALUE="31250"/>
         <PARAMETER NAME="TRACE_POINTS" VALUE="16320"/>
         <PARAMETER NAME="AOM_WIDTH" VALUE="12"/>
+        <PARAMETER NAME="TX_SINE_MEM" VALUE="sine_4096.mem"/>
         <PARAMETER NAME="Component_Name" VALUE="xdma_pcie_top_layer_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
@@ -9770,9 +10002,97 @@
             <CONNECTION INSTANCE="rst_ddr" PORT="peripheral_aresetn"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="acquisition_enable" SIGIS="undef" SIGNAME="vio_readback_probe_out1">
+        <PORT DIR="I" NAME="acquisition_enable" SIGIS="undef" SIGNAME="acquisition_router_0_frontend_enable">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="vio_readback" PORT="probe_out1"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="frontend_enable"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="adc_test_enable" SIGIS="undef" SIGNAME="acquisition_router_0_adc_test_request">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="adc_test_request"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="adc_test_active" SIGIS="undef" SIGNAME="top_layer_0_adc_test_active">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="adc_test_active"/>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in11"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="adc_test_error" SIGIS="undef" SIGNAME="top_layer_0_adc_test_error">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in12"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="adc_test_checked_count" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_adc_test_checked_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in13"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="adc_test_error_count" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_adc_test_error_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in14"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="adc_test_config_locked" SIGIS="undef" SIGNAME="top_layer_0_adc_test_config_locked">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in15"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="tx_enable" SIGIS="undef" SIGNAME="acquisition_router_0_tx_enable_locked">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="tx_enable_locked"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="tx_abort" SIGIS="undef" SIGNAME="vio_readback_probe_out8">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_out8"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="tx_init_done" SIGIS="undef" SIGNAME="top_layer_0_tx_init_done">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="tx_init_done"/>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in21"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="tx_fault" SIGIS="undef" SIGNAME="top_layer_0_tx_fault">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="tx_fault"/>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in22"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="tx_status" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_tx_status">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="vio_readback" PORT="probe_in23"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="15" NAME="dac_data_p" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_dac_data_p">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="dac_data_p"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="15" NAME="dac_data_n" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_dac_data_n">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="dac_data_n"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="dac_dci_p" SIGIS="undef" SIGNAME="top_layer_0_dac_dci_p">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="dac_dci_p"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="dac_dci_n" SIGIS="undef" SIGNAME="top_layer_0_dac_dci_n">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="dac_dci_n"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="dac_frame_p" SIGIS="undef" SIGNAME="top_layer_0_dac_frame_p">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="dac_frame_p"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="dac_frame_n" SIGIS="undef" SIGNAME="top_layer_0_dac_frame_n">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="dac_frame_n"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="stream_ready" SIGIS="undef" SIGNAME="axis_data_fifo_0_s_axis_tready">
@@ -9806,6 +10126,7 @@
             <CONNECTION INSTANCE="vio_readback" PORT="probe_in4"/>
             <CONNECTION INSTANCE="ila_readback" PORT="probe7"/>
             <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="input_fault"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="input_fault"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="acquisition_active" SIGIS="undef" SIGNAME="top_layer_0_acquisition_active">
@@ -10772,9 +11093,9 @@
         <PARAMETER NAME="C_PIPE_IFACE" VALUE="0"/>
         <PARAMETER NAME="C_BUS_ADDR_WIDTH" VALUE="17"/>
         <PARAMETER NAME="C_BUS_DATA_WIDTH" VALUE="16"/>
-        <PARAMETER NAME="C_NUM_PROBE_IN" VALUE="11"/>
+        <PARAMETER NAME="C_NUM_PROBE_IN" VALUE="25"/>
         <PARAMETER NAME="C_EN_PROBE_IN_ACTIVITY" VALUE="1"/>
-        <PARAMETER NAME="C_NUM_PROBE_OUT" VALUE="3"/>
+        <PARAMETER NAME="C_NUM_PROBE_OUT" VALUE="9"/>
         <PARAMETER NAME="C_EN_SYNCHRONIZATION" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN0_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN1_WIDTH" VALUE="1"/>
@@ -10789,8 +11110,8 @@
         <PARAMETER NAME="C_PROBE_IN10_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN11_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN12_WIDTH" VALUE="1"/>
-        <PARAMETER NAME="C_PROBE_IN13_WIDTH" VALUE="1"/>
-        <PARAMETER NAME="C_PROBE_IN14_WIDTH" VALUE="1"/>
+        <PARAMETER NAME="C_PROBE_IN13_WIDTH" VALUE="32"/>
+        <PARAMETER NAME="C_PROBE_IN14_WIDTH" VALUE="32"/>
         <PARAMETER NAME="C_PROBE_IN15_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN16_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN17_WIDTH" VALUE="1"/>
@@ -10799,7 +11120,7 @@
         <PARAMETER NAME="C_PROBE_IN20_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN21_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN22_WIDTH" VALUE="1"/>
-        <PARAMETER NAME="C_PROBE_IN23_WIDTH" VALUE="1"/>
+        <PARAMETER NAME="C_PROBE_IN23_WIDTH" VALUE="32"/>
         <PARAMETER NAME="C_PROBE_IN24_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN25_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_IN26_WIDTH" VALUE="1"/>
@@ -11037,8 +11358,8 @@
         <PARAMETER NAME="C_PROBE_OUT2_WIDTH" VALUE="16"/>
         <PARAMETER NAME="C_PROBE_OUT3_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_OUT4_WIDTH" VALUE="1"/>
-        <PARAMETER NAME="C_PROBE_OUT5_WIDTH" VALUE="1"/>
-        <PARAMETER NAME="C_PROBE_OUT6_WIDTH" VALUE="1"/>
+        <PARAMETER NAME="C_PROBE_OUT5_WIDTH" VALUE="32"/>
+        <PARAMETER NAME="C_PROBE_OUT6_WIDTH" VALUE="32"/>
         <PARAMETER NAME="C_PROBE_OUT7_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_OUT8_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE_OUT9_WIDTH" VALUE="1"/>
@@ -11293,8 +11614,8 @@
         <PARAMETER NAME="C_PROBE_OUT2_INIT_VAL" VALUE="0x0000"/>
         <PARAMETER NAME="C_PROBE_OUT3_INIT_VAL" VALUE="0x0"/>
         <PARAMETER NAME="C_PROBE_OUT4_INIT_VAL" VALUE="0x0"/>
-        <PARAMETER NAME="C_PROBE_OUT5_INIT_VAL" VALUE="0x0"/>
-        <PARAMETER NAME="C_PROBE_OUT6_INIT_VAL" VALUE="0x0"/>
+        <PARAMETER NAME="C_PROBE_OUT5_INIT_VAL" VALUE="0x00000000"/>
+        <PARAMETER NAME="C_PROBE_OUT6_INIT_VAL" VALUE="0x00000000"/>
         <PARAMETER NAME="C_PROBE_OUT7_INIT_VAL" VALUE="0x0"/>
         <PARAMETER NAME="C_PROBE_OUT8_INIT_VAL" VALUE="0x0"/>
         <PARAMETER NAME="C_PROBE_OUT9_INIT_VAL" VALUE="0x0"/>
@@ -11608,6 +11929,76 @@
             <CONNECTION INSTANCE="das_writer_packet_0" PORT="framing_error"/>
           </CONNECTIONS>
         </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in11" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_adc_test_active">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="adc_test_active"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in12" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_adc_test_error">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="adc_test_error"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="probe_in13" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_adc_test_checked_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="adc_test_checked_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="probe_in14" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_adc_test_error_count">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="adc_test_error_count"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in15" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_adc_test_config_locked">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="adc_test_config_locked"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in16" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_raw_capture_complete">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="raw_capture_complete"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in17" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_raw_capture_error">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="raw_capture_error"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in18" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_raw_frame_sent">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="raw_frame_sent"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in19" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_configuration_error">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="configuration_error"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in20" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_raw_mode_active">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="raw_mode_active"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in21" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_tx_init_done">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="tx_init_done"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in22" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_tx_fault">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="tx_fault"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="probe_in23" RIGHT="0" SIGIS="undef" SIGNAME="top_layer_0_tx_status">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="tx_status"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe_in24" RIGHT="0" SIGIS="undef" SIGNAME="acquisition_router_0_mode_locked">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="mode_locked"/>
+          </CONNECTIONS>
+        </PORT>
         <PORT DIR="O" LEFT="0" NAME="probe_out0" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out0">
           <CONNECTIONS>
             <CONNECTION INSTANCE="wr_addr_0" PORT="xdma_valid"/>
@@ -11615,12 +12006,42 @@
         </PORT>
         <PORT DIR="O" LEFT="0" NAME="probe_out1" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out1">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="top_layer_0" PORT="acquisition_enable"/>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="start"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="15" NAME="probe_out2" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out2">
           <CONNECTIONS>
             <CONNECTION INSTANCE="das_processing_dif_acc_phase_0" PORT="phase_start_cfg"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="0" NAME="probe_out3" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out3">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="raw_mode_cfg"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="0" NAME="probe_out4" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out4">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="test_enable_cfg"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="probe_out5" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out5">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="epoch_cfg"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="probe_out6" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out6">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="config_id_cfg"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="0" NAME="probe_out7" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out7">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="acquisition_router_0" PORT="tx_enable_cfg"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="0" NAME="probe_out8" RIGHT="0" SIGIS="undef" SIGNAME="vio_readback_probe_out8">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="top_layer_0" PORT="tx_abort"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>

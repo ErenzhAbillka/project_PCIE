@@ -1,0 +1,8 @@
+PCIEv2_0：125 MSPS ADC + DAS 幅相处理版本
+xdma_pcie_wrapper.bit：FPGA 下载文件；xdma_pcie_wrapper.ltx：同次生成的调试探针。
+本次仅整理目录，bit/ltx 未重新生成，SHA256 与 2026-10-04 已通过实现的版本一致。
+本目录没有 Flash 固化所需的 MCS/BIN；BIT 是 Vivado Hardware Manager 的 FPGA 下载文件。
+使用说明：../../project_PCIE.doc/PCIEv2_0/DAS处理链迁移说明.txt。
+reports：实现报告；checkpoints：综合/布线检查点；validation：仿真日志与源文件校验。
+10 MHz 参考晶振仍为用户选择的默认假设，AOM 尚未绑定外部触发管脚，未完成上板采集验证。
+新版本使用本目录，旧 link_build 和 link_bulid/history 中内容为历史版本。

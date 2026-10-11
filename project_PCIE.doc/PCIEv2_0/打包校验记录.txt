@@ -1,0 +1,13 @@
+PCIEv2_0 文件整理和打包验证（2026-10-08）
+1. 已校验本版 9 个关键 BD/RTL/系数/bit/ltx 文件与原构建记录一致。
+2. check_das_bd.py 通过：处理连接和 writer 地址窗口正确，原 DDR/PCIe 后端保持。
+3. test_decode_das.py 通过；未修改 RTL，不重复综合实现。
+4. 在不同路径的交付副本中，用 Vivado 2018.3 成功打开工程，源文件存在，validate_bd_design 通过。
+   日志：link_bulid/PCIEv2_0/validation/delivery_relocation.log。
+   包不包含缓存/run 工作目录，打开时可提示缺少旧 GeneratedRun；需综合时由 Vivado 重新生成。
+   BD 仍保留原有时钟属性传播及 VIO 探针类型警告，本次不修改功能来消除这些警告。
+5. 打包脚本对 ZIP 执行 CRC 检查，逐文件解压读取 SHA256 与目录清单比较，通过后才报告 PACKAGE_VERIFY_PASS。
+   文件清单：同目录 打包文件清单.json（清单自身除外）。
+   ZIP 外部同目录 .zip.sha256 文件记录整包 SHA256。
+6. 原有旧版本、恢复备份和开发工作区均保留；包中排除旧 bit/DCP、.git、缓存和工作目录。
+7. 本次未上板验证，也未生成 Flash MCS/BIN。BIT/LTX 为已实现版本的原字节副本。

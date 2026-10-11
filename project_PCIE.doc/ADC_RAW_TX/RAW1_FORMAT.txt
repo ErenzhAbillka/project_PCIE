@@ -1,0 +1,75 @@
+RAW1 v1 固定帧规范 / RTL与host共同接口 (2026-10-10)
+
+范围：当前实现为一次系统复位后只捕获第一个完整ADC窗口的一帧。
+捕获后仍排空ADC FIFO，后续样本丢弃；不继续写第二帧/覆写环。
+frame_seq=0、trace_id=0、capture_stride=1；下一次采集需系统复位。
+格式预留连续帧字段，但host不会把非单次语义的RAW1直接当成本版格式。
+DAS1格式和scripts/decode_das.py不变。不得把RAW1送DAS1解码器。
+
+帧/位置：little-endian u32，16384 words = 65536 bytes = 64KiB。
+header=32words，payload容量=16320words，footer=32words。
+DDR起点0x00100000，原16槽/1MiB环形地址布局不变；当前RAW只使用slot0。
+数字magic沿用DAS1的整数常量约定，不要求文件字节顺序显示英文字符串。
+header w0=0x52415731即整数RAW1，文件开头四字节为31 57 41 52。
+
+header (所有字段u32；配置在采样开始前稳定并锁存，不在一帧中途变化)：
+word  字段                    本版含义
+0     magic                   0x52415731
+1     frame_seq               0，本次已形成帧序号；物理slot=seq%16
+2     frame_words             16384
+3     sample_count            1..16320；生产默认16320
+4     trace_id                0，捕获ADC窗口序号
+5     epoch                   host/VIO配置32位run标识，用户应每次复位采集更换
+6     sample_rate_hz          125000000，配置值，不是实测时钟频率
+7     trace_period_samples    31250
+8     capture_stride          1
+9     test_mode               实际稳定锁存的AD9643寄存器0x0D设定：0正常/15 ramp
+10    error_flags             必须0；有ADC/格式/写入故障时禁止发布RAW帧
+11    config_flags            0x6：bit0=0 two's-complement；bit1=1 14bit符号扩展；
+                              bit2=1 A低16/B高16；其他bit必须0
+12    config_id               host/VIO配置的32位配置标识，解释由实验记录给出
+13    adc_bits                14
+14    format_version          1
+15    frame_seq_inverse       ~frame_seq & 0xffffffff
+16..31 reserved               全0
+
+payload：w32..w(31+sample_count)，每个word一个同拍A/B样本：
+bits15:0=A，bits31:16=B；均为14bit two's-complement符号扩展到signed16。
+例A=-1,B=1 => word=0x0001ffff。真实14位码值可由halfword & 0x3fff取出。
+剩余payload容量w(32+sample_count)..w16351全0。
+payload_XOR32只异或有效sample_count个完整32bit样本word，初值0，不含header/padding。
+
+footer 固定w16352..w16383：
+16352 magic                   0x52415731
+16353 frame_seq               与header w1一致
+16354 frame_seq_inverse       与header w15一致
+16355 trace_id                与header w4一致
+16356 epoch                   与header w5一致
+16357 sample_count            与header w3一致
+16358 error_flags             与header w10一致，必须0
+16359 config_flags            与header w11一致，0x6
+16360 payload_XOR32           有效payload所有u32逐字异或
+16361 payload_XOR32_inverse   ~payload_XOR32 & 0xffffffff
+16362..16379 reserved          全0
+16380 commit_magic            0x434f4d54 (COMT整数常量)
+16381 commit_sequence         frame_seq
+16382 commit_sequence_inverse ~frame_seq & 0xffffffff
+16383 end_magic               0x454e4421 (END!整数常量)，本拍才frame_last=1
+
+提交/一致性：
+frame_last表示frame最后一word，不能代替每4拍AXI burst的WLAST。
+DDR frames-done只在最后一个4拍burst的OKAY B响应后从0变1。
+写入错误fail-stop，不增加成功完成计数。Footer到达DDR不等于host已看到发布。
+默认host要求VIO采集/写入错误状态为0，DMA前后DDR done均为1且未发生复位，
+expected_epoch匹配本次用户配置，再校验seq反码、header/footer、尾commit和payload XOR。
+XOR不是CRC/强校验；成对位翻转可以抵消。帧结构和相同epoch本身也不能证明“本轮新数据”。
+epoch默认为0时，应显式改成未复用标识；用户需记录VIO状态与文件属于同一不间断run。
+本版单次完成后不覆写，因此DMA可在done=1后稳定读取slot0，不依赖400ms环覆盖期限。
+
+Ramp：本板当前0x14=0x05输出配置下，0x0D=0x0f每通道每拍14位modulo递减1。
+默认direction=-1；signed14正负边界和0/16383码边界均按模16384检查。
+支持显式+1仅用于不同已确认配置。相同ramp不能证明A/B身份或模拟输入正确。
+硬件时序/眼图/通道身份仍需差异化测试pattern、已知输入和实板扫delay验证。
+
+工具/复现：scripts/decode_raw.py，scripts/test_decode_raw.py。
+不访问设备、不读写CSR；无CSR自动采集功能不虚构寄存器。

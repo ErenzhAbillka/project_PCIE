@@ -1,0 +1,21 @@
+请以我提供的 PCIEv2_0 压缩工程为唯一实现依据，帮助我完全理解这次 ADC/DAS 迁移代码。先阅读实际文件，再讲解，不要凭之前聊天推测，也先不要修改代码。
+
+工程入口 project_PCIE.xpr；BD 为 project_PCIE.srcs/sources_1/bd/xdma_pcie/xdma_pcie.bd。
+首先阅读 project_PCIE.doc/PCIEv2_0 下的 工程目录与使用入口.txt、DAS处理链迁移说明.txt、DAS验证记录.txt。
+关键源码：
+1. project_PCIE.srcs/sources_1/new/old_prj_src/top_layer.v、adc_driver.v。
+2. project_PCIE.srcs/sources_1/new/das_processing/das_iq_control.v、das_trace_process.v 和 coefficients/das_125m.coe。
+3. project_PCIE.srcs/sources_1/new/wr_addr.v，以及 scripts/decode_das.py。
+对照 archive/backups/das_template_backup_20261004，区分原工程代码、本次迁移新增代码、只改参数的部分和未接入当前 BD 的旧模块。
+
+请按以下顺序分阶段教学，每一步引用准确文件和行号，并配合数据流图、信号表以及具体数值例子：
+A. 先给出实际 BD 的完整数据通路，解释每个 IP/模块职责、时钟频率、复位方式、输入输出位宽及 valid/ready/TUSER/TLAST 意义。明确 ADC A/B 的去向。
+B. 解释为何使用 AD9516 和 AD9643；结合 adc_driver 的实际寄存器表、SPI 状态机、10 MHz 参考假设、125 MSPS 配置、LVDS/DDR 接收、MMCM/IDELAY 及数据拼接，说明初始化到首个有效样本的全过程。若需芯片数据手册，查阅原厂资料并引用，不能猜测寄存器含义。
+C. 解释 top_layer 启动锁存、64 点预热、31250 点周期、16320 点窗口、内部 AOM 脉冲、跨时钟 FIFO、背压与溢出处理，以及停止后为何需要复位。
+D. 顺着一个 ADC 样本讲 DDS 相位步长、50 MHz 正交混频、两路 FIR、定点截位/舍入/缩放、I/Q 对齐、CORDIC 幅值和 Q3.13 相位，说明数据标记怎样穿过管线。
+E. 用小数组演算 100 条曲线的相邻绝对差累加、右移和饱和、相位 ROI、双 bank 轮换、64 KiB 帧头/负载/补零/帧尾。明确低 16 位差分索引和高 16 位相位索引不同，只保证属于同一组。
+F. 解释四拍打包、wr_addr 握手及 B 响应、1 MiB 环形 DDR 地址、16 个槽与主机最多 15 组安全读取的原因。说明后端哪些逻辑保留，以及两次完成计数如何排除覆盖数据。
+G. 解释 decode_das.py 的端序、有符号相位、缩放、空间解缠绕、首尾差与时间解缠绕，并将其映射到 FPGA 帧字段。
+H. 给出上板观察顺序和 VIO/ILA 信号预期，区分仿真通过、时序通过与尚未验证的实际 ADC/PCIe/光学同步。10 MHz 尚未确认、AOM 未绑定外部引脚必须明确说明，不能当作已完成实测。
+
+第一轮先给出整体结构、文件阅读顺序和前置知识，然后只详细讲 A、B 两部分；后续我说继续再展开其余部分。每一阶段附少量检查理解的问题。发现实现与说明不一致时列出证据，先解释，不自动改代码。不要把压缩包里无关旧模块误当成当前正在工作的模块。

@@ -1,0 +1,52 @@
+{
+  "format": "RAW1",
+  "single_shot": true,
+  "publication_verified": false,
+  "completed_before": null,
+  "completed_after": null,
+  "expected_epoch": 4660,
+  "expected_config_id": 43981,
+  "accepted_frames": 1,
+  "rejected_slots": [],
+  "frames": [
+    {
+      "slot": 0,
+      "frame_seq": 0,
+      "sample_count": 16320,
+      "trace_id": 0,
+      "epoch": 4660,
+      "sample_rate_hz": 125000000,
+      "trace_period_samples": 31250,
+      "capture_stride": 1,
+      "test_mode": 15,
+      "error_flags": 0,
+      "config_flags": 6,
+      "config_id": 43981,
+      "adc_bits": 14,
+      "version": 1,
+      "payload_xor32": 4290772992
+    }
+  ],
+  "limits": "Publication evidence assumes VIO values bracketed this file read in the same uninterrupted run. XOR32 cannot detect every corruption. Software metadata cannot prove analog channel identity or correct ADC capture timing.",
+  "result": "RAW_RTL_HOST_CROSSCHECK_PASS",
+  "source": "actual_RTL_simulation_frame_not_board_DMA",
+  "ramp": {
+    "expected_step": -1,
+    "modulus": 16384,
+    "adc_test_mode_is_ramp": true,
+    "A": {
+      "samples": 16320,
+      "checked_edges": 16319,
+      "bad_edges": 0,
+      "first_bad_indices": []
+    },
+    "B": {
+      "samples": 16320,
+      "checked_edges": 16319,
+      "bad_edges": 0,
+      "first_bad_indices": []
+    },
+    "ramp_check_pass": true,
+    "limits": "Pass checks both digital code sequences only. Identical ramp channels cannot prove A/B identity, analog behavior, eye margin, or sample-clock frequency."
+  }
+}

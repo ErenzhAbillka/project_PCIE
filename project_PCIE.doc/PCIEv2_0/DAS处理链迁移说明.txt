@@ -1,0 +1,154 @@
+project_PCIE：模板处理链 + 相位截取 + DDR4/PCIe
+2026-10-04。本说明取代上一版“FIFO 后留空”说明。
+
+1. 打开哪里、BD 中看哪里
+
+原工程：E:\FPGA_Doc\project_PCIE\project_PCIE.xpr
+BD：xdma_pcie；展开 das_processing 层级查看实际处理 IP 和 RTL 模块。
+
+top_layer_0 -> axis_data_fifo_0 -> das_processing -> das_writer_packet_0
+           -> wr_addr_0 -> 原 SmartConnect -> DDR4 -> 原 XDMA/PCIe
+
+das_processing 内部：
+phase_source_0 -> dds_compiler_0 -> mult_iq_0
+ -> fir_compiler_i / fir_compiler_q -> iq_align_0
+ -> cordic_amp_phase_0 -> dif_acc_phase_0
+
+ila_readback 的 probe5/6 仍旁路观察原始 FIFO 数据；它不消费数据。
+真正的 FIFO ready 已接入 das_processing。新的 ila_das 观察处理结果。
+Vivado GUI 不会自动重载另一个 batch 进程保存的 BD。
+请关闭旧工程后重新打开上述 xpr，不要将仍显示旧图的 GUI 覆盖保存。
+本轮下载文件位于 link_bulid/PCIEv2_0/xdma_pcie_wrapper.bit，调试探针使用同目录同名 .ltx；
+是否已通过完整实现，以 DAS验证记录.txt 为准，不要混用旧 link_bulid/history/adc_capture_build 的文件。
+
+2. 参考来源和迁移边界
+
+模板：D:\Users\Administrator\Desktop\fiber_fpga_prj\prj_13_last-main
+模板实际通路只处理 ADC A：正交混频、双路 FIR、平方和开方、100 条回波差分累加，
+然后送 Zynq AXI DMA。原模板未包含相位输出；本次按用户确认补齐。
+论文：E:\Documents\论文\DAS\基于外差相干探测型φ-OTDR振动信号解调系统研究_陈益壮.pdf
+对应正文图 3.11、3.17、3.18、3.19：IQ 解调、差分累加、相位截取、拼接传输。
+
+保留用户此前确认的 10 MHz 板载参考晶振假设、AD9516/AD9643 初始化及 125 MSPS 接收。
+模板 Zynq 的 ADC 驱动、U22 AOM 引脚和 PS/AXI DMA 没有套到 KU060 上。
+模板的按 valid 下降沿识别曲线、无满空保护的 FIFO 控制、不可等待保持的数据发送
+逻辑改为明确的样本标记和 valid/ready 握手，避免 125->200 MHz 的空拍造成错帧。
+
+3. 当前参数
+
+ADC：双路 14 位、每路 125 MSPS。前端 FIFO 每个 32 位字为 A[15:0]/B[31:16]。
+处理选择 A 通道；B 仍进入前端 FIFO，但本模板算法不使用 B。
+原始 FIFO：4096 字，ADC 域 125 MHz 写、DDR UI 域 200 MHz 读，另携带 2 位 TUSER。
+数字中频：50 MHz；32 位相位累加器步长 0x66666666，仅在消费一个 ADC 样本时前进。
+DDS LUT 输入取累加器高 16 位，输出 10 位 sin/cos；Q 使用 -sin，atan2(Q,I) 为正相位约定。
+回波周期：31250 个 ADC 样本，即 4 kHz；窗口：16320 点，即 130.56 us。
+AOM 内部高电平：12 个 ADC 周期，即 96 ns；开始接收后先经过 64 个预热样本。
+一组 100 条曲线，计算相邻曲线的 99 次绝对差并逐点累加；每秒约 40 组。
+相位 ROI：每条 100 点，起始点由 VIO probe_out2 设置，并在每组开头锁存。
+默认起始点 0 是接口默认值，不代表已定位到真实振动位置。
+在 125 MSPS 下每点间隔 8 ns；选择 ROI 时应使用本版点数，不能沿用 250 MSPS 的点编号。
+
+4. FIR、CORDIC 和样本对齐
+
+模板 zuihou.coe 已找到并保留为参考。原系数为 250 MSPS 下的 64 taps。
+本版相邻系数配对平均得到 125 MSPS 下的 32 taps，保持相近的物理滤波频带；
+不是声称两个滤波器完全相同。归一化响应已比较：10 MHz 约 -0.069 dB，
+20 MHz 约 -73.9 dB，25 MHz 约 -76.4 dB；完整表在link_bulid/PCIEv2_0/validation/fir_response.csv。
+FIR 线性相位群延迟为 15.5 个采样点（124 ns），定位时还需校准 ADC/板级固定延迟。
+
+窗口/末点标记在 ADC 域随采样生成，随 FIFO TUSER 进入 DSP。
+DDS TUSER 携带原 ADC 样本；两路 FIR 的 TUSER 随数据传递，join 检查标记一致。
+CORDIC Translate 同时给出幅值和 atan2 相位，避免幅值与相位各走不同延迟后错配。
+相位为 signed 16-bit Q3.13 弧度数，实际弧度 = signed16 / 8192。
+累加使用 23 位中间值，输出右移 ACC_SHIFT=7 后饱和到 16 位，帧头记录缩放和饱和状态。
+因此低 16 位是已缩放的差分累加值；不应当作未缩放的 23 位精确和。
+
+两个结果 RAM 交替：一组形成完整结果后才发布，下一组可在另一个 bank 继续处理。
+下游长期停顿会施加背压；ADC 无法停转换，前端最终满时锁存溢出并停止接入。
+溢出/格式错误后须系统复位，不能把不完整回波组继续拼接成连续记录。
+
+5. wr_addr 的修改范围和 DDR 地址
+
+用户已确认扩大写地址窗口。本次 wr_addr.v 只增加两个地址参数并修改复位起点和
+回绕条件；四拍 AXI 写状态机、读回状态机、0xF000 读回、字节处理均保留。
+DDR4、XDMA、SmartConnect 的配置、AXI 连接和地址映射保留，检查脚本逐项比对。
+
+WRITE_BASE_ADDR = 0x00100000
+WRITE_WINDOW_BYTES = 0x00100000
+环形写入范围：0x00100000..0x001FFFFF，共 1 MiB。
+每组结果占 65536 字节，容纳 16 组，4 kHz/100 条条件下约 400 ms 后覆盖旧组。
+序号 g 的 DDR 槽起点：0x00100000 + (g % 16) * 0x10000。
+原 0xF000 主机写入/ILA 回读区域不与本数据区重叠。
+das_writer_packet_0 将组帧拆成四拍包；writer 的 i_last 每 4 次握手出现一次，
+整组 frame_last 保留给监测和完成计数，不直接用作 writer 的四拍末尾。
+DDR 完成组数在最后一个突发收到 B 响应后递增，不提前将最后一次数据握手视为写完。
+
+6. 64 KiB 帧格式（32 位小端字，共 16384 字）
+
+头部 16 字：
+  0 magic=0x44415331；1 组序号；2 总字数；3 曲线点数；4 每组曲线数；
+  5 ROI 起点；6 每条 ROI 点数；7 相位总点数；8 ADC 采样率；9 数字中频；
+  10 ACC_SHIFT；11 相位小数位数 13；12 bit0 饱和标志；13 回波周期样本数；
+  14 格式版本 1；15 组序号取反。
+
+随后 16320 个负载字，设负载索引为 k：
+  低 16 位：同一组的差分累加曲线 Z[k]，k=0..16319。
+  高 16 位：同一组 100 条曲线的 ROI 相位按“曲线、位置”顺序展开：
+    k=0..9999 对应 trace=k/100、point=ROI起点+k%100；k>=10000 补 0。
+两个半字属于同一组，但索引语义分别是完整差分曲线和相位 ROI 数组；
+不能把第 k 个高半字误认为第 k 个空间点在最后一条曲线上的相位。
+
+再补 44 个零字。最后 4 字：0x434F4D54、组序号、组序号取反、0x454E4421。
+主机应检查帧头/尾和完成计数；DDR 循环覆盖时不能仅凭帧头认定整组完整。
+
+读取后可运行：
+  python scripts/decode_das.py capture.bin --completed N --completed-after M --output das_decoded
+N、M 分别使用 C2H 读取前、读取完成后的 VIO probe_in8 完成组数，期间不能复位。
+解析只保留序号 max(0,M-15)..N-1，排除正在覆盖的槽和读取期间已被覆盖的槽。
+因此一次最多安全提取 15 组；若读取太慢导致无安全窗口，应减小读取量或提高读取速度。
+此脚本只解析已有 C2H 文件，不会主动操作设备。
+输出 difference.csv、phase_roi.csv，以及按论文步骤做 ROI 空间解缠绕/首尾相减和
+时间解缠绕的 phase_relative.csv。组序号有间断时另起一段，不跨缺失组连续解缠绕。
+不提供 N 时只能检验格式，无法排除上一轮运行残留在 DDR 中的旧槽。
+只提供 N、不提供 M 时，无法保证排除读取期间被并发覆盖的数据；帧头/尾检查不能替代这一点。
+实际信号频带、ROI 位置和光学同步仍需用你的实验系统校准。
+
+7. VIO 与 ILA
+
+上板顺序：加载本轮匹配的 bit/ltx，等待 DDR 校准和 ADC 初始化完成；
+先设 ROI 起点，再将 probe_out1 置 1。正常运行应看到 in7/in8 递增，in1/in4/in5/in6/in10 为 0。
+若发生错误或溢出，应停止使用本轮后续记录，按下面的复位步骤重新开始。
+
+vio_readback：
+  probe_out0：保留原 0xF000 回读触发。
+  probe_out1：采集启动请求，默认 0；置 1 后锁存启动，降回 0 不打断正在进行的组。
+             停止时先将请求置 0，再执行工程系统复位；确认初始化完成后置 1 重启。
+             仅将请求置 0 不停止本轮，避免中途终止四拍写事务。
+  probe_out2[15:0]：相位 ROI 起点，默认 0。须满足 起点+100<=16320。
+  probe_in0/1：原 DDR 校准/错误；in2：初始化完成；in3：ADC 接入运行；in4：ADC 溢出；
+  in5：I/Q 标记不一致；in6：回波格式/ROI 参数错误；in7：处理完成组数；
+  in8：DDR 写完组数；in9：累加结果饱和；in10：四拍分包错误。
+
+ila_das probe0..7：frame_data、frame_valid、frame_ready、frame_last、
+处理完成组数、DDR 完成组数、两 bank 占用、格式错误。
+
+8. AOM 接线边界
+
+已检查 MLK-H4-CU01-040-060-1156 开发板手册第 8 页和底板/核心板原理图。
+第 8 页的 FMC HPC 是 ADC 子卡接口，不提供“外部 AOM 驱动器已接到某个 GPIO”的证据。
+模板 AOM 用的 Zynq U22/LVCMOS33 不能复制到 KU060。
+本次内部 aom_pulse 与采样窗同源，保留为 top_layer_0/aom_pulse 节点，未绑定外部引脚。
+因此当前处理链按内部周期分帧，尚不能宣称与真实激光/AOM 脉冲已硬件同步。
+确定外部触发线的实际接口和电平后，再将此节点引出并补对应约束，或改成同步外触发。
+
+9. 构建与备份
+
+scripts/build_das.tcl：完整综合/实现，输出到 link_bulid/PCIEv2_0。
+scripts/check_das_bd.py：检查处理链连接、writer 修改范围和后端保留情况。
+工作验证目录：E:\Documents\ChatGPT\project_PCIE\das_template_integration。
+修改前备份：原工程 archive/backups/das_template_backup_20261004。
+旧 link_bulid/history/adc_capture_build 的 bit/ltx 是早前原始 ADC 直送 DDR 的版本，不用于本处理链。
+最终构建、时序和仿真结果以本轮 DAS验证记录.txt 为准。
+
+2026-10-08 整理补充：文中工作验证目录为原始开发位置；本工程交付材料已集中归档。
+当前目录、解压使用及检查方法见同目录 工程目录与使用入口.txt。历史日志中的旧路径保留原貌。

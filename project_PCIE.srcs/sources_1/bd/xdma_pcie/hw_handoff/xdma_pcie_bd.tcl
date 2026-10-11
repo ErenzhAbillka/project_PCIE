@@ -40,7 +40,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# das_writer_packet, top_layer, wr_addr, das_trace_process, das_iq_join, das_iq_mixer, das_phase_source
+# acquisition_router, das_writer_packet, top_layer, wr_addr, das_trace_process, das_iq_join, das_iq_mixer, das_phase_source
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -411,6 +411,12 @@ proc create_root_design { parentCell } {
   set adc_spi_csb [ create_bd_port -dir O adc_spi_csb ]
   set adc_sync [ create_bd_port -dir O adc_sync ]
   set adk_spi_csb [ create_bd_port -dir O adk_spi_csb ]
+  set dac_data_n [ create_bd_port -dir O -from 15 -to 0 dac_data_n ]
+  set dac_data_p [ create_bd_port -dir O -from 15 -to 0 dac_data_p ]
+  set dac_dci_n [ create_bd_port -dir O dac_dci_n ]
+  set dac_dci_p [ create_bd_port -dir O dac_dci_p ]
+  set dac_frame_n [ create_bd_port -dir O dac_frame_n ]
+  set dac_frame_p [ create_bd_port -dir O dac_frame_p ]
   set dac_spi_csb [ create_bd_port -dir O dac_spi_csb ]
   set data_pin_n_0 [ create_bd_port -dir I -from 13 -to 0 data_pin_n_0 ]
   set data_pin_p_0 [ create_bd_port -dir I -from 13 -to 0 data_pin_p_0 ]
@@ -420,6 +426,23 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.POLARITY {ACTIVE_LOW} \
  ] $reset_rtl_0
+
+  # Create instance: acquisition_router_0, and set properties
+  set block_name acquisition_router
+  set block_cell_name acquisition_router_0
+  if { [catch {set acquisition_router_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $acquisition_router_0 eq "" } {
+     catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+    set_property -dict [ list \
+   CONFIG.FRAME_WORDS {16384} \
+   CONFIG.SAMPLE_RATE {125000000} \
+   CONFIG.TRACE_PERIOD {31250} \
+   CONFIG.TRACE_POINTS {16320} \
+ ] $acquisition_router_0
 
   # Create instance: axi_smc, and set properties
   set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
@@ -534,7 +557,10 @@ proc create_root_design { parentCell } {
      catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
-  
+    set_property -dict [ list \
+   CONFIG.TX_SINE_MEM {sine_4096.mem} \
+ ] $top_layer_0
+
   # Create instance: util_ds_buf, and set properties
   set util_ds_buf [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf:2.1 util_ds_buf ]
   set_property -dict [ list \
@@ -551,12 +577,24 @@ proc create_root_design { parentCell } {
   # Create instance: vio_readback, and set properties
   set vio_readback [ create_bd_cell -type ip -vlnv xilinx.com:ip:vio:3.0 vio_readback ]
   set_property -dict [ list \
-   CONFIG.C_NUM_PROBE_IN {11} \
-   CONFIG.C_NUM_PROBE_OUT {3} \
+   CONFIG.C_NUM_PROBE_IN {25} \
+   CONFIG.C_NUM_PROBE_OUT {9} \
    CONFIG.C_PROBE_OUT0_INIT_VAL {0x0} \
    CONFIG.C_PROBE_OUT1_INIT_VAL {0x0} \
    CONFIG.C_PROBE_OUT2_INIT_VAL {0x0000} \
    CONFIG.C_PROBE_OUT2_WIDTH {16} \
+   CONFIG.C_PROBE_OUT3_INIT_VAL {0x0} \
+   CONFIG.C_PROBE_OUT3_WIDTH {1} \
+   CONFIG.C_PROBE_OUT4_INIT_VAL {0x0} \
+   CONFIG.C_PROBE_OUT4_WIDTH {1} \
+   CONFIG.C_PROBE_OUT5_INIT_VAL {0x0} \
+   CONFIG.C_PROBE_OUT5_WIDTH {32} \
+   CONFIG.C_PROBE_OUT6_INIT_VAL {0x0} \
+   CONFIG.C_PROBE_OUT6_WIDTH {32} \
+   CONFIG.C_PROBE_OUT7_INIT_VAL {0x0} \
+   CONFIG.C_PROBE_OUT7_WIDTH {1} \
+   CONFIG.C_PROBE_OUT8_INIT_VAL {0x0} \
+   CONFIG.C_PROBE_OUT8_WIDTH {1} \
  ] $vio_readback
 
   # Create instance: wr_addr_0, and set properties
@@ -644,22 +682,39 @@ proc create_root_design { parentCell } {
   # Create port connections
   connect_bd_net -net AXI_data_out_0_0_data [get_bd_pins axis_data_fifo_0/s_axis_tdata] [get_bd_pins top_layer_0/stream_data]
   connect_bd_net -net AXI_data_out_0_0_valid [get_bd_pins axis_data_fifo_0/s_axis_tvalid] [get_bd_pins top_layer_0/stream_valid]
-  connect_bd_net -net Net [get_bd_pins axi_smc/aresetn] [get_bd_pins das_processing/reset_n] [get_bd_pins das_writer_packet_0/reset_n] [get_bd_pins ddr4_0/c0_ddr4_aresetn] [get_bd_pins rst_ddr/peripheral_aresetn] [get_bd_pins top_layer_0/rst_n] [get_bd_pins wr_addr_0/m00_axi_aresetn] [get_bd_pins wr_addr_0/rst_n]
+  connect_bd_net -net Net [get_bd_pins acquisition_router_0/reset_n] [get_bd_pins axi_smc/aresetn] [get_bd_pins das_processing/reset_n] [get_bd_pins das_writer_packet_0/reset_n] [get_bd_pins ddr4_0/c0_ddr4_aresetn] [get_bd_pins rst_ddr/peripheral_aresetn] [get_bd_pins top_layer_0/rst_n] [get_bd_pins wr_addr_0/m00_axi_aresetn] [get_bd_pins wr_addr_0/rst_n]
   connect_bd_net -net Net1 [get_bd_ports device_spi_sda] [get_bd_pins top_layer_0/device_spi_sda]
+  connect_bd_net -net acquisition_router_0_adc_ready [get_bd_pins acquisition_router_0/adc_ready] [get_bd_pins axis_data_fifo_0/m_axis_tready]
+  connect_bd_net -net acquisition_router_0_adc_test_request [get_bd_pins acquisition_router_0/adc_test_request] [get_bd_pins top_layer_0/adc_test_enable]
+  connect_bd_net -net acquisition_router_0_configuration_error [get_bd_pins acquisition_router_0/configuration_error] [get_bd_pins vio_readback/probe_in19]
+  connect_bd_net -net acquisition_router_0_das_adc_data [get_bd_pins acquisition_router_0/das_adc_data] [get_bd_pins das_processing/adc_data]
+  connect_bd_net -net acquisition_router_0_das_adc_user [get_bd_pins acquisition_router_0/das_adc_user] [get_bd_pins das_processing/adc_user]
+  connect_bd_net -net acquisition_router_0_das_adc_valid [get_bd_pins acquisition_router_0/das_adc_valid] [get_bd_pins das_processing/adc_valid]
+  connect_bd_net -net acquisition_router_0_das_frame_ready [get_bd_pins acquisition_router_0/das_frame_ready] [get_bd_pins das_processing/frame_ready]
+  connect_bd_net -net acquisition_router_0_frame_data [get_bd_pins acquisition_router_0/frame_data] [get_bd_pins das_writer_packet_0/frame_data] [get_bd_pins ila_das/probe0]
+  connect_bd_net -net acquisition_router_0_frame_last [get_bd_pins acquisition_router_0/frame_last] [get_bd_pins das_writer_packet_0/frame_last] [get_bd_pins ila_das/probe3]
+  connect_bd_net -net acquisition_router_0_frame_valid [get_bd_pins acquisition_router_0/frame_valid] [get_bd_pins das_writer_packet_0/frame_valid] [get_bd_pins ila_das/probe1]
+  connect_bd_net -net acquisition_router_0_frontend_enable [get_bd_pins acquisition_router_0/frontend_enable] [get_bd_pins top_layer_0/acquisition_enable]
+  connect_bd_net -net acquisition_router_0_mode_locked [get_bd_pins acquisition_router_0/mode_locked] [get_bd_pins vio_readback/probe_in24]
+  connect_bd_net -net acquisition_router_0_raw_capture_complete [get_bd_pins acquisition_router_0/raw_capture_complete] [get_bd_pins vio_readback/probe_in16]
+  connect_bd_net -net acquisition_router_0_raw_capture_error [get_bd_pins acquisition_router_0/raw_capture_error] [get_bd_pins vio_readback/probe_in17]
+  connect_bd_net -net acquisition_router_0_raw_frame_sent [get_bd_pins acquisition_router_0/raw_frame_sent] [get_bd_pins vio_readback/probe_in18]
+  connect_bd_net -net acquisition_router_0_raw_mode_active [get_bd_pins acquisition_router_0/raw_mode_active] [get_bd_pins vio_readback/probe_in20]
+  connect_bd_net -net acquisition_router_0_tx_enable_locked [get_bd_pins acquisition_router_0/tx_enable_locked] [get_bd_pins top_layer_0/tx_enable]
   connect_bd_net -net adc_data_clk_n_0_1 [get_bd_ports adc_data_clk_n_0] [get_bd_pins top_layer_0/adc_data_clk_n]
   connect_bd_net -net adc_data_clk_p_0_1 [get_bd_ports adc_data_clk_p_0] [get_bd_pins top_layer_0/adc_data_clk_p]
-  connect_bd_net -net axis_data_fifo_0_m_axis_tdata [get_bd_pins axis_data_fifo_0/m_axis_tdata] [get_bd_pins das_processing/adc_data] [get_bd_pins ila_readback/probe5]
-  connect_bd_net -net axis_data_fifo_0_m_axis_tuser [get_bd_pins axis_data_fifo_0/m_axis_tuser] [get_bd_pins das_processing/adc_user]
-  connect_bd_net -net axis_data_fifo_0_m_axis_tvalid [get_bd_pins axis_data_fifo_0/m_axis_tvalid] [get_bd_pins das_processing/adc_valid] [get_bd_pins ila_readback/probe6]
+  connect_bd_net -net axis_data_fifo_0_m_axis_tdata [get_bd_pins acquisition_router_0/adc_data] [get_bd_pins axis_data_fifo_0/m_axis_tdata] [get_bd_pins ila_readback/probe5]
+  connect_bd_net -net axis_data_fifo_0_m_axis_tuser [get_bd_pins acquisition_router_0/adc_user] [get_bd_pins axis_data_fifo_0/m_axis_tuser]
+  connect_bd_net -net axis_data_fifo_0_m_axis_tvalid [get_bd_pins acquisition_router_0/adc_valid] [get_bd_pins axis_data_fifo_0/m_axis_tvalid] [get_bd_pins ila_readback/probe6]
   connect_bd_net -net axis_data_fifo_0_s_axis_tready [get_bd_pins axis_data_fifo_0/s_axis_tready] [get_bd_pins top_layer_0/stream_ready]
   connect_bd_net -net das_processing_accumulator_clipped [get_bd_pins das_processing/accumulator_clipped] [get_bd_pins vio_readback/probe_in9]
-  connect_bd_net -net das_processing_adc_ready [get_bd_pins axis_data_fifo_0/m_axis_tready] [get_bd_pins das_processing/adc_ready]
+  connect_bd_net -net das_processing_adc_ready [get_bd_pins acquisition_router_0/das_adc_ready] [get_bd_pins das_processing/adc_ready]
   connect_bd_net -net das_processing_alignment_error [get_bd_pins das_processing/alignment_error] [get_bd_pins vio_readback/probe_in5]
   connect_bd_net -net das_processing_banks_full [get_bd_pins das_processing/banks_full] [get_bd_pins ila_das/probe6]
   connect_bd_net -net das_processing_format_error [get_bd_pins das_processing/format_error] [get_bd_pins ila_das/probe7] [get_bd_pins vio_readback/probe_in6]
-  connect_bd_net -net das_processing_frame_data [get_bd_pins das_processing/frame_data] [get_bd_pins das_writer_packet_0/frame_data] [get_bd_pins ila_das/probe0]
-  connect_bd_net -net das_processing_frame_last [get_bd_pins das_processing/frame_last] [get_bd_pins das_writer_packet_0/frame_last] [get_bd_pins ila_das/probe3]
-  connect_bd_net -net das_processing_frame_valid [get_bd_pins das_processing/frame_valid] [get_bd_pins das_writer_packet_0/frame_valid] [get_bd_pins ila_das/probe1]
+  connect_bd_net -net das_processing_frame_data [get_bd_pins acquisition_router_0/das_frame_data] [get_bd_pins das_processing/frame_data]
+  connect_bd_net -net das_processing_frame_last [get_bd_pins acquisition_router_0/das_frame_last] [get_bd_pins das_processing/frame_last]
+  connect_bd_net -net das_processing_frame_valid [get_bd_pins acquisition_router_0/das_frame_valid] [get_bd_pins das_processing/frame_valid]
   connect_bd_net -net das_processing_groups_completed [get_bd_pins das_processing/groups_completed] [get_bd_pins ila_das/probe4] [get_bd_pins vio_readback/probe_in7]
   connect_bd_net -net das_writer_packet_0_ddr_frames_done [get_bd_pins das_writer_packet_0/ddr_frames_done] [get_bd_pins ila_das/probe5] [get_bd_pins vio_readback/probe_in8]
   connect_bd_net -net das_writer_packet_0_framing_error [get_bd_pins das_writer_packet_0/framing_error] [get_bd_pins vio_readback/probe_in10]
@@ -668,30 +723,50 @@ proc create_root_design { parentCell } {
   connect_bd_net -net das_writer_packet_0_writer_valid [get_bd_pins das_writer_packet_0/writer_valid] [get_bd_pins wr_addr_0/i_valid]
   connect_bd_net -net data_pin_n_0_1 [get_bd_ports data_pin_n_0] [get_bd_pins top_layer_0/data_pin_n]
   connect_bd_net -net data_pin_p_0_1 [get_bd_ports data_pin_p_0] [get_bd_pins top_layer_0/data_pin_p]
-  connect_bd_net -net ddr4_0_c0_ddr4_ui_clk [get_bd_pins axi_smc/aclk] [get_bd_pins axis_data_fifo_0/m_axis_aclk] [get_bd_pins das_processing/clk] [get_bd_pins das_writer_packet_0/clk] [get_bd_pins ddr4_0/c0_ddr4_ui_clk] [get_bd_pins ila_das/clk] [get_bd_pins ila_readback/clk] [get_bd_pins rst_ddr/slowest_sync_clk] [get_bd_pins top_layer_0/ctrl_clk] [get_bd_pins vio_readback/clk] [get_bd_pins wr_addr_0/clk] [get_bd_pins wr_addr_0/m00_axi_aclk]
+  connect_bd_net -net ddr4_0_c0_ddr4_ui_clk [get_bd_pins acquisition_router_0/clk] [get_bd_pins axi_smc/aclk] [get_bd_pins axis_data_fifo_0/m_axis_aclk] [get_bd_pins das_processing/clk] [get_bd_pins das_writer_packet_0/clk] [get_bd_pins ddr4_0/c0_ddr4_ui_clk] [get_bd_pins ila_das/clk] [get_bd_pins ila_readback/clk] [get_bd_pins rst_ddr/slowest_sync_clk] [get_bd_pins top_layer_0/ctrl_clk] [get_bd_pins vio_readback/clk] [get_bd_pins wr_addr_0/clk] [get_bd_pins wr_addr_0/m00_axi_aclk]
   connect_bd_net -net ddr4_0_c0_ddr4_ui_clk_sync_rst [get_bd_pins ddr4_0/c0_ddr4_ui_clk_sync_rst] [get_bd_pins rst_ddr/ext_reset_in]
   connect_bd_net -net ddr4_0_c0_init_calib_complete [get_bd_pins ddr4_0/c0_init_calib_complete] [get_bd_pins rst_ddr/dcm_locked] [get_bd_pins vio_readback/probe_in0]
-  connect_bd_net -net frame_ready_1 [get_bd_pins das_processing/frame_ready] [get_bd_pins das_writer_packet_0/frame_ready] [get_bd_pins ila_das/probe2]
+  connect_bd_net -net frame_ready_1 [get_bd_pins acquisition_router_0/frame_ready] [get_bd_pins das_writer_packet_0/frame_ready] [get_bd_pins ila_das/probe2]
   connect_bd_net -net one_dout [get_bd_pins one/dout] [get_bd_pins wr_addr_0/i_fifo_ready]
   connect_bd_net -net perst_invert_Res [get_bd_pins ddr4_0/sys_rst] [get_bd_pins perst_invert/Res]
   connect_bd_net -net reset_rtl_0_1 [get_bd_ports reset_rtl_0] [get_bd_pins perst_invert/Op1] [get_bd_pins xdma_0/sys_rst_n]
   connect_bd_net -net top_layer_0_acquisition_active [get_bd_pins top_layer_0/acquisition_active] [get_bd_pins vio_readback/probe_in3]
   connect_bd_net -net top_layer_0_adc_data_ch1 [get_bd_pins top_layer_0/adc_data_ch1]
   connect_bd_net -net top_layer_0_adc_fifo_aresetn [get_bd_pins axis_data_fifo_0/s_axis_aresetn] [get_bd_pins top_layer_0/adc_fifo_aresetn]
-  connect_bd_net -net top_layer_0_adc_overflow [get_bd_pins das_processing/input_fault] [get_bd_pins ila_readback/probe7] [get_bd_pins top_layer_0/adc_overflow] [get_bd_pins vio_readback/probe_in4]
+  connect_bd_net -net top_layer_0_adc_overflow [get_bd_pins acquisition_router_0/input_fault] [get_bd_pins das_processing/input_fault] [get_bd_pins ila_readback/probe7] [get_bd_pins top_layer_0/adc_overflow] [get_bd_pins vio_readback/probe_in4]
   connect_bd_net -net top_layer_0_adc_spi_csb [get_bd_ports adc_spi_csb] [get_bd_pins top_layer_0/adc_spi_csb]
   connect_bd_net -net top_layer_0_adc_sync [get_bd_ports adc_sync] [get_bd_pins top_layer_0/adc_sync]
+  connect_bd_net -net top_layer_0_adc_test_active [get_bd_pins acquisition_router_0/adc_test_active] [get_bd_pins top_layer_0/adc_test_active] [get_bd_pins vio_readback/probe_in11]
+  connect_bd_net -net top_layer_0_adc_test_checked_count [get_bd_pins top_layer_0/adc_test_checked_count] [get_bd_pins vio_readback/probe_in13]
+  connect_bd_net -net top_layer_0_adc_test_config_locked [get_bd_pins top_layer_0/adc_test_config_locked] [get_bd_pins vio_readback/probe_in15]
+  connect_bd_net -net top_layer_0_adc_test_error [get_bd_pins top_layer_0/adc_test_error] [get_bd_pins vio_readback/probe_in12]
+  connect_bd_net -net top_layer_0_adc_test_error_count [get_bd_pins top_layer_0/adc_test_error_count] [get_bd_pins vio_readback/probe_in14]
   connect_bd_net -net top_layer_0_adk_spi_csb [get_bd_ports adk_spi_csb] [get_bd_pins top_layer_0/adk_spi_csb]
+  connect_bd_net -net top_layer_0_dac_data_n [get_bd_ports dac_data_n] [get_bd_pins top_layer_0/dac_data_n]
+  connect_bd_net -net top_layer_0_dac_data_p [get_bd_ports dac_data_p] [get_bd_pins top_layer_0/dac_data_p]
+  connect_bd_net -net top_layer_0_dac_dci_n [get_bd_ports dac_dci_n] [get_bd_pins top_layer_0/dac_dci_n]
+  connect_bd_net -net top_layer_0_dac_dci_p [get_bd_ports dac_dci_p] [get_bd_pins top_layer_0/dac_dci_p]
+  connect_bd_net -net top_layer_0_dac_frame_n [get_bd_ports dac_frame_n] [get_bd_pins top_layer_0/dac_frame_n]
+  connect_bd_net -net top_layer_0_dac_frame_p [get_bd_ports dac_frame_p] [get_bd_pins top_layer_0/dac_frame_p]
   connect_bd_net -net top_layer_0_dac_spi_csb [get_bd_ports dac_spi_csb] [get_bd_pins top_layer_0/dac_spi_csb]
   connect_bd_net -net top_layer_0_device_spi_sclk [get_bd_ports device_spi_sclk] [get_bd_pins top_layer_0/device_spi_sclk]
   connect_bd_net -net top_layer_0_init_done [get_bd_pins top_layer_0/init_done] [get_bd_pins vio_readback/probe_in2]
   connect_bd_net -net top_layer_0_stream_user [get_bd_pins axis_data_fifo_0/s_axis_tuser] [get_bd_pins top_layer_0/stream_user]
   connect_bd_net -net top_layer_0_sys_clk [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins top_layer_0/sys_clk]
+  connect_bd_net -net top_layer_0_tx_fault [get_bd_pins acquisition_router_0/tx_fault] [get_bd_pins top_layer_0/tx_fault] [get_bd_pins vio_readback/probe_in22]
+  connect_bd_net -net top_layer_0_tx_init_done [get_bd_pins acquisition_router_0/tx_init_done] [get_bd_pins top_layer_0/tx_init_done] [get_bd_pins vio_readback/probe_in21]
+  connect_bd_net -net top_layer_0_tx_status [get_bd_pins top_layer_0/tx_status] [get_bd_pins vio_readback/probe_in23]
   connect_bd_net -net util_ds_buf_IBUF_DS_ODIV2 [get_bd_pins util_ds_buf/IBUF_DS_ODIV2] [get_bd_pins xdma_0/sys_clk]
   connect_bd_net -net util_ds_buf_IBUF_OUT [get_bd_pins util_ds_buf/IBUF_OUT] [get_bd_pins xdma_0/sys_clk_gt]
   connect_bd_net -net vio_readback_probe_out0 [get_bd_pins vio_readback/probe_out0] [get_bd_pins wr_addr_0/xdma_valid]
-  connect_bd_net -net vio_readback_probe_out1 [get_bd_pins top_layer_0/acquisition_enable] [get_bd_pins vio_readback/probe_out1]
+  connect_bd_net -net vio_readback_probe_out1 [get_bd_pins acquisition_router_0/start] [get_bd_pins vio_readback/probe_out1]
   connect_bd_net -net vio_readback_probe_out2 [get_bd_pins das_processing/phase_start] [get_bd_pins vio_readback/probe_out2]
+  connect_bd_net -net vio_readback_probe_out3 [get_bd_pins acquisition_router_0/raw_mode_cfg] [get_bd_pins vio_readback/probe_out3]
+  connect_bd_net -net vio_readback_probe_out4 [get_bd_pins acquisition_router_0/test_enable_cfg] [get_bd_pins vio_readback/probe_out4]
+  connect_bd_net -net vio_readback_probe_out5 [get_bd_pins acquisition_router_0/epoch_cfg] [get_bd_pins vio_readback/probe_out5]
+  connect_bd_net -net vio_readback_probe_out6 [get_bd_pins acquisition_router_0/config_id_cfg] [get_bd_pins vio_readback/probe_out6]
+  connect_bd_net -net vio_readback_probe_out7 [get_bd_pins acquisition_router_0/tx_enable_cfg] [get_bd_pins vio_readback/probe_out7]
+  connect_bd_net -net vio_readback_probe_out8 [get_bd_pins top_layer_0/tx_abort] [get_bd_pins vio_readback/probe_out8]
   connect_bd_net -net wr_addr_0_fifo_ready [get_bd_pins das_writer_packet_0/writer_ready] [get_bd_pins wr_addr_0/fifo_ready]
   connect_bd_net -net wr_addr_0_m00_axi_error [get_bd_pins ila_readback/probe3] [get_bd_pins vio_readback/probe_in1] [get_bd_pins wr_addr_0/m00_axi_error]
   connect_bd_net -net wr_addr_0_m00_axi_txn_done [get_bd_pins das_writer_packet_0/burst_done] [get_bd_pins ila_readback/probe4] [get_bd_pins wr_addr_0/m00_axi_txn_done]

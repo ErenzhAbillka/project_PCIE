@@ -1,0 +1,55 @@
+project_PCIE 验证结果（2026-09-30，Vivado 2018.3）
+
+结论：工程逻辑、BD、综合、布局布线和 bitstream 生成已通过本次离线验证。
+尚未进行板卡下载、DDR4 校准实测、主机 PCIe 枚举或 H2C/C2H DMA 实测，不能据此宣布硬件端到端完全打通。
+
+验证对象
+  原工程：E:/FPGA_Doc/project_PCIE/project_PCIE.xpr
+  构建使用独立验证工程，避免与用户已打开的 Vivado GUI 会话争用：
+  E:/Documents/ChatGPT/PCIE/link_completion/vivado/link_check.xpr
+  已核对两者 BD 的单元参数、网络端点，以及用户 RTL/XDC；功能内容一致。
+  DDR4 自动生成模块名称在验证工程为 ddr4_0_1，原工程为 ddr4_0_2；顶层与 BD 实例名一致。
+  本目录交付的 bit 和 ltx 是同一次完整构建的配套文件。
+
+通过项目
+  1. 原工程 BD validate_bd_design、IP 输出生成、check_bd.py 结构检查。
+  2. XSim RTL 自检：1024 个 LFSR 样点、256 个四拍突发、AW/B 延迟、
+     包尾背压、4 KiB 地址回绕、AR/R 停顿、提前撤销触发、字节反转和错误响应。
+  3. 完整综合：0 个综合 Critical Warning、0 个综合 Error。
+  4. opt_design、place_design、phys_opt_design、route_design 完成。
+  5. 100492 条需要布线的网络全部布线，布线错误 0。
+  6. 实际 report_io 复核全部 152 个顶层引脚，含 PCIe 八通道、参考时钟、PERST# 和 DDR4。
+  7. 原始布线报告：WNS +0.212 ns、WHS +0.004 ns。
+     重新打开 routed.dcp 复核：WNS +0.214 ns、WHS +0.004 ns、WPWS 0.000 ns。
+     建立、保持、脉宽违例均为 0；无缺失时钟或未约束内部端点。
+  8. report_bus_skew：18 组摘要均通过，最小余量 +3.581 ns，无 VIOLATED。
+  9. 最终 DRC：0 Error、0 Critical Warning；write_bitstream 成功。
+     postcheck.log 包含 LINK_FINAL_CHECK_PASS。
+
+保留并解释的报告项
+  - DRC RTSTAT-10：IP 内部无可布线负载网络，普通 Warning，未降级或屏蔽检查。
+  - no_output_delay：C0_DDR4_0_reset_n，是 DDR4 IP 生成的复位输出，
+    不作为数据总线同步输出处理；保留该提示，没有为使报告干净而增加任意 false_path。
+  - report_cdc 共 42 个 Critical 条目，不等同于 DRC 的 Critical Warning：
+    39 个在厂家 ILA/VIO 内部，1 个为 PERST# 到 XDMA user_lnk_up 异步清零，
+    2 个为 rst_ddr 输出到 SmartConnect 不同时钟域复位同步器的扇出。
+    没有据此声称“CDC 零告警”或完成全设计形式验证，详细路径保存在 cdc.rpt。
+  - 批处理启动有 Common 17-741 本地 Tcl Store 写权限提示，是沙箱环境权限；
+    调试核的 Windows Script Host 启动任务重试后完成，不影响本次 bitstream 生成结果。
+
+上板前仍需确认
+  - project_14 确认 FPGA 为 xcku060-ffva1156-2-i，但其中没有 DDR 控制器，不能确认 DDR 颗粒。
+  - 当前保留 MT40A512M16HA-083E / 1600 MT/s / 64 bit / 4 GiB 配置。
+    060 商业板手册列有其他料号，最终应按实际丝印或该板已验证 DDR 工程核对。
+  - 按 链路说明.txt 依次验证 calib_complete、link_up、主机枚举、样点读回、H2C/C2H 回环。
+
+使用文件
+  ../link_build/xdma_pcie_wrapper.bit 和 ../link_build/xdma_pcie_wrapper.ltx
+  ../link_build/routed.dcp 保存完整已布线设计。
+  ../link_build 中保留完整构建日志、RTL 仿真日志、时序/管脚/DRC/CDC/总线偏斜报告。
+  scripts/build_link.tcl 可以从原工程重新构建，检查时序、DRC、总线偏斜和实际引脚后输出 bit。
+  此次未运行原工程 GUI 的 synth_1/impl_1 run，所以 GUI 的运行状态可能仍显示未开始或过期。
+
+重新打开工程
+  关闭旧 Vivado 工程窗口时不要保存旧的内存中 BD，随后重新打开原工程 XPR，
+  防止旧窗口把本次写回的 BD/约束覆盖。原文件备份见 backup_link_completion_20260930_185610。

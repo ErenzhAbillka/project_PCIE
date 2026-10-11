@@ -1,0 +1,70 @@
+project_PCIE PCIe / DDR4 链路补全（2026-09-30）
+
+当前设计
+  PC <-> PCIe Gen2 x8 / XDMA M_AXI (256 bit, 125 MHz)
+                 <-> SmartConnect S00 (跨时钟/位宽转换)
+  数据发生器 -> AXIS 包 FIFO -> wr_addr M_AXI (32 bit)
+                 <-> SmartConnect S01
+  SmartConnect M00 <-> DDR4 AXI (512 bit, 200 MHz, 4 GiB)
+
+数据发生器、FIFO、wr_addr 的两个时钟都使用 DDR4 UI 时钟。
+DDR4 校准完成、UI 复位撤销、XDMA AXI 复位撤销后，rst_ddr 同步释放用户逻辑。
+PERST# 经反相驱动 DDR4 的高有效 sys_rst；直接驱动 XDMA 的低有效 sys_rst_n。
+XDMA 配置管理与未使用中断输入已接常数，不再悬空。
+wr_addr 原来的零宽 USER 声明会产生非法/错误推断的信号宽度，已删除未使用的 USER 端口。
+
+地址与数据
+  两个 AXI 主机均映射 DDR4 0x00000000..0xFFFFFFFF。
+  0x00000000..0x00000FFF：每次复位后自动写入 1024 个 32 位 LFSR 样点。
+  每次四拍、16 字节；采集只运行一轮，写完后停止，不持续覆盖。
+  0x0000F000..0x0000F00F：PC 写入数据后，可使用 VIO 触发 wr_addr 读四个字。
+  PC 的普通 H2C/C2H 回环建议先用 0x00010000，避开发生器的 4 KiB 区域。
+  XDMA 是 AXI Memory Mapped 模式。参考 project_14 的 AXI Stream 应用程序不能直接照搬。
+
+调试接口
+  vio_pcie/probe_in0：user_lnk_up；probe_in1：XDMA axi_aresetn。
+  vio_readback/probe_in0：DDR4 init_calib_complete；probe_in1：wr_addr 错误锁存。
+  vio_readback/probe_out0：先置 0，PC 完成写入 0xF000，再置 1；读完后回到 0，才能再次触发。
+  ila_readback 使用 Native 模式：probe0=32 位读数据；probe1=valid；probe2=last；
+  probe3=错误锁存；probe4=每个四拍写突发完成脉冲。
+  ILA 以 probe1=1 触发，四个有效周期的最后一个周期 probe2=1。
+  wr_addr 保留旧模块的“每个 32 位字节反转”行为，例如 0x12345678 显示为 0x78563412。
+  PC 直接 C2H 读取 DDR4 不经过这段字节反转逻辑。
+
+板级依据
+  保留器件 xcku060-ffva1156-2-i；project_14 的 XPR 和硬件说明使用相同器件。
+  PCIe 硬核 X0Y1，GT Quad 227，使用 Bank 226/227。
+  已核对 Vivado 2018.3 生成的 gtwizard_top：IP 内部已经反转 GT 位序，
+  因此顶层 lane0 直接约束 F2/F1、G4/G3，lane7 为 Y2/Y1、AA4/AA3。
+  PCIe REFCLK=P6/P5，PERST#=K22，LVCMOS33；DDR4 REFCLK=E22/E23。
+  引脚依据：指定板卡资料目录/02_原理图中的底板图第 11 页、核心图第 6/7/9 页；
+  PCIe 也与 project_14/constraints/pcie.xdc 和 docs/hardware.md 交叉核对。
+  板卡手册声明 060 为四颗 1 GiB、x16 DDR4，总容量 4 GiB。
+  DDR4 暂时保留原工程 MT40A512M16HA-083E、1600 MT/s 配置。
+  project_14 没有 DDR 控制器，不能据它确认板上实际颗粒。手册列有 LY-062E 和海力士替代料；
+  仍需实际丝印或一份该板已验证的 DDR 工程才能最终确认时序预设。
+
+复现检查
+  在工程目录运行：
+  python scripts/check_bd.py project_PCIE.srcs/sources_1/bd/xdma_pcie/xdma_pcie.bd project_PCIE.srcs/constrs_1/new/project_pcie_pins.xdc
+  powershell -File scripts/run_rtl_check.ps1
+  构建：Vivado 2018.3 batch 执行 scripts/build_link.tcl；输出在 link_build。
+  该脚本检查 DRC、时序和实际 report_io 通道映射，通过后才写 bitstream。
+  原始文件保存在 backup_link_completion_20260930_185610，未修改 XDMA_DDR_end/project_14。
+
+上板验收顺序
+  1. 按板卡手册选择 x8 档位，使用电气 x8/x16 主机插槽；加载本工程 bit 和对应 ltx。
+  2. 确认 DDR4 init_calib_complete=1、PCIe user_lnk_up=1。
+  3. 主机枚举设备，确认链路宽度/速率，使用支持 10EE:8028 的 XDMA 驱动。
+     JTAG 下载晚于主机枚举窗口时，需要主机重新枚举/复位。
+  4. 校准和建链完成后先留出至少 10 ms 完成这轮写入（其间不要访问样本区），
+     从卡地址 0 通过 C2H 读取 4096 字节，保存原始二进制 capture.bin：
+     python scripts/check_capture.py capture.bin
+     应输出全部 1024 点匹配；expected_capture.bin 是预期的小端二进制。
+  5. H2C 向 0x10000 写已知二进制，再从同地址 C2H 读回并逐字节比较。
+  6. H2C 向 0xF000 写入 16 字节，VIO 触发读取，用 ILA 核对四个数据及 last。
+
+边界
+  BD 校验、RTL 仿真、综合/实现与“主机 DMA 实测成功”是不同验证层级。
+  本次不自动连接/烧写板卡，不擦写 Flash，不安装或更改主机驱动。
+  最终构建结果以本目录的 validation_result.txt 及构建日志为准。
