@@ -38,8 +38,10 @@
       },
       "das_writer_packet_0": "",
       "ila_das": "",
-      "top_layer_0": "",
-      "acquisition_router_0": ""
+      "acquisition_router_0": "",
+      "compat_bram_ctrl": "",
+      "compat_bram": "",
+      "top_layer_0": ""
     },
     "interface_ports": {
       "C0_DDR4_0": {
@@ -300,7 +302,13 @@
             "value": "256_bit"
           },
           "axilite_master_en": {
-            "value": "false"
+            "value": "true"
+          },
+          "axilite_master_scale": {
+            "value": "Kilobytes"
+          },
+          "axilite_master_size": {
+            "value": "32"
           },
           "axisten_freq": {
             "value": "125"
@@ -2101,6 +2109,208 @@
           }
         }
       },
+      "acquisition_router_0": {
+        "vlnv": "xilinx.com:module_ref:acquisition_router:1.0",
+        "xci_name": "xdma_pcie_acquisition_router_0_0",
+        "parameters": {
+          "FRAME_WORDS": {
+            "value": "16384"
+          },
+          "SAMPLE_RATE": {
+            "value": "125000000"
+          },
+          "TRACE_PERIOD": {
+            "value": "31250"
+          },
+          "TRACE_POINTS": {
+            "value": "16320"
+          }
+        },
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "acquisition_router",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "reset_n",
+                "value_src": "constant"
+              },
+              "CLK_DOMAIN": {
+                "value": "xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk",
+                "value_src": "default_prop"
+              },
+              "FREQ_HZ": {
+                "value": "200000000",
+                "value_src": "constant"
+              },
+              "PHASE": {
+                "value": "0.00",
+                "value_src": "const_prop"
+              }
+            }
+          },
+          "reset_n": {
+            "type": "rst",
+            "direction": "I",
+            "parameters": {
+              "POLARITY": {
+                "value": "ACTIVE_LOW",
+                "value_src": "const_prop"
+              }
+            }
+          },
+          "start": {
+            "direction": "I"
+          },
+          "raw_mode_cfg": {
+            "direction": "I"
+          },
+          "test_enable_cfg": {
+            "direction": "I"
+          },
+          "tx_enable_cfg": {
+            "direction": "I"
+          },
+          "epoch_cfg": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "config_id_cfg": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "adc_test_active": {
+            "direction": "I"
+          },
+          "input_fault": {
+            "direction": "I"
+          },
+          "tx_init_done": {
+            "direction": "I"
+          },
+          "tx_fault": {
+            "direction": "I"
+          },
+          "frontend_enable": {
+            "direction": "O"
+          },
+          "adc_test_request": {
+            "direction": "O"
+          },
+          "tx_enable_locked": {
+            "direction": "O"
+          },
+          "mode_locked": {
+            "direction": "O"
+          },
+          "raw_mode_active": {
+            "direction": "O"
+          },
+          "configuration_error": {
+            "direction": "O"
+          },
+          "adc_data": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "adc_user": {
+            "direction": "I",
+            "left": "1",
+            "right": "0"
+          },
+          "adc_valid": {
+            "direction": "I"
+          },
+          "adc_ready": {
+            "direction": "O"
+          },
+          "das_adc_data": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "das_adc_user": {
+            "direction": "O",
+            "left": "1",
+            "right": "0"
+          },
+          "das_adc_valid": {
+            "direction": "O"
+          },
+          "das_adc_ready": {
+            "direction": "I"
+          },
+          "das_frame_data": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "das_frame_valid": {
+            "direction": "I"
+          },
+          "das_frame_last": {
+            "direction": "I"
+          },
+          "das_frame_ready": {
+            "direction": "O"
+          },
+          "frame_data": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "frame_valid": {
+            "direction": "O"
+          },
+          "frame_last": {
+            "direction": "O"
+          },
+          "frame_ready": {
+            "direction": "I"
+          },
+          "raw_capture_complete": {
+            "direction": "O"
+          },
+          "raw_capture_error": {
+            "direction": "O"
+          },
+          "raw_frame_sent": {
+            "direction": "O"
+          }
+        }
+      },
+      "compat_bram_ctrl": {
+        "vlnv": "xilinx.com:ip:axi_bram_ctrl:4.1",
+        "xci_name": "xdma_pcie_compat_bram_ctrl_0",
+        "parameters": {
+          "PROTOCOL": {
+            "value": "AXI4LITE"
+          },
+          "SINGLE_PORT_BRAM": {
+            "value": "1"
+          }
+        }
+      },
+      "compat_bram": {
+        "vlnv": "xilinx.com:ip:blk_mem_gen:8.4",
+        "xci_name": "xdma_pcie_compat_bram_0",
+        "parameters": {
+          "EN_SAFETY_CKT": {
+            "value": "false"
+          },
+          "Memory_Type": {
+            "value": "Single_Port_RAM"
+          }
+        }
+      },
       "top_layer_0": {
         "vlnv": "xilinx.com:module_ref:top_layer:1.0",
         "xci_name": "xdma_pcie_top_layer_0_0",
@@ -2327,184 +2537,6 @@
             "direction": "O"
           }
         }
-      },
-      "acquisition_router_0": {
-        "vlnv": "xilinx.com:module_ref:acquisition_router:1.0",
-        "xci_name": "xdma_pcie_acquisition_router_0_0",
-        "parameters": {
-          "FRAME_WORDS": {
-            "value": "16384"
-          },
-          "SAMPLE_RATE": {
-            "value": "125000000"
-          },
-          "TRACE_PERIOD": {
-            "value": "31250"
-          },
-          "TRACE_POINTS": {
-            "value": "16320"
-          }
-        },
-        "reference_info": {
-          "ref_type": "hdl",
-          "ref_name": "acquisition_router",
-          "boundary_crc": "0x0"
-        },
-        "ports": {
-          "clk": {
-            "type": "clk",
-            "direction": "I",
-            "parameters": {
-              "ASSOCIATED_RESET": {
-                "value": "reset_n",
-                "value_src": "constant"
-              },
-              "CLK_DOMAIN": {
-                "value": "xdma_pcie_ddr4_0_2_c0_ddr4_ui_clk",
-                "value_src": "default_prop"
-              },
-              "FREQ_HZ": {
-                "value": "200000000",
-                "value_src": "constant"
-              },
-              "PHASE": {
-                "value": "0.00",
-                "value_src": "const_prop"
-              }
-            }
-          },
-          "reset_n": {
-            "type": "rst",
-            "direction": "I",
-            "parameters": {
-              "POLARITY": {
-                "value": "ACTIVE_LOW",
-                "value_src": "const_prop"
-              }
-            }
-          },
-          "start": {
-            "direction": "I"
-          },
-          "raw_mode_cfg": {
-            "direction": "I"
-          },
-          "test_enable_cfg": {
-            "direction": "I"
-          },
-          "tx_enable_cfg": {
-            "direction": "I"
-          },
-          "epoch_cfg": {
-            "direction": "I",
-            "left": "31",
-            "right": "0"
-          },
-          "config_id_cfg": {
-            "direction": "I",
-            "left": "31",
-            "right": "0"
-          },
-          "adc_test_active": {
-            "direction": "I"
-          },
-          "input_fault": {
-            "direction": "I"
-          },
-          "tx_init_done": {
-            "direction": "I"
-          },
-          "tx_fault": {
-            "direction": "I"
-          },
-          "frontend_enable": {
-            "direction": "O"
-          },
-          "adc_test_request": {
-            "direction": "O"
-          },
-          "tx_enable_locked": {
-            "direction": "O"
-          },
-          "mode_locked": {
-            "direction": "O"
-          },
-          "raw_mode_active": {
-            "direction": "O"
-          },
-          "configuration_error": {
-            "direction": "O"
-          },
-          "adc_data": {
-            "direction": "I",
-            "left": "31",
-            "right": "0"
-          },
-          "adc_user": {
-            "direction": "I",
-            "left": "1",
-            "right": "0"
-          },
-          "adc_valid": {
-            "direction": "I"
-          },
-          "adc_ready": {
-            "direction": "O"
-          },
-          "das_adc_data": {
-            "direction": "O",
-            "left": "31",
-            "right": "0"
-          },
-          "das_adc_user": {
-            "direction": "O",
-            "left": "1",
-            "right": "0"
-          },
-          "das_adc_valid": {
-            "direction": "O"
-          },
-          "das_adc_ready": {
-            "direction": "I"
-          },
-          "das_frame_data": {
-            "direction": "I",
-            "left": "31",
-            "right": "0"
-          },
-          "das_frame_valid": {
-            "direction": "I"
-          },
-          "das_frame_last": {
-            "direction": "I"
-          },
-          "das_frame_ready": {
-            "direction": "O"
-          },
-          "frame_data": {
-            "direction": "O",
-            "left": "31",
-            "right": "0"
-          },
-          "frame_valid": {
-            "direction": "O"
-          },
-          "frame_last": {
-            "direction": "O"
-          },
-          "frame_ready": {
-            "direction": "I"
-          },
-          "raw_capture_complete": {
-            "direction": "O"
-          },
-          "raw_capture_error": {
-            "direction": "O"
-          },
-          "raw_frame_sent": {
-            "direction": "O"
-          }
-        }
       }
     },
     "interface_nets": {
@@ -2514,22 +2546,10 @@
           "ddr4_0/C0_DDR4"
         ]
       },
-      "xdma_0_M_AXI": {
-        "interface_ports": [
-          "xdma_0/M_AXI",
-          "axi_smc/S00_AXI"
-        ]
-      },
       "C0_SYS_CLK_0_1": {
         "interface_ports": [
           "C0_SYS_CLK_0",
           "ddr4_0/C0_SYS_CLK"
-        ]
-      },
-      "wr_addr_0_m00_axi": {
-        "interface_ports": [
-          "wr_addr_0/m00_axi",
-          "axi_smc/S01_AXI"
         ]
       },
       "diff_clock_rtl_0_1": {
@@ -2542,6 +2562,30 @@
         "interface_ports": [
           "axi_smc/M00_AXI",
           "ddr4_0/C0_DDR4_S_AXI"
+        ]
+      },
+      "wr_addr_0_m00_axi": {
+        "interface_ports": [
+          "wr_addr_0/m00_axi",
+          "axi_smc/S01_AXI"
+        ]
+      },
+      "xdma_0_M_AXI_LITE": {
+        "interface_ports": [
+          "xdma_0/M_AXI_LITE",
+          "compat_bram_ctrl/S_AXI"
+        ]
+      },
+      "compat_bram_ctrl_BRAM_PORTA": {
+        "interface_ports": [
+          "compat_bram_ctrl/BRAM_PORTA",
+          "compat_bram/BRAM_PORTA"
+        ]
+      },
+      "xdma_0_M_AXI": {
+        "interface_ports": [
+          "xdma_0/M_AXI",
+          "axi_smc/S00_AXI"
         ]
       },
       "xdma_0_pcie_mgt": {
@@ -2598,8 +2642,8 @@
           "wr_addr_0/m00_axi_aresetn",
           "das_processing/reset_n",
           "das_writer_packet_0/reset_n",
-          "top_layer_0/rst_n",
-          "acquisition_router_0/reset_n"
+          "acquisition_router_0/reset_n",
+          "top_layer_0/rst_n"
         ]
       },
       "perst_invert_Res": {
@@ -2612,7 +2656,8 @@
         "ports": [
           "xdma_0/axi_aresetn",
           "xdma_reset_invert/Op1",
-          "vio_pcie/probe_in1"
+          "vio_pcie/probe_in1",
+          "compat_bram_ctrl/s_axi_aresetn"
         ]
       },
       "ddr4_0_c0_ddr4_ui_clk_sync_rst": {
@@ -2647,15 +2692,16 @@
           "das_processing/clk",
           "das_writer_packet_0/clk",
           "ila_das/clk",
-          "top_layer_0/ctrl_clk",
-          "acquisition_router_0/clk"
+          "acquisition_router_0/clk",
+          "top_layer_0/ctrl_clk"
         ]
       },
       "xdma_0_axi_aclk": {
         "ports": [
           "xdma_0/axi_aclk",
           "axi_smc/aclk1",
-          "vio_pcie/clk"
+          "vio_pcie/clk",
+          "compat_bram_ctrl/s_axi_aclk"
         ]
       },
       "axis_data_fifo_0_m_axis_tdata": {
@@ -3213,6 +3259,17 @@
                 "address_block": "/ddr4_0/C0_DDR4_MEMORY_MAP/C0_DDR4_ADDRESS_BLOCK",
                 "offset": "0x0000000000000000",
                 "range": "4G"
+              }
+            }
+          },
+          "M_AXI_LITE": {
+            "range": "4G",
+            "width": "32",
+            "segments": {
+              "SEG_compat_bram": {
+                "address_block": "/compat_bram_ctrl/S_AXI/Mem0",
+                "offset": "0x00000000",
+                "range": "32K"
               }
             }
           }

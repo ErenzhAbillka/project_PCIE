@@ -1,5 +1,7 @@
 from pathlib import Path
 import json, hashlib, re
+from copy import deepcopy
+from check_xdma_compat import check_compat
 
 root=Path(__file__).resolve().parents[1]
 backup=root/'archive'/'backups'/'das_template_backup_20261004'
@@ -26,8 +28,19 @@ for pin in ['wr_addr_0/i_data','wr_addr_0/i_valid','wr_addr_0/i_last','axis_data
     assert not any(pin in n['ports'] and any(p.startswith('zero_') for p in n['ports']) for n in after['nets'].values()),pin
 for key,net in before['interface_nets'].items():
     assert after['interface_nets'][key]==net,('Backend interface changed',key)
-assert before['addressing']==after['addressing']
-for c in ['ddr4_0','xdma_0','axi_smc','rst_ddr','perst_invert','xdma_reset_invert']:
+check_compat(root,after)
+# Only the isolated user BAR may extend the original DDR/PCIe backend.
+addressing=deepcopy(after['addressing'])
+del addressing['/xdma_0']['address_spaces']['M_AXI_LITE']
+assert before['addressing']==addressing,'Original backend addressing changed'
+compat_params={'axilite_master_en','axilite_master_scale','axilite_master_size'}
+before_xdma=before['components']['xdma_0']['parameters']
+after_xdma=after['components']['xdma_0']['parameters']
+assert before_xdma['axilite_master_en']['value']=='false'
+assert {k:v for k,v in before_xdma.items() if k not in compat_params}=={
+    k:v for k,v in after_xdma.items() if k not in compat_params
+},'Unexpected XDMA parameter change'
+for c in ['ddr4_0','axi_smc','rst_ddr','perst_invert','xdma_reset_invert']:
     assert before['components'][c].get('parameters',{})==after['components'][c].get('parameters',{}),c
 for param in ['WRITE_BASE_ADDR','WRITE_WINDOW_BYTES']:
     assert int(after['components']['wr_addr_0']['parameters'][param]['value'],0)==0x100000

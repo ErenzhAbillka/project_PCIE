@@ -14,13 +14,19 @@ ADC ramp/连续性监控、RAW1 单帧、AD9122 单次扫频以及 writer 故障
 RTL 回归默认使用 D:/Xilinxx/Vivado/2018.3/bin，可用 -VivadoBin 指定工具目录。
 主机基础解码使用 Python 3；离线匹配与相关测试还需要 NumPy。
 build_das.tcl 会按当前工程位置刷新 ROM 路径，然后生成 BD 并综合、实现。
+同时确保旧版 Windows XDMA 驱动兼容布局：BAR0 为 32 KiB 用户 BRAM，
+BAR1 为 64 KiB 控制空间；DDR M_AXI 与 ADC/RAW/TX 通路保持原映射。
+生成 BD 后 check_das_bd.py 会同时检查该布局和生成的 PCIe 硬核参数。
 新增测试位于 project_PCIE.srcs/sim_1/ADC_RAW_TX，不改变默认旧仿真顶层。
 
 操作和格式：project_PCIE.doc/ADC_RAW_TX/HOST_CAPTURE_GUIDE.txt、RAW1_FORMAT.txt。
 构建与交付：project_PCIE.doc/ADC_RAW_TX/构建与交付说明.txt。
-本次结果：project_PCIE.doc/ADC_RAW_TX/合并验证记录.txt。
+合并阶段结果：project_PCIE.doc/ADC_RAW_TX/合并验证记录.txt。
 
 新构建输出：link_bulid/ADC_RAW_TX。
+2026-10-11 旧驱动兼容修订及上板结果见 project_PCIE.doc/ADC_RAW_TX/20261011_XDMA兼容与上板记录.txt。
+实板已完成兼容bit下载、8028/BAR识别和单次64KiB DDR读取；ADC ramp出现
+每码两拍重复，正式斜坡验收未通过，须先校验ADC/DCO采样时序再做模拟/TX测试。
 历史 DAS bit/LTX 和报告继续保留在 link_bulid/PCIEv2_0；它们不包含本版新增功能。
 project_PCIE.doc/PCIEv2_0 是历史版本说明；archive/backups 保存旧迁移基线。
 旧 integrate_das_bd.tcl/trim_adc_to_fifo.tcl 等是历史迁移工具，正常构建无需重跑。

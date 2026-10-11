@@ -1,5 +1,9 @@
 ADC_RAW_TX 完整构建记录（2026-10-11）
 
+后续兼容修订：本记录的 87158C2D...bit 未包含用户 BAR，不适用于本机
+已安装的旧版 XDMA.sys 做 DMA。请使用20261011_XDMA兼容与上板记录.txt
+列出的兼容 bit/LTX；以下时序与 hash 保留为首次完整构建的历史证据。
+
 器件：xcku060-ffva1156-2-i；Vivado 2018.3。
 对应功能源码提交：19405f40bbd7a371a321711392d9771d7b9a45c9。
 构建命令：vivado -mode batch -source scripts/build_das.tcl。

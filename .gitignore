@@ -16,5 +16,6 @@ __pycache__/
 *.sim/
 *.hw/
 link_bulid/**/packages/
-link_bulid/ADC_RAW_TX/
+link_bulid/ADC_RAW_TX*/
+scripts/raw_c2h_*/
 acquisition_tx_build/

@@ -1,0 +1,97 @@
+XDMA 旧驱动兼容修订与上板记录（2026-10-11）
+
+修订基线：9cf2c0a5e965c8f930aecfd7b5f1c03642711b68。
+设备：KU060，Digilent JTAG 210512180081；Vivado 2018.3。
+
+下载前实测：Windows 枚举 10EE:8038，驱动 oem3.inf/XDMA 已启动，ProblemCode=0。
+用户确认未下载本轮 ADC_RAW_TX bit。JTAG 读到原设计只有1个ILA、0个VIO。
+当前 INF 同时支持8028与8038，因此无需为ID改INF；本轮工程仍为8028、Gen2×8。
+已安装 XDMA.sys SHA256：
+5CDBAF12776444E45AD3CB837E42B4D2487C3BFFD9ACAC9BB08515AE980F8396。
+
+旧驱动具有已复现的 DPC 用户 BAR 越界问题：只有控制 BAR 的设计不能在本机
+直接做 DMA。首次构建的87158C2D...bit不包含用户BAR。本次启用XDMA AXI-Lite
+Master，增加32KiB独立BRAM：BAR0=32位/非预取/32KiB用户空间，
+BAR1=32位/非预取/64KiB控制空间，BAR2–5关闭；用户IRQ保持0。
+BRAM使用XDMA axi_aclk/axi_aresetn，原M_AXI DDR/writer地址映射保持不变。
+ADC/RAW/DAS/TX的RTL、ROM/COE和XDC内容保持原基线不变。
+该布局避开旧驱动缺用户BAR的路径；没有修改或宣称修复驱动二进制本身。
+
+可复现性检查：
+  check_das_bd.py、check_xdma_compat.py：通过。
+  原始git archive只覆盖新BD、4个脚本及完整XDMA IP配置闭包后，
+  Vivado validate/generate_target/make_wrapper成功，双checker通过。
+  更新XCI必须连同配套XML；仅更新BD或XCI会被旧生成配置覆盖/锁定。
+  新增BRAM IP产品由BD自动生成，无需改变XPR源文件列表。
+  干净副本检查只验证生成阶段，完整综合/实现另见下列本轮结果。
+
+主机采集工具：scripts/raw_c2h_probe.py、dma_core.py。
+默认只做离线自检；--run-raw才访问唯一8028/8038接口，检查当前驱动hash与
+普通control标识后，单次只读DDR 0x100000的65536字节，无H2C、重试或复位。
+大缓冲页对齐/只读权限/地址/短读/取消排空/日志异常负例均通过离线检查。
+5秒观察超时不代表请求已终止；取消后保留缓冲区等最终完成，不能强杀。
+硬件读取完成仍需前后VIO和decode_raw.py检查本轮epoch/config/ramp。
+
+本轮完整构建、下载与测试结果：
+  14:12:39 完整综合/实现/bitgen退出0，ADC_RAW_TX_BITSTREAM_BUILD_PASS。
+  bit：9662848字节，SHA256
+  199F6467C9C7D65CE7C0FDE3FE5129B93A9E8FDDCBC93ED6C8EA105938AC8C5B。
+  匹配LTX SHA256
+  9F47FA5E2B3AAF40D7351321EC5AF5B83712AF5C67A1326339EFFE97B6F39372。
+  最终 timing_summary：WNS +0.083ns、WHS +0.004ns，TNS/THS/TPWS均0；
+  route阶段摘要为+0.081ns，以最终报告为准。224物理端口通过；118787个
+  routable nets全部完成，0 routing errors；DRC 0错误/0严重警告/8普通警告。
+  20项bus skew全部满足；ADC14路/DAC32个p/n端点setup/hold覆盖通过。
+  独立后布线检查：65个snapshot真实C→D端点全覆盖，10ns约束最小余量9.292ns。
+  既有CDC告警和DDR reset无output_delay仍保留；本轮未增加BAR相关CDC端点，
+  不能称CDC告警清零。主构建复用了未改变的DDR PHY IP缓存；后续脚本已将
+  ip_output_repo设置为当前checkout内，独立干净副本生成阶段检查通过。
+
+  14:13:01 正常停用原8038，ProblemCode=22。
+  14:13:38 JTAG program成功，startup HIGH；发现2 ILA、1 MIG、2 VIO，
+  DDR校准完成，PCIe user_lnk_up=1。仅加载易失配置，未烧写Flash。
+  正常移除已停用的旧设备节点并扫描PCI父节点后，14:13:47新8028启动，
+  ProblemCode=0，仍使用oem3.inf及原XDMA.sys，没有改INF或安装新驱动。
+  PnP内存窗口：F43E8000–F43EFFFF=32768字节，
+               F43F0000–F43FFFFF=65536字节。
+  实际硬核参数也独立确认BAR0 aperture=8/control=4、BAR1=9/4，BAR2–5关闭。
+
+  严格采集前检查未通过：in12 ADC测试错误为1，in13=375002691、
+  in14=187501345。尚未start时上电3秒自动斜坡自检已产生错误。
+  切换模式不会清除这些诊断历史，因此另做明确标记的单帧诊断，
+  保留所有其他DDR/溢出/格式/配置/TX故障门，没有修改RTL或放宽正式验收。
+  ramp就绪后的200ms观测：checked增加27495598、error增加13747799，
+  错误仍持续且恰为50%，不能解释为仅有历史错误或模式切换瞬态。
+
+  14:16:00 RAW诊断帧发布：epoch=0x6ACB299F，config=0x52414D50。
+  capture_complete=frame_sent=frames_done=1，模式锁定；DDR写错误、ADC溢出、
+  RAW/配置/格式/对齐错误均0，TXenable=0、TX状态/故障为0。
+  14:16:10 单次C2H从DDR 0x100000完整读回65536字节，无超时或重试。
+  control普通标识实读0x0=0x1FC00006、0x1000=0x1FC10006。
+  raw.bin SHA256：
+  A65C1A353A9BEAB1553170105785A670B626F14C247DAF17DEC4AC707E84B8B0。
+  14:16:23 DMA后JTAG确认frames_done仍=1，其余传输/采集故障仍0，TX关闭。
+
+  decode_raw.py：publication_verified=true、accepted_frames=1，
+  16320对样本、epoch/config、首尾commit及payload XOR均通过；
+  ramp[0].ramp_check_pass=false，A/B各8159个坏边沿/16319个已检查边沿。
+  A/B逐点相等，序列8709,8708,8708,8707,8707,8706,8706…；
+  每通道8160个-1边沿、8159个0边沿，重复发生于偶数索引2,4,…16318。
+  采样域checker在FIFO/DDR/PCIe之前已报相同比例，问题不能归为仅主机解码。
+  RAW头error_flags不包含独立adc_test_error，头为0不能代替VIO ramp验收。
+
+结论与下一步：
+  兼容bit构建、JTAG下载、8028识别、BAR资源及本轮单次DDR→PCIe读取已通过。
+  ADC斜坡数字正确性未通过；模拟输入、通道身份、DAC/TX电测未验收。
+  ADI官方同型号IDDR两拍重复案例指出连续样本应变化一个码，并建议排查
+  DCO/FPGA采集时序，而非接受重复样本：
+  https://ez.analog.com/data_converters/high-speed_adcs/f/q-a/21871/ad9643-test-modes
+  因此下一步应核对ADC/DCO频率与DDR采样相位，做延时/相位扫描及全码范围
+  斜坡验收；本轮没有据此擅改固定相位或把每两拍重复改成合格判据。
+  当前板保留诊断RAW状态，start/config已锁定；掉电会丢失JTAG配置，Flash未更新。
+  不应直接以此结果开始模拟信号或TX系统验收。
+
+证据位置：本工程link_bulid/ADC_RAW_TX下的build_manifest.json、构建报告、
+  hardware_evidence/日志和raw_c2h_20261011_141610_baab6885/原始与解码文件。
+  原首次无USER BAR的输出完整保留在ADC_RAW_TX_precompat_20261011。
+  大型构建/硬件产物按.gitignore留在本地；Git提交包含兼容源文件与本记录。

@@ -70,7 +70,7 @@ TX01 当成已匹配 AOM 的光学工作频段。独立 AOM gate 外部引脚也
   vivado -mode batch -source scripts/build_das.tcl
 在 project_PCIE 目录执行。检查 link_bulid/ADC_RAW_TX 中本轮的 timing、CDC、DRC、
 IO 和 route 报告，再使用同次生成的 bit 与 LTX。源码修改后旧 bit 不能验证新功能。
-本机此前真实综合因 KU060 许可缺失停止，本轮没有生成或下载新 bit。
+首次完整构建结果见20261011_完整构建记录.txt；旧驱动兼容修订及本轮下载、测试状态见20261011_XDMA兼容与上板记录.txt。
 
 第一步：确认实物时钟。旧版接线不唯一决定晶振频率；当前 AD9516 配置按 10 MHz
 参考设计。先核对晶振、跳线，测得 ADC DCO 125 MHz 和 DAC 设备时钟 500 MHz。

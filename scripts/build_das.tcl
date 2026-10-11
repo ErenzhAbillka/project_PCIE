@@ -6,7 +6,9 @@ set out [file join $root link_bulid ADC_RAW_TX]
 file mkdir $out
 cd $out
 open_project [file join $root project_PCIE.xpr]
+set_property ip_output_repo [file join $root project_PCIE.cache ip] [current_project]
 open_bd_design [get_files */xdma_pcie.bd]
+source $scripts/ensure_xdma_compat.tcl
 # Resolve the TX ROM from this checkout whenever the project moves disks.
 set txdir [file join $root project_PCIE.srcs sources_1 new tgd_tx]
 update_module_reference [get_ips *top_layer*]

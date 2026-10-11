@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 $previousBytecode = $env:PYTHONDONTWRITEBYTECODE
 $env:PYTHONDONTWRITEBYTECODE = '1'
 try {
-    foreach ($test in @('test_decode_das.py', 'test_decode_raw.py')) {
+    foreach ($test in @('test_decode_das.py', 'test_decode_raw.py', 'raw_c2h_probe.py')) {
         & $Python -B (Join-Path $PSScriptRoot $test)
         if ($LASTEXITCODE -ne 0) { throw "Host regression failed: $test" }
     }

@@ -5095,11 +5095,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Mon Sep 28 09:36:43 UTC 2026</spirit:value>
+            <spirit:value>Sun Oct 11 04:42:00 UTC 2026</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:3880c426</spirit:value>
+            <spirit:value>9:19e55f08</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -5115,11 +5115,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed Sep 30 10:56:59 UTC 2026</spirit:value>
+            <spirit:value>Sun Oct 11 05:40:06 UTC 2026</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:bed9b779</spirit:value>
+            <spirit:value>9:d1cdbbfc</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -5135,11 +5135,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed Sep 30 10:56:59 UTC 2026</spirit:value>
+            <spirit:value>Sun Oct 11 05:40:06 UTC 2026</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:bed9b779</spirit:value>
+            <spirit:value>9:d1cdbbfc</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -5155,11 +5155,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed Sep 30 10:56:59 UTC 2026</spirit:value>
+            <spirit:value>Sun Oct 11 05:40:06 UTC 2026</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:fa120a01</spirit:value>
+            <spirit:value>9:2101452a</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -5175,11 +5175,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Wed Sep 30 10:56:59 UTC 2026</spirit:value>
+            <spirit:value>Sun Oct 11 05:40:06 UTC 2026</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:fa120a01</spirit:value>
+            <spirit:value>9:2101452a</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -16178,7 +16178,7 @@
       <spirit:modelParameter spirit:dataType="std_logic_vector">
         <spirit:name>PF0_BAR0_APERTURE_SIZE</spirit:name>
         <spirit:displayName>Pf0 Bar0 Aperture Size</spirit:displayName>
-        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.PF0_BAR0_APERTURE_SIZE" spirit:bitStringLength="5">0x09</spirit:value>
+        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.PF0_BAR0_APERTURE_SIZE" spirit:bitStringLength="5">0x08</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="std_logic_vector">
         <spirit:name>PF0_BAR0_CONTROL</spirit:name>
@@ -16188,12 +16188,12 @@
       <spirit:modelParameter spirit:dataType="std_logic_vector">
         <spirit:name>PF0_BAR1_APERTURE_SIZE</spirit:name>
         <spirit:displayName>Pf0 Bar1 Aperture Size</spirit:displayName>
-        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.PF0_BAR1_APERTURE_SIZE" spirit:bitStringLength="5">0x00</spirit:value>
+        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.PF0_BAR1_APERTURE_SIZE" spirit:bitStringLength="5">0x09</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="std_logic_vector">
         <spirit:name>PF0_BAR1_CONTROL</spirit:name>
         <spirit:displayName>Pf0 Bar1 Control</spirit:displayName>
-        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.PF0_BAR1_CONTROL" spirit:bitStringLength="3">0x0</spirit:value>
+        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.PF0_BAR1_CONTROL" spirit:bitStringLength="3">0x4</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="std_logic_vector">
         <spirit:name>PF0_BAR2_APERTURE_SIZE</spirit:name>
@@ -18067,6 +18067,11 @@
       <spirit:enumeration spirit:text="16950 compatible serial controller">16950_compatible_serial_controller</spirit:enumeration>
     </spirit:choice>
     <spirit:choice>
+      <spirit:name>choice_pairs_e58acabb</spirit:name>
+      <spirit:enumeration spirit:text="BAR 0">BAR_0</spirit:enumeration>
+      <spirit:enumeration spirit:text="BAR 1">BAR_1</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
       <spirit:name>choice_pairs_f8a795d6</spirit:name>
       <spirit:enumeration spirit:text="2.5 GT/s">2.5_GT/s</spirit:enumeration>
       <spirit:enumeration spirit:text="5.0 GT/s">5.0_GT/s</spirit:enumeration>
@@ -18448,7 +18453,7 @@
     <spirit:parameter>
       <spirit:name>PF0_MSIX_CAP_PBA_BIR</spirit:name>
       <spirit:displayName>Pf0 Msix Cap Pba Bir</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.PF0_MSIX_CAP_PBA_BIR" spirit:choiceRef="choice_pairs_49d248fb" spirit:order="219">BAR_0</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.PF0_MSIX_CAP_PBA_BIR" spirit:choiceRef="choice_pairs_e58acabb" spirit:order="219">BAR_0</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>PF0_MSIX_CAP_PBA_OFFSET</spirit:name>
@@ -18458,7 +18463,7 @@
     <spirit:parameter>
       <spirit:name>PF0_MSIX_CAP_TABLE_BIR</spirit:name>
       <spirit:displayName>Pf0 Msix Cap Table Bir</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.PF0_MSIX_CAP_TABLE_BIR" spirit:choiceRef="choice_pairs_49d248fb" spirit:order="217">BAR_0</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.PF0_MSIX_CAP_TABLE_BIR" spirit:choiceRef="choice_pairs_e58acabb" spirit:order="217">BAR_0</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>PF0_MSIX_CAP_TABLE_OFFSET</spirit:name>
@@ -19160,17 +19165,17 @@
     <spirit:parameter>
       <spirit:name>pf0_bar0_size</spirit:name>
       <spirit:displayName>Pf0 Bar0 Size</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.pf0_bar0_size" spirit:choiceRef="choice_list_c15e8c67" spirit:order="49">64</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.pf0_bar0_size" spirit:choiceRef="choice_list_c15e8c67" spirit:order="49">32</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>pf0_bar1_enabled</spirit:name>
       <spirit:displayName>Pf0 Bar1 Enabled</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.pf0_bar1_enabled" spirit:choiceRef="choice_list_7a7dde49" spirit:order="50">false</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.pf0_bar1_enabled" spirit:choiceRef="choice_list_7a7dde49" spirit:order="50">true</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>pf0_bar1_type</spirit:name>
       <spirit:displayName>Pf0 Bar1 Type</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.pf0_bar1_type" spirit:choiceRef="choice_list_ec64e624" spirit:order="51">N/A</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.pf0_bar1_type" spirit:choiceRef="choice_list_c3d223d9" spirit:order="51">Memory</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>pf0_bar1_64bit</spirit:name>
@@ -19190,7 +19195,7 @@
     <spirit:parameter>
       <spirit:name>pf0_bar1_size</spirit:name>
       <spirit:displayName>Pf0 Bar1 Size</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.pf0_bar1_size" spirit:choiceRef="choice_list_c15e8c67" spirit:order="55">2</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.pf0_bar1_size" spirit:choiceRef="choice_list_c15e8c67" spirit:order="55">64</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>pf0_bar2_enabled</spirit:name>
@@ -20162,6 +20167,9 @@
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.pf0_bar0_scale" xilinx:valueSource="propagated"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.pf0_bar0_size" xilinx:valueSource="propagated"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.pf0_bar1_enabled" xilinx:valueSource="propagated"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.pf0_bar1_scale" xilinx:valueSource="propagated"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.pf0_bar1_size" xilinx:valueSource="propagated"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.pf0_bar2_enabled" xilinx:valueSource="propagated"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.pf0_base_class_menu" xilinx:valueSource="propagated"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.pf0_class_code_base" xilinx:valueSource="propagated"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.pf0_class_code_interface" xilinx:valueSource="propagated"/>

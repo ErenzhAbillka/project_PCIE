@@ -1,8 +1,12 @@
 RAW1 离线抓取与验证 (2026-10-10)
 
-本工具不打开PCIe设备、不配置ADC/DAC、不读写虚构CSR。
+decode_raw.py 离线解码不打开PCIe设备、不配置ADC/DAC、不读写虚构CSR。
 2026-10-11 已在本机完成综合/实现并生成新bit/LTX；本轮记录和首次上板步骤见20261011_完整构建记录.txt。
 旧10月4日bit不支持本轮RAW1/ADC诊断/TX接口，不能混用新的VIO说明。
+当前本机的旧版 XDMA.sys 同时支持 8028/8038，无需为 ID 改 INF。
+但它需要用户 BAR0 + 控制 BAR1；首次完整构建的 87158C2D...bit 缺用户 BAR，
+不能直接在此驱动下做 DMA。兼容修订及对应新 bit/LTX 见20261011_XDMA兼容与上板记录.txt。
+下载改变 BAR 布局前正常停用设备，随后重新枚举并核对 ID、32 KiB/64 KiB 资源与驱动状态。
 格式准确word表：project_PCIE.doc/ADC_RAW_TX/RAW1_FORMAT.txt。
 
 实际VIO编号（vio_readback；先前out0=start的口述已纠正）：
@@ -44,7 +48,7 @@ AD9643持续ramp单次抓取：
    当前RAW完成后继续排空ADC样本但不写第二帧，不存在DAS环的400ms覆写期限。
 5. 运行：
    python scripts/decode_raw.py raw.bin --completed 1 --completed-after 1 --expected-epoch 0x20261010 --expected-config-id 0x52414d50 --ramp --output raw_decoded
-   产生samples.csv与summary.json；exit0且ramp_check_pass=true才通过本项数字检查。
+   产生samples.csv与summary.json；exit0、publication_verified=true，且ramp[0].ramp_check_pass=true才通过本项数字检查。
    本板0x14=0x05下ramp每拍14bit modulo递减1，默认--ramp-direction -1。
    两通道相同ramp不能证明A/B身份；需差异化pattern/已知输入进一步验证。
 
@@ -81,3 +85,14 @@ python scripts/check_rtl_raw.py <RTL回归输出目录>/tb_raw_capture/raw_frame
 
 RTL回归默认输出到系统临时目录，实际目录由 run_acquisition_rtl_check.ps1 打印。
 可用 -OutputDir 指定工程目录之外的验证目录，再将其 raw_frame.hex 交给上述主机检查。
+
+本机只读 C2H 入口（需先完成上述 bit/BAR/VIO 验收）：
+python scripts/raw_c2h_probe.py              默认仅离线自检，不访问设备
+python scripts/raw_c2h_probe.py --run-raw    单次读取 DDR 0x100000 的65536字节
+输出独立 raw_c2h_日期_UUID 目录，含 raw.bin、事件日志及 hash。
+工具支持唯一的 8028 或 8038 接口，不向 DDR 写入，也不自动重试或复位。
+5秒观察超时后请求取消，保留缓冲区等待最终完成；不能强杀仍有请求的进程。
+读取完成不等于 RAW 数据验证通过，仍须记录前后 VIO 并运行 decode_raw.py。
+RAW头error_flags不包含独立adc_test_error；不能用头为0代替VIO/逐样本ramp检查。
+2026-10-11本机首次实测64KiB读取成功，但ADC ramp每码两拍重复，验收未通过；
+下一步先排查采样相位/时钟，详见同目录20261011_XDMA兼容与上板记录.txt。
